@@ -1,5 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "none",
@@ -55,8 +57,20 @@ module.exports = {
     ],
   },
   plugins: [
+    new CleanWebpackPlugin({
+      root: path.resolve(__dirname, "../"),
+    }),
     new HtmlWebpackPlugin({
       template: "./src/index.html"
-    })
+    }),
+    //copy our assets from the /src/assets folder into /dist/assets.
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, "./src/assets"),
+          to: path.join(__dirname, "./dist/assets"),
+        },
+      ],
+    }),
   ]
 };
