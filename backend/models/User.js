@@ -1,7 +1,6 @@
 "strict mode";
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const myPlaintextPassword = "145OkyayNo668Pass";
 const FILE_PATH = __dirname + "/users.json";
 
 class User {
@@ -15,12 +14,7 @@ class User {
   async save() {
     let userList = getUserListFromFile(FILE_PATH);
     const hashedPassword = await bcrypt.hash(this.password, saltRounds);
-    console.log("save:", this.email);
-    userList.push({
-      username: this.email,
-      email: this.email,
-      password: hashedPassword,
-    });
+    userList.push({ username: this.email, email: this.email, password: hashedPassword });
     saveUserListToFile(FILE_PATH, userList);
     return true;
   }
@@ -31,38 +25,12 @@ class User {
     let userFound = User.getUserFromList(email);
     console.log("User::checkCredentials:", userFound, " password:", password);
     if (!userFound) return Promise.resolve(false);
-    //try {
-    console.log("checkCredentials:prior to await");
-    // return the promise
-    return bcrypt
-      .compare(password, userFound.password)
+  
+
+    return bcrypt.compare(password, userFound.password)
       .then((match) => match)
       .catch((err) => err);
   }
-
-  // Some example of bcrypt used with sync function
-  /*
-  save() {
-    let userList = getUserListFromFile(FILE_PATH);
-    const hashedPassword = bcrypt.hashSync(this.password, saltRounds);
-
-    userList.push({
-      username: this.email,
-      email: this.email,
-      password: hashedPassword,
-    });
-
-    saveUserListToFile(FILE_PATH, userList);
-  }
-
-  checkCredentials(email, password) {
-    if (!email || !password) return false;
-    let userFound = User.getUserFromList(email);
-    console.log("User::checkCredentials:", userFound, " password:", password);
-    if (!userFound) return false;
-    const match = bcrypt.compareSync(password, userFound.password);
-    return match;
-  }*/
 
   static get list() {
     let userList = getUserListFromFile(FILE_PATH);

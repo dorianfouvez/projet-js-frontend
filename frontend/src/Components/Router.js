@@ -16,7 +16,6 @@ const routes = {
   "/game": PhaserGamePage,
 };
 
-let page = document.querySelector("#page");
 let navBar = document.querySelector("#navBar");
 let componentToRender;
 
@@ -38,11 +37,7 @@ const Router = () => {
     let uri;
     if (e.target.tagName === "A") {
       e.preventDefault();
-      if (e.target.text === "Home" || e.target.text === "MyCMS") {
-        uri = "/";
-      } else {
-        uri = "/" + e.target.text.toLowerCase();
-      }
+      uri = e.target.dataset.uri;
     }
     if (uri) {
       console.log(

@@ -1,10 +1,12 @@
-import Quote from "./Quote.js";
+//import Quote from "./Quote.js";
 
-let page = document.querySelector("#page");
+let homePage = `<p>Welcome to MyCMS...</p>`;
 
 const HomePage = () => {    
-  page.innerHTML = `<div id="quote"></div>`;
-  Quote(); 
+  let page = document.querySelector("#page");
+  return (page.innerHTML = homePage);
+  //page.innerHTML = `<div id="quote"></div>`;
+  //Quote(); 
 };
 
 export default HomePage;

@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var User = require("../model/User.js");
+var User = require("../models/User.js");
 let { authorize, signAsynchronous } = require("../utils/auth");
 const jwt = require("jsonwebtoken");
 const jwtSecret = "jkjJ1235Ohno!";

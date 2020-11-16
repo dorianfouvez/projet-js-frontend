@@ -15,24 +15,13 @@ const UserListPage = () => {
     },
   })
     .then((response) => {
-      if (!response.ok) {
-        let fullErrorMessage =
-          " Error code : " +
-          response.status +
-          " : " +
-          response.statusText +
-          "/nMessage : ";
-        return response.text().then((errorMessage) => {
-          fullErrorMessage += errorMessage;
-          return fullErrorMessage;
-        });
-      }
+      if (!response.ok)
+        throw new Error(
+          "Error code : " + response.status + " : " + response.statusText
+        );
       return response.json();
     })
-    .then((data) => {
-      if (typeof data === "string") onError(data);
-      else onUserList(data);
-    })
+    .then((data) => onUserList(data))
     .catch((err) => onError(err));
 };
 
@@ -40,7 +29,6 @@ const onUserList = (data) => {
   console.log("onUserList");
   let userListPage = `<h5>List of MyCMS users</h5>
 <ul class="list-group list-group-horizontal-lg">`;
-  let userList = document.querySelector("ul");
   // Neat way to loop through all data in the array, create a new array of string elements (HTML li tags)
   // with map(), and create one string from the resulting array with join(''). '' means that the separator is a void string.
   userListPage += data
@@ -52,12 +40,15 @@ const onUserList = (data) => {
 
 const onError = (err) => {
   console.error("UserListPage::onError:", err);
-  let errorMessage;
+  let errorMessage = "Error";
   if (err.message) {
-    errorMessage = err.message;
-  } else errorMessage = err;
-  if (errorMessage.includes("jwt expired"))
-    errorMessage += "<br> Please logout first, then login.";
+    if (err.message.includes("401"))
+      errorMessage =
+        "Unauthorized access to this ressource : you must first login.";
+    else errorMessage = err.message;
+    
+    if (errorMessage.includes("jwt expired")) errorMessage += "<br> Please logout first, then login.";
+  }
   RedirectUrl("/error", errorMessage);
 };
 

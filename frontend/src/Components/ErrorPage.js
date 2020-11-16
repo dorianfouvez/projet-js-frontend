@@ -1,5 +1,3 @@
-let page = document.querySelector("#page");
-
 const ErrorPage = (err) => {
   let errorPage;
   if (!err) errorPage = `<p>There was an error.</p>`;

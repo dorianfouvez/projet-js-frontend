@@ -34,8 +34,6 @@ const LoginPage = () => {
 
 const onLogin = (e) => {
   e.preventDefault();
-  let email = document.getElementById("email");
-  let password = document.getElementById("password");
 
   let user = {
     email: document.getElementById("email").value,
@@ -65,7 +63,7 @@ const onUserLogin = (userData) => {
   const user = { ...userData, isAutenticated: true };
   setUserSessionData(user);
   // re-render the navbar for the authenticated user
-  Navbar();
+  Navbar(userData);
   RedirectUrl("/list");
 };
 

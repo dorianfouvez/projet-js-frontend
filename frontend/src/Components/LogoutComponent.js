@@ -1,4 +1,3 @@
-import RegisterPage from "./LoginPage.js";
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./Navbar.js";
 import {removeSessionData} from "../utils/session.js";

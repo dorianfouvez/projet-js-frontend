@@ -12,9 +12,17 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, "public")));
+// not found in static files, so default to index.html
+app.use((req, res, next) => {
+  if (!req.path.startsWith("/api/"))
+    return res.sendFile(`${__dirname}/public/index.html`);
+  next();
+});
+
 app.use("/api/users", usersRouter);
 
-// catch 404 and forward to error handler
+/*// catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
@@ -24,7 +32,7 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.send(err.message);
-});
+});*/
 
 
 module.exports = app;

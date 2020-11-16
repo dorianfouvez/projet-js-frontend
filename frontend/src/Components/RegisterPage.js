@@ -57,15 +57,14 @@ const onUserRegistration = (userData) => {
   const user = { ...userData, isAutenticated: true };
   setUserSessionData(user);
   // re-render the navbar for the authenticated user
-  Navbar();
+  Navbar(userData);
   RedirectUrl("/list");
 };
 
 const onError = (err) => {
   let messageBoard = document.querySelector("#messageBoard");
   let errorMessage = "";
-  if (err.message.includes("409"))
-    errorMessage = "This user is already registered.";
+  if (err.message.includes("409")) errorMessage = "This user is already registered.";
   else errorMessage = err.message;
   messageBoard.innerText = errorMessage;
   // show the messageBoard div (add relevant Bootstrap class)
