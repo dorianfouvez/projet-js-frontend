@@ -8,9 +8,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 /* load bootstrap module (JS) */
 import 'bootstrap';
 
-const HEADER_TITLE = "JavaScript & Node.js full course";
-const PAGE_TITLE = "Demo : use of webpack as a module bundler";
-const FOOTER_TEXT = "Happy learning : )";
+const HEADER_TITLE = "The choice - Projet JS 2020";
+const PAGE_TITLE = "Synopsis ..."; // changer ceci dans les Components Page ????
+const FOOTER_TEXT = "Created by Fouvez Dorian - Lekeu Cyprien - Fisher Boris - Pronce Alexandre";
 
 Navbar();
 
