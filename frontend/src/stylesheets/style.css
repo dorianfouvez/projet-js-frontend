@@ -3,6 +3,10 @@
   background: radial-gradient(circle, rgba(67,0,102,1) 0%, rgba(0,0,0,1) 75%);
 }
 
+.bg-big-gradient-dark-purple{
+  background: radial-gradient(circle, rgba(31,0,75,1) 89%, rgba(0,0,0,1) 100%);
+}
+
 body {
   height: 100vh;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
