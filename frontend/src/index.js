@@ -10,7 +10,7 @@ import 'bootstrap';
 
 const HEADER_TITLE = "The choice - Projet JS 2020";
 const PAGE_TITLE = "Synopsis ..."; // changer ceci dans les Components Page ????
-const FOOTER_TEXT = "Created by Fouvez Dorian - Lekeu Cyprien - Fisher Boris - Pronce Alexandre";
+const FOOTER_TEXT = "Created by Fouvez Dorian - Lekeu Cyprien - Fischer Boris - Pronce Alexandre";
 
 Navbar();
 
