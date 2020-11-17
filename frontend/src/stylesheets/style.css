@@ -7,10 +7,12 @@
   background: radial-gradient(circle, rgba(31,0,75,1) 89%, rgba(0,0,0,1) 100%);
 }
 
+/********** Logo site **********/
 #logo-site{
   width: 100px;
 }
 
+/*Déjà là*/
 body {
   height: 100vh;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
