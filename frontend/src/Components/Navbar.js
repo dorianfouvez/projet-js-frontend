@@ -20,7 +20,7 @@ const Navbar = (userData) => {
 
         <!-- Centered Logo -->
         <div class="mx-auto">
-          <a class="navbar-brand" href="/game"><img src="src/assets/logo.png" alt="Logo"></a>
+          <a class="navbar-brand" href="/game"><img src="assets/logo-over.png" alt="Logo"></a>
         </div>
 
         <!-- Navbar Left Side -->
@@ -43,7 +43,7 @@ const Navbar = (userData) => {
         <!-- Navbar Right Side -->
         <div class="navbar-nav">
           <a class="nav-item nav-link" href="#" data-uri="/"><i class="fab fa-rebel text-black"></i> Synopsis</a>
-          <a class="nav-item nav-link" href="#" data-uri="/"><i class="fas fa-address-book"></i> Contactez-nous</a>
+          <a class="nav-item nav-link" href="#" data-uri="/contact"><i class="fas fa-address-book"></i> Contactez-nous</a>
         </div>
 
         <!-- Centered Logo -->

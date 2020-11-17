@@ -1,12 +1,12 @@
 //let Phaser = require("phaser");
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
-import { setLayout } from "../../utils/render.js";
+import { setTitle } from "../../utils/render.js";
 
 var game;
 
 const PhaserGamePage = () => {
-  setLayout("Making your first Phaser 3 game");
+  setTitle("Game");
   let phaserGame = `
 <div id="gameDiv" class="d-flex justify-content-center my-3">
 </div>`;
