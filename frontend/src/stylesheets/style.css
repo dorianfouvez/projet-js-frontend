@@ -4,12 +4,12 @@
 }
 
 .bg-big-gradient-dark-purple{
-  background: radial-gradient(circle, rgba(31,0,75,1) 89%, rgba(0,0,0,1) 100%);
+  background: radial-gradient(circle, rgba(31,0,75,1) 30%, rgba(0,0,0,1) 100%);
 }
 
 /********** Logo site **********/
 #logo-site{
-  width: 100px;
+  width: 150px;
 }
 
 /*Déjà là*/
