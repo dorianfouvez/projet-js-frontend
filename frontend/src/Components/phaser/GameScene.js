@@ -1,10 +1,15 @@
 import Phaser from "phaser";
-const GROUND_KEY = "ground";
-const DUDE_KEY = "dude";
-const STAR_KEY = "star";
-const BOMB_KEY = "bomb";
 import ScoreLabel from "./ScoreLabel.js";
-import BombSpawner from "./BombSpawner.js";
+import LadyBugSpawner from "./LadyBugSpawner.js";
+
+const DUDE_KEY = "dude";
+const LADYBUG_KEY = "bomb";
+
+const PATH_ASSETS = "../assets/";
+const PATH_ENEMIES = PATH_ASSETS + "enemies/";
+const PATH_MAPS = PATH_ASSETS + "maps/";
+const PATH_PLAYERS = PATH_ASSETS + "players/";
+const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -13,47 +18,68 @@ class GameScene extends Phaser.Scene {
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.stars = undefined;
-    this.bombSpawner = undefined;
+    this.ladyBugSpawner = undefined;
     this.gameOver = false;
   }
 
   preload() {
-    this.load.image("sky", "../../assets/sky.png");
-    this.load.image(GROUND_KEY, "../../assets/platform.png");
-    this.load.image(STAR_KEY, "../../assets/star.png");
-    this.load.image(BOMB_KEY, "../../assets/bomb.png");
+    // Maps
+    this.load.image("tiles", PATH_TILESHEETS + "winter.png");
+    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
 
-    this.load.spritesheet(DUDE_KEY, "../../assets/dude.png", {
+    // Enemies
+    //this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
+
+    // Players
+    this.load.spritesheet(DUDE_KEY, PATH_PLAYERS + "dude.png", {
       frameWidth: 32,
       frameHeight: 48,
     });
   }
 
   create() {
-    this.add.image(400, 300, "sky");
-    const platforms = this.createPlatforms();
+    // Images of Maps
+    this.tilemap = this.make.tilemap({key: "map"});
+    this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+
+    // Set all levels of the map
+    this.downLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0);
+    this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0);
+    //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
+
+
+    //this.add.image(400, 300, "sky");
+    //const platforms = this.createPlatforms();
     this.player = this.createPlayer();
-    this.stars = this.createStars();
+    //this.stars = this.createStars();
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
-    this.bombSpawner = new BombSpawner(this, BOMB_KEY);
-    const bombsGroup = this.bombSpawner.group;
-    this.physics.add.collider(this.stars, platforms);
-    this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(bombsGroup, platforms);
-    this.physics.add.collider(
+    this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
+    const ladyBugsGroup = this.ladyBugSpawner.group;
+    //this.physics.add.collider(this.stars, platforms);
+    //this.physics.add.collider(this.player, platforms);
+    //this.physics.add.collider(ladyBugsGroup, platforms);
+    /*this.physics.add.collider(
       this.player,
-      bombsGroup,
+      ladyBugsGroup,
       this.hitBomb,
       null,
       this
-    );
-    this.physics.add.overlap(
+    );*/
+    /*this.physics.add.overlap(
       this.player,
       this.stars,
       this.collectStar,
       null,
       this
-    );
+    );*/
     this.cursors = this.input.keyboard.createCursorKeys();
 
     /*The Collider takes two objects and tests for collision and performs separation against them.
@@ -82,14 +108,14 @@ class GameScene extends Phaser.Scene {
   }
 
   createPlatforms() {
-    const platforms = this.physics.add.staticGroup();
+    /*const platforms = this.physics.add.staticGroup();
 
     platforms.create(400, 568, GROUND_KEY).setScale(2).refreshBody();
 
     platforms.create(600, 400, GROUND_KEY);
     platforms.create(50, 250, GROUND_KEY);
     platforms.create(750, 220, GROUND_KEY);
-    return platforms;
+    return platforms;*/
   }
 
   createPlayer() {
@@ -123,7 +149,7 @@ class GameScene extends Phaser.Scene {
   }
 
   createStars() {
-    const stars = this.physics.add.group({
+    /*const stars = this.physics.add.group({
       key: STAR_KEY,
       repeat: 11,
       setXY: { x: 12, y: 0, stepX: 70 },
@@ -133,11 +159,11 @@ class GameScene extends Phaser.Scene {
       child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
 
-    return stars;
+    return stars;*/
   }
 
   collectStar(player, star) {
-    star.disableBody(true, true);
+    /*star.disableBody(true, true);
     this.scoreLabel.add(10);
     if (this.stars.countActive(true) === 0) {
       //  A new batch of stars to collect
@@ -146,19 +172,19 @@ class GameScene extends Phaser.Scene {
       });
     }
 
-    this.bombSpawner.spawn(player.x);
+    this.bombSpawner.spawn(player.x);*/
   }
 
   createScoreLabel(x, y, score) {
-    const style = { fontSize: "32px", fill: "#000" };
+    /*const style = { fontSize: "32px", fill: "#000" };
     const label = new ScoreLabel(this, x, y, score, style);
     console.log("score:", label);
     this.add.existing(label);
 
-    return label;
+    return label;*/
   }
 
-  hitBomb(player, bomb) {
+  hitBomb(player, bomb) {/*
     this.scoreLabel.setText("GAME OVER : ( \nYour Score = " + this.scoreLabel.score);
     this.physics.pause();
 
@@ -166,7 +192,7 @@ class GameScene extends Phaser.Scene {
 
     player.anims.play("turn");
 
-    this.gameOver = true;
+    this.gameOver = true;*/
   }
 }
 
