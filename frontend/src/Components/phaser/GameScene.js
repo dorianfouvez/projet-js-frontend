@@ -48,6 +48,9 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
+
+    // Cameras
+    this.manageCamera();
   
     // Cursors
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -147,7 +150,12 @@ class GameScene extends Phaser.Scene {
 
     return player;
   }
-  
+
+  manageCamera() {
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels,this.tilemap.heigthInPixels);
+  }
+
 }
 
 export default GameScene;
