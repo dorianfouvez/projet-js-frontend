@@ -3,7 +3,7 @@ import { setTitle } from "../utils/render.js";
 let synopsisPage = `
 <p>
     Welcome to <strong>THE CHOICE</strong><br>
-    Here begin your adventure in ...
+    Here begins your adventure in ...
 </p>`;
 
 const SynopsisPage = () => {
