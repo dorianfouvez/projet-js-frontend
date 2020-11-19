@@ -1,12 +1,12 @@
 import Phaser from "phaser";
 
-export default class BombSpawner {
+export default class LadyBugSpawner {
   /**
    * @param {Phaser.Scene} scene
    */
-  constructor(scene, bombKey = "bomb") {
+  constructor(scene, ladyBugKey = "ladyBug") {
     this.scene = scene;
-    this.key = bombKey;
+    this.key = ladyBugKey;
 
     this._group = this.scene.physics.add.group();
   }
@@ -21,11 +21,11 @@ export default class BombSpawner {
         ? Phaser.Math.Between(400, 800)
         : Phaser.Math.Between(0, 400);
 
-    const bomb = this.group.create(x, 16, this.key);
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    const ladyBug = this.group.create(x, 16, this.key);
+    ladyBug.setBounce(1);
+    ladyBug.setCollideWorldBounds(true);
+    ladyBug.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
-    return bomb;
+    return ladyBug;
   }
 }
