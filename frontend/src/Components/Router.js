@@ -1,19 +1,21 @@
-import HomePage from "./HomePage.js";
 import UserListPage from "./UserListPage.js";
 import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
 import LogoutComponent from "./LogoutComponent.js";
 import ErrorPage from "./ErrorPage.js";
 import PhaserGamePage from "./phaser/PhaserGamePage.js";
+import SynopsisPage from "./SynopsisPage";
+import ContactPage from "./ContactPage";
 
 const routes = {
-  "/": HomePage,
+  "/": SynopsisPage,
   "/list": UserListPage,
   "/login": LoginPage,
   "/register": RegisterPage,
   "/logout": LogoutComponent,
   "/error": ErrorPage,
   "/game": PhaserGamePage,
+  "/contact": ContactPage,
 };
 
 let navBar = document.querySelector("#navBar");

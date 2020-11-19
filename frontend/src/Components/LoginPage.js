@@ -5,6 +5,7 @@ import { getUserSessionData, setUserSessionData } from "../utils/session.js";
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./Navbar.js";
 import { API_URL } from "../utils/server.js";
+import { setTitle } from "../utils/render.js";
 
 let loginPage = `<form>
 <div class="form-group">
@@ -21,6 +22,7 @@ let loginPage = `<form>
 </form>`;
 
 const LoginPage = () => {
+  setTitle("Login");
   let page = document.querySelector("#page");
   page.innerHTML = loginPage;
   let loginForm = document.querySelector("form");

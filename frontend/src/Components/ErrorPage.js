@@ -1,4 +1,7 @@
+import { setTitle } from "../utils/render.js";
+
 const ErrorPage = (err) => {
+  setTitle("Error");
   let errorPage;
   if (!err) errorPage = `<p>There was an error.</p>`;
   else if (!err.message) errorPage = `<p>${err}</p>`;
