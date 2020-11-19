@@ -8,7 +8,7 @@ var game;
 const PhaserGamePage = () => {
   setTitle("Game");
   let phaserGame = `
-<div id="gameDiv" class="d-flex justify-content-center my-3">
+<div id="gameDiv" class="d-flex justify-content-center my-3 offset-2 pl-4">
 </div>`;
 
   let page = document.querySelector("#page");
