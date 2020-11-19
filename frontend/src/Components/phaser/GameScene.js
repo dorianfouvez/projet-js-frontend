@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
 
-const DUDE_KEY = "dude";
+const PLAYER_KEY = "player";
 const LADYBUG_KEY = "bomb";
 
 const PATH_ASSETS = "../assets/";
@@ -31,10 +31,7 @@ class GameScene extends Phaser.Scene {
     //this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
 
     // Players
-    this.load.spritesheet(DUDE_KEY, PATH_PLAYERS + "dude.png", {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
+    this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
   }
 
   create() {
@@ -43,6 +40,7 @@ class GameScene extends Phaser.Scene {
     this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
 
     // Set all levels of the map
+    //setLayer();
     this.downLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0);
     this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
     this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0);
@@ -84,6 +82,14 @@ class GameScene extends Phaser.Scene {
 
     /*The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision...*/
+
+    /* FOR DEBUGGING !!! Make all colliding object colloring in ORAGNE ! */
+    const debugGraphics = this.add.graphics().setAlpha(0.75);
+    this.worldLayer.renderDebug(debugGraphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+    });
   }
 
   update() {
@@ -93,18 +99,33 @@ class GameScene extends Phaser.Scene {
 
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-160);
-      this.player.anims.play("left", true);
+      this.player.anims.play("playerWalk", true);
+      this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
       this.player.setVelocityX(160);
-      this.player.anims.play("right", true);
+      this.player.anims.play("playerWalk", true);
+      this.player.flipX = false;
     } else {
       this.player.setVelocityX(0);
-      this.player.anims.play("turn");
+      this.player.anims.play("playerDown");
     }
 
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
+    if (this.cursors.up.isDown) {
+      this.player.setVelocityY(-160);
+      this.player.anims.play("playerUp");
+    } else if (this.cursors.down.isDown) {
+      this.player.setVelocityY(160);
+      this.player.anims.play("playerDown");
+    } else {
+      this.player.setVelocityY(0);
     }
+    /*if (this.cursors.up.isDown && this.player.body.touching.down) {
+      this.player.setVelocityY(-330);
+    }*/
+  }
+
+  setLayer() {
+    ;
   }
 
   createPlatforms() {
@@ -119,31 +140,40 @@ class GameScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const player = this.physics.add.sprite(100, 450, DUDE_KEY);
-    player.setBounce(0.2);
+    const player = this.physics.add.sprite(100, 450, PLAYER_KEY, "adventurer_stand");
+    //player.setBounce(0.2);
     player.setCollideWorldBounds(true);
-    /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second. 
-    The 'repeat -1' value tells the animation to loop.
-    */
+    /* The 'repeat -1' value tells the animation to loop. */
     this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1,
+      key : "playerWalk",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
+      frameRate : 5,
+      repeat : -1
     });
 
     this.anims.create({
-      key: "turn",
-      frames: [{ key: DUDE_KEY, frame: 4 }],
-      frameRate: 20,
+      key : "playerDown",
+      frames : [{key: PLAYER_KEY, frame: "adventurer_stand"}],
+      frameRate : 5,
+      repeat : -1
     });
 
     this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1,
+      key : "playerUp",
+      frames : [{key: PLAYER_KEY, frame: "adventurer_back"}],
+      frameRate : 5,
+      repeat : -1
     });
+
+    /*this.anims.create({
+      key : "playerIdle",
+      frames : [
+          {key: PLAYER_KEY, frame: "adventurer_stand"},
+          {key: PLAYER_KEY, frame: "adventurer_idle"}
+      ],
+      frameRate : 2,
+      repeat : -1
+    });*/
 
     return player;
   }
