@@ -40,19 +40,7 @@ class GameScene extends Phaser.Scene {
     this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
 
     // Set all levels of the map
-    //setLayer();
-    this.downLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0);
-    this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0);
-    this.topLayer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0);
-    //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
-
+    this.setLayer();
 
     //this.add.image(400, 300, "sky");
     //const platforms = this.createPlatforms();
@@ -125,7 +113,17 @@ class GameScene extends Phaser.Scene {
   }
 
   setLayer() {
-    ;
+    this.downLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0);
+    this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0);
+    this.topLayer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0);
+    //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
   }
 
   createPlatforms() {
