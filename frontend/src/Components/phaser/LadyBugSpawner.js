@@ -23,11 +23,24 @@ export default class LadyBugSpawner {
 
     const ladyBug = this.group.create(x, 16, this.key);
     ladyBug.setCollideWorldBounds(true);
-    ladyBug.setVelocity(Phaser.Math.Between(-200, 200), 20);
-
+    //ladyBug.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    this.animation(x,ladyBug);
     return ladyBug;
-  }
-  animation(){
     
+  }
+  animation(moving,ladyBug){
+    var tween=this.scene.tweens.add({
+      targets : ladyBug,
+      x : moving+400,
+      ease : "linear",
+      duration : 1300,
+      yoyo : true ,
+      repeat : -1,
+      onstart : function(){},
+      onComplete : function(){},
+      onYoyo : function(){ladyBug.flipX = false;},
+      onRepeat : function(){ladyBug.flipX = true;},
+
+    })
   }
 }
