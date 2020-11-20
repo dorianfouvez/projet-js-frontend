@@ -11,6 +11,8 @@ const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 
+const PLAYER_SPEED = 160;
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -42,6 +44,8 @@ class GameScene extends Phaser.Scene {
     // Set all levels of the map
     this.setLayer();
 
+    this.physics.world.setBounds(0,0,this.tilemap.widthInPixels,this.tilemap.heightInPixels);
+
     // Player
     this.player = this.createPlayer();
     
@@ -65,11 +69,11 @@ class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-PLAYER_SPEED);
       this.player.anims.play("playerWalk", true);
       this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(PLAYER_SPEED);
       this.player.anims.play("playerWalk", true);
       this.player.flipX = false;
     } else {
@@ -78,10 +82,10 @@ class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-160);
+      this.player.setVelocityY(-PLAYER_SPEED);
       this.player.anims.play("playerUp");
     } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(160);
+      this.player.setVelocityY(PLAYER_SPEED);
       this.player.anims.play("playerDown");
     } else {
       this.player.setVelocityY(0);
