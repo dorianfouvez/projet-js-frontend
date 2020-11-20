@@ -22,10 +22,12 @@ export default class LadyBugSpawner {
         : Phaser.Math.Between(0, 400);
 
     const ladyBug = this.group.create(x, 16, this.key);
-    ladyBug.setBounce(1);
     ladyBug.setCollideWorldBounds(true);
     ladyBug.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
     return ladyBug;
+  }
+  animation(){
+    
   }
 }

@@ -30,7 +30,7 @@ class GameScene extends Phaser.Scene {
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
 
     // Enemies
-    //this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
+    this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
 
     // Players
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
@@ -52,6 +52,9 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
+    this.ladyBugSpawner.spawn(this.player.x);
+
+
 
     // Cameras
     this.manageCamera();
