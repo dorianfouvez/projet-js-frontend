@@ -1,9 +1,11 @@
 import Phaser from "phaser";
 import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
+import ZombieSpawner from "./ZombieSpawner.js";
 
 const PLAYER_KEY = "player";
-const LADYBUG_KEY = "bomb";
+const LADYBUG_KEY = "ladyBug";
+const ZOMBIE_KEY = "zombie";
 
 const PATH_ASSETS = "../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
@@ -25,6 +27,7 @@ class GameScene extends Phaser.Scene {
     this.currentMap = undefined;
     this.warpZone = undefined;
     this.gameOver = false;
+    this.ZombieSpawner = undefined;
   }
 
   preload() {
@@ -36,6 +39,7 @@ class GameScene extends Phaser.Scene {
 
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
+    this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
@@ -59,6 +63,11 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
+    this.ladyBugSpawner.spawn(this.player.x);
+    this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
+    const zombieGroup = this.zombieSpawner.group;
+    this.zombieSpawner.spawn(this.player.x);
+
 
     // Cameras
     this.manageCamera();
@@ -77,13 +86,28 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
+    let runSpeed;
+    if(this.cursors.shift.isDown){
+      runSpeed = 100;
+    } else {
+      runSpeed = 0;
+    }
+
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-PLAYER_SPEED);
-      this.player.anims.play("playerWalk", true);
+      this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
+      if(runSpeed != 0){
+        this.player.anims.play("playerRun", true);
+      } else {
+        this.player.anims.play("playerWalk", true);
+      }
       this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(PLAYER_SPEED);
-      this.player.anims.play("playerWalk", true);
+      this.player.setVelocityX(PLAYER_SPEED + runSpeed);
+      if(runSpeed != 0){
+        this.player.anims.play("playerRun", true);
+      } else {
+        this.player.anims.play("playerWalk", true);
+      }
       this.player.flipX = false;
     } else {
       this.player.setVelocityX(0);
@@ -91,11 +115,19 @@ class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-PLAYER_SPEED);
-      this.player.anims.play("playerUp");
+      this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
+      if(runSpeed != 0){
+        this.player.anims.play("playerRunUp", true); // a changer ici, animation de sprint vers le haut
+      } else {
+        this.player.anims.play("playerUp", true);
+      }
     } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(PLAYER_SPEED);
-      this.player.anims.play("playerDown");
+      this.player.setVelocityY(PLAYER_SPEED + runSpeed);
+      if(runSpeed != 0){
+        this.player.anims.play("playerRunDown", true); // a changer ici, animation de sprint vers le bas
+      } else {
+        this.player.anims.play("playerDown", true);
+      }
     } else {
       this.player.setVelocityY(0);
     }
@@ -181,6 +213,27 @@ class GameScene extends Phaser.Scene {
       key : "playerWalk",
       frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
       frameRate : 5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRun",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
+      frameRate : 8.5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRunUp",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
+      frameRate : 8.5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRunDown",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
+      frameRate : 8.5,
       repeat : -1 /* -1 value tells the animation to loop. */
     });
 
