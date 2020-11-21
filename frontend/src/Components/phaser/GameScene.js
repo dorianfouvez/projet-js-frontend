@@ -192,8 +192,18 @@ class GameScene extends Phaser.Scene {
   }
 
   manageColliders(){
-    // Colliders
-    this.physics.add.collider(this.player, this.worldLayer);
+    switch(this.currentMap){
+      case "map":
+        this.physics.add.collider(this.player, this.worldLayer);
+        break;
+      case "mapDodo":
+        this.physics.add.collider(this.player, this.worldLayer);
+        break;
+      default:
+        this.currentMap = "map"
+        this.setLayer();
+        break;
+    }
   }
 
   setDebugingGraphics() {
