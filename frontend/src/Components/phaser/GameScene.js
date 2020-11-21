@@ -11,6 +11,9 @@ const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 
+const PLAYER_SPEED = 160;
+
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -42,6 +45,8 @@ class GameScene extends Phaser.Scene {
     // Set all levels of the map
     this.setLayer();
 
+    this.physics.world.setBounds(0,0,this.tilemap.widthInPixels,this.tilemap.heightInPixels);
+
     // Player
     this.player = this.createPlayer();
     
@@ -64,13 +69,28 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
+    let runSpeed;
+    if(this.cursors.shift.isDown){
+      runSpeed = 100;
+    } else {
+      runSpeed = 0;
+    }
+
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play("playerWalk", true);
+      this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
+      if(runSpeed != 0){
+        this.player.anims.play("playerRun", true);
+      } else {
+        this.player.anims.play("playerWalk", true);
+      }
       this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play("playerWalk", true);
+      this.player.setVelocityX(PLAYER_SPEED + runSpeed);
+      if(runSpeed != 0){
+        this.player.anims.play("playerRun", true);
+      } else {
+        this.player.anims.play("playerWalk", true);
+      }
       this.player.flipX = false;
     } else {
       this.player.setVelocityX(0);
@@ -78,11 +98,19 @@ class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-160);
-      this.player.anims.play("playerUp");
+      this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
+      if(runSpeed != 0){
+        this.player.anims.play("playerRunUp", true); // a changer ici, animation de sprint vers le haut
+      } else {
+        this.player.anims.play("playerUp", true);
+      }
     } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(160);
-      this.player.anims.play("playerDown");
+      this.player.setVelocityY(PLAYER_SPEED + runSpeed);
+      if(runSpeed != 0){
+        this.player.anims.play("playerRunDown", true); // a changer ici, animation de sprint vers le bas
+      } else {
+        this.player.anims.play("playerDown", true);
+      }
     } else {
       this.player.setVelocityY(0);
     }
@@ -120,6 +148,27 @@ class GameScene extends Phaser.Scene {
       key : "playerWalk",
       frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
       frameRate : 5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRun",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
+      frameRate : 8.5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRunUp",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
+      frameRate : 8.5,
+      repeat : -1 /* -1 value tells the animation to loop. */
+    });
+
+    this.anims.create({
+      key : "playerRunDown",
+      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
+      frameRate : 8.5,
       repeat : -1 /* -1 value tells the animation to loop. */
     });
 
