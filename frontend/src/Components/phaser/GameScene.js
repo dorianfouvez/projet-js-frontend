@@ -17,11 +17,16 @@ const PLAYER_SPEED = 160;
 const MAP_RESIZING_FACTOR = 0.5;
 const PLAYER_RESIZING_FACTOR = 0.75;
 
+let isDebugingGraphicsAllowed = false;
+let isDebugingKeyDown = false;
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
     this.player = undefined;
     this.cursors = undefined;
+    this.debugGraphics = undefined;
+    this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
     this.currentMap = undefined;
@@ -74,6 +79,7 @@ class GameScene extends Phaser.Scene {
   
     // Cursors
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.debugingKey = this.input.keyboard.addKey('C');
 
     this.codeKonami();
 
@@ -84,6 +90,14 @@ class GameScene extends Phaser.Scene {
   update() {
     if (this.gameOver) {
       return;
+    }
+
+    if(this.debugingKey.isDown && !isDebugingKeyDown){
+      isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
+      this.setDebugingGraphics();
+      isDebugingKeyDown = !isDebugingKeyDown;
+    }else if(this.debugingKey.isUp && isDebugingKeyDown){
+      isDebugingKeyDown = !isDebugingKeyDown;
     }
 
     let runSpeed;
@@ -207,12 +221,16 @@ class GameScene extends Phaser.Scene {
   }
 
   setDebugingGraphics() {
-    const debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR);
-    this.worldLayer.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-    });
+    if(isDebugingGraphicsAllowed) {
+      this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR);
+      this.worldLayer.renderDebug(this.debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      });
+    }else if(this.debugGraphics){
+      this.debugGraphics.destroy();
+    }
   }
 
   createPlayer() {
