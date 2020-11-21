@@ -1,9 +1,11 @@
 import Phaser from "phaser";
 import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
+import ZombieSpawner from "./ZombieSpawner.js";
 
 const PLAYER_KEY = "player";
-const LADYBUG_KEY = "bomb";
+const LADYBUG_KEY = "ladyBug";
+const ZOMBIE_KEY = "zombie";
 
 const PATH_ASSETS = "../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
@@ -22,6 +24,7 @@ class GameScene extends Phaser.Scene {
     this.stars = undefined;
     this.ladyBugSpawner = undefined;
     this.gameOver = false;
+    this.ZombieSpawner = undefined;
   }
 
   preload() {
@@ -31,6 +34,7 @@ class GameScene extends Phaser.Scene {
 
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
+    this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
@@ -53,7 +57,9 @@ class GameScene extends Phaser.Scene {
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
     this.ladyBugSpawner.spawn(this.player.x);
-
+    this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
+    const zombieGroup = this.zombieSpawner.group;
+    this.zombieSpawner.spawn(this.player.x);
 
 
     // Cameras
