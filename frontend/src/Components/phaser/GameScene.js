@@ -22,6 +22,7 @@ class GameScene extends Phaser.Scene {
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
+    this.currentMap = undefined;
     this.warpZone = undefined;
     this.gameOver = false;
   }
@@ -41,19 +42,19 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // Images of Maps
-    this.tilemap = this.make.tilemap({key: "map"});
-    this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+    console.log(this.currentMap);
+    //console.log(game.world);
 
     // Set all layers of the map in params
-    this.setLayer("map");
-
+    this.setLayer();
+    
     // Set the Bounds of the map
     this.physics.world.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
     
-
     // Player
     this.player = this.createPlayer();
+
+    this.manageColliders();
     
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
@@ -105,9 +106,14 @@ class GameScene extends Phaser.Scene {
 
   }
 
-  setLayer(nextMap) {
-    switch(nextMap){
+  setLayer() {
+    //if(!this.currentMap) this.currentMap = "map";
+    switch(this.currentMap){
       case "map":
+        // Images of Maps
+        this.tilemap = this.make.tilemap({key: "map"});
+        this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+
         this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -126,22 +132,36 @@ class GameScene extends Phaser.Scene {
         // Higher depths will sit on top of lower depth objects
         this.abovePlayerLayer.setDepth(10);
 
+        this.worldLayer.setCollisionByProperty({ collides: true });
+
         // Set the point for changing the map
         this.warpZone = {};
         break;
       case "mapDodo":
-        // Calque of Dorian's Map
-        this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0);
-        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
-        this.topLayer = this.tilemap.createStaticLayer("topRoad",this.tileset,0,0);
-        this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0);
+        // Images of Maps
+        this.tilemap = this.make.tilemap({key: "mapDodo"});
+        this.tileset = this.tilemap.addTilesetImage("winter","tiles");
+
+        // Layers of Dorian's Map
+        this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+
+        this.worldLayer.setCollisionByProperty({ Collides: true });
 
         this.topLayer.setDepth(10);
         break;
       default:
-        this.setLayer("map");
+        this.currentMap = "map"
+        this.setLayer();
         break;
     }
+  }
+
+  manageColliders(){
+    // Colliders
+    this.physics.add.collider(this.player, this.worldLayer);
   }
 
   setDebugingGraphics() {
@@ -154,7 +174,7 @@ class GameScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const player = this.physics.add.sprite(100, 450, PLAYER_KEY, "adventurer_stand").setScale(0.7);
+    const player = this.physics.add.sprite(100, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
     player.setCollideWorldBounds(true);
     
     this.anims.create({
@@ -214,11 +234,14 @@ class GameScene extends Phaser.Scene {
     //  66  = B
 
     var combo = this.input.keyboard.createCombo([ 38, 38, 40, 40, 37, 39, 37, 39, 66, 65 ], { resetOnMatch: true });
+    let jeu = this;
 
     this.input.keyboard.on('keycombomatch', function (event) {
 
         console.log('Konami Code entered!');
 
+        jeu.currentMap = "mapDodo";
+        jeu.scene.restart();
     });
   }
 
