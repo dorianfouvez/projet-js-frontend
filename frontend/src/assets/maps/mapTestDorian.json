@@ -18350,6 +18350,11 @@
                          "name":"Portes",
                          "type":"string",
                          "value":"H2Left"
+                        }, 
+                        {
+                         "name":"TP",
+                         "type":"string",
+                         "value":"map"
                         }]
                 }, 
                 {
@@ -18364,6 +18369,11 @@
                          "name":"Portes",
                          "type":"string",
                          "value":"H2Right"
+                        }, 
+                        {
+                         "name":"TP",
+                         "type":"string",
+                         "value":"map"
                         }]
                 }, 
                 {

@@ -10134,12 +10134,14 @@
    <properties>
     <property name="Collides" type="bool" value="false"/>
     <property name="Portes" value="H2Left"/>
+    <property name="TP" value="map"/>
    </properties>
   </tile>
   <tile id="2250">
    <properties>
     <property name="Collides" type="bool" value="false"/>
     <property name="Portes" value="H2Right"/>
+    <property name="TP" value="map"/>
    </properties>
   </tile>
   <tile id="2251">

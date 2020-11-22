@@ -31,6 +31,7 @@ class GameScene extends Phaser.Scene {
     this.ladyBugSpawner = undefined;
     this.currentMap = undefined;
     this.warpObjects = undefined;
+    this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
   }
@@ -51,6 +52,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.isReadyToTP = false;
     //console.log(this.currentMap);
     //console.log(game.world);
 
@@ -100,6 +102,7 @@ class GameScene extends Phaser.Scene {
       isDebugingKeyDown = !isDebugingKeyDown;
     }
 
+    if(this.player.ableToMove){
     let runSpeed;
     if(this.cursors.shift.isDown){
       runSpeed = 100;
@@ -144,6 +147,8 @@ class GameScene extends Phaser.Scene {
       }
     } else {
       this.player.setVelocityY(0);
+    }
+
     }
 
    /* if(this.player.x >this.end.x - 2 && this.player.x < this.end.x +2){
@@ -213,8 +218,15 @@ class GameScene extends Phaser.Scene {
         case "mapDodo":
           // Changing Map Objects
           let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+          //entryHouse.x *= MAP_RESIZING_FACTOR;
           this.warpObjects.push(entryHouse);
-          this.add.sprite(entryHouse.x*MAP_RESIZING_FACTOR,entryHouse.y*MAP_RESIZING_FACTOR,"ladyBug").setScale(0.4);
+
+          this.warpObjects.forEach(element => {
+            element.x *= MAP_RESIZING_FACTOR;
+            element.y *= MAP_RESIZING_FACTOR;
+            // Set an image On each element For Debuging
+            this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+          });
           
           break;
         default:
@@ -244,7 +256,7 @@ class GameScene extends Phaser.Scene {
 
         // OverLaps
         this.physics.add.overlap(this.player, this.overlapLayer);
-        this.overlapLayer.setTileIndexCallback((2249+1), this.test, this);
+        this.overlapLayer.setTileIndexCallback((2249+1), this.changeMap, this);
         
         break;
       default:
@@ -252,10 +264,6 @@ class GameScene extends Phaser.Scene {
         this.manageColliders();
         break;
     }
-  }
-
-  test(){
-    console.log("coucou");
   }
 
   setDebugingGraphics() {
@@ -274,6 +282,8 @@ class GameScene extends Phaser.Scene {
   createPlayer() {
     const player = this.physics.add.sprite(100, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
     player.setCollideWorldBounds(true);
+
+    player.ableToMove = true;
     
     this.anims.create({
       key : "playerWalk",
@@ -337,12 +347,24 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
   }
 
-  changeMap(){
-    let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse").properties[0].value;
-    this.currentMap = nextMap;
-    this.restart();
-  }
+  changeMap(player, tile){
+    this.player.ableToMove = false;
+    if(!this.isReadyToTP){
+      this.physics.moveTo(this.player,this.warpObjects[0].x+5,this.warpObjects[0].y,100);
+      console.log(player, tile);
+      console.log(tile.index, tile.properties.TP);
+    }
 
+    if(this.player.x > (this.warpObjects[0].x - 1) && this.player.x < (this.warpObjects[0].x + 5) && this.player.y > (this.warpObjects[0].y - 1) && this.player.y < (this.warpObjects[0].y + 2)){
+      this.player.body.stop();
+      this.isReadyToTP = true;
+      this.currentMap = tile.properties.TP;
+      this.scene.restart();
+      //this.changeMap(tile.properties.TP);
+      //this.player.ableToMove = true;
+    }
+  }
+  
   codeKonami(){
     //  Lien pour les keyCodes : https://github.com/photonstorm/phaser/blob/v3.22.0/src/input/keyboard/keys/KeyCodes.js
     //  37 = LEFT
