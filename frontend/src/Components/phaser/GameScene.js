@@ -51,7 +51,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(this.currentMap);
+    //console.log(this.currentMap);
     //console.log(game.world);
 
     // Set all layers of the map in params
@@ -204,6 +204,25 @@ class GameScene extends Phaser.Scene {
         break;
     }
   }
+  
+    manageObjects(){
+      switch(this.currentMap){
+        case "map":
+          //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
+          break;
+        case "mapDodo":
+          // Changing Map Objects
+          let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+          this.warpObjects.push(entryHouse);
+          this.add.sprite(entryHouse.x*MAP_RESIZING_FACTOR,entryHouse.y*MAP_RESIZING_FACTOR,"ladyBug").setScale(0.4);
+          
+          break;
+        default:
+          this.currentMap = "map"
+          this.manageObjects();
+          break;
+      }
+    }
 
   manageColliders(){
     switch(this.currentMap){
@@ -224,7 +243,8 @@ class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.worldLayer);
 
         // OverLaps
-        this.physics.add.overlap(this.player, this.warpObjects[0]);
+        this.physics.add.overlap(this.player, this.overlapLayer);
+        this.overlapLayer.setTileIndexCallback((2249+1), this.test, this);
         
         break;
       default:
@@ -234,27 +254,13 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  manageObjects(){
-    switch(this.currentMap){
-      case "map":
-        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
-        break;
-      case "mapDodo":
-        // Changing Map Objects
-        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
-        this.warpObjects.push(entryHouse);
-        
-        break;
-      default:
-        this.currentMap = "map"
-        this.manageObjects();
-        break;
-    }
+  test(){
+    console.log("coucou");
   }
 
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
-      this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR);
+      this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
       this.worldLayer.renderDebug(this.debugGraphics, {
         tileColor: null, // Color of non-colliding tiles
         collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
