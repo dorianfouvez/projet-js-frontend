@@ -64,6 +64,7 @@ class GameScene extends Phaser.Scene {
     this.player = this.createPlayer();
 
     this.manageColliders();
+    this.manageObjects();
     
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
@@ -73,25 +74,23 @@ class GameScene extends Phaser.Scene {
     const zombieGroup = this.zombieSpawner.group;
     this.zombieSpawner.spawn(this.player.x);
 
-
     // Cameras
     this.manageCamera();
   
-    // Cursors
+    // Cursors && Keyboards
     this.cursors = this.input.keyboard.createCursorKeys();
     this.debugingKey = this.input.keyboard.addKey('C');
 
     this.codeKonami();
 
-    /* FOR DEBUGGING !!! Make all colliding object colloring in ORAGNE ! */
-    this.setDebugingGraphics();
   }
-
+  
   update() {
     if (this.gameOver) {
       return;
     }
-
+    
+    /* FOR DEBUGGING !!! Make all colliding object colloring in ORANGE ! */
     if(this.debugingKey.isDown && !isDebugingKeyDown){
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
@@ -220,6 +219,21 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  manageObjects(){
+    switch(this.currentMap){
+      case "map":
+        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
+        break;
+      case "mapDodo":
+        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+        break;
+      default:
+        this.currentMap = "map"
+        this.setLayer();
+        break;
+    }
+  }
+
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
       this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR);
@@ -300,8 +314,8 @@ class GameScene extends Phaser.Scene {
   }
 
   changeMap(){
-    let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
-    this.setLayer(nextMap);
+    let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse").properties[0].value;
+    this.currentMap = nextMap;
     this.restart();
   }
 
