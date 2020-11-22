@@ -18345,6 +18345,11 @@
                          "name":"Collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"Portes",
+                         "type":"string",
+                         "value":"H2Left"
                         }]
                 }, 
                 {
@@ -18354,6 +18359,11 @@
                          "name":"Collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"Portes",
+                         "type":"string",
+                         "value":"H2Right"
                         }]
                 }, 
                 {

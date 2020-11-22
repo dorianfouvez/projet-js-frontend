@@ -30,7 +30,7 @@ class GameScene extends Phaser.Scene {
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
     this.currentMap = undefined;
-    this.warpZone = undefined;
+    this.warpObjects = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
   }
@@ -63,8 +63,8 @@ class GameScene extends Phaser.Scene {
     // Player
     this.player = this.createPlayer();
 
-    this.manageColliders();
     this.manageObjects();
+    this.manageColliders();
     
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
@@ -83,6 +83,7 @@ class GameScene extends Phaser.Scene {
 
     this.codeKonami();
 
+    console.log(this.warpObjects);
   }
   
   update() {
@@ -177,10 +178,8 @@ class GameScene extends Phaser.Scene {
         // Higher depths will sit on top of lower depth objects
         this.abovePlayerLayer.setDepth(10);
 
-        this.worldLayer.setCollisionByProperty({ collides: true });
-
         // Set the point for changing the map
-        this.warpZone = {};
+        this.warpObjects = [];
         break;
       case "mapDodo":
         // Images of Maps
@@ -193,9 +192,11 @@ class GameScene extends Phaser.Scene {
         this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
-        this.worldLayer.setCollisionByProperty({ Collides: true });
-
+        // Set depths of the layers
         this.topLayer.setDepth(10);
+
+        // Set the point for changing the map
+        this.warpObjects = [];
         break;
       default:
         this.currentMap = "map"
@@ -207,14 +208,28 @@ class GameScene extends Phaser.Scene {
   manageColliders(){
     switch(this.currentMap){
       case "map":
+        this.worldLayer.setCollisionByProperty({ collides: true });
+
+        // Colliders
         this.physics.add.collider(this.player, this.worldLayer);
+
+        // OverLaps
+
+
         break;
       case "mapDodo":
+        this.worldLayer.setCollisionByProperty({ Collides: true });
+
+        // Colliders
         this.physics.add.collider(this.player, this.worldLayer);
+
+        // OverLaps
+        this.physics.add.overlap(this.player, this.warpObjects[0]);
+        
         break;
       default:
         this.currentMap = "map"
-        this.setLayer();
+        this.manageColliders();
         break;
     }
   }
@@ -225,11 +240,14 @@ class GameScene extends Phaser.Scene {
         //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
         break;
       case "mapDodo":
+        // Changing Map Objects
         let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+        this.warpObjects.push(entryHouse);
+        
         break;
       default:
         this.currentMap = "map"
-        this.setLayer();
+        this.manageObjects();
         break;
     }
   }
