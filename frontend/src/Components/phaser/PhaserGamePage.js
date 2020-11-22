@@ -1,4 +1,3 @@
-//let Phaser = require("phaser");
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
 import { setTitle } from "../../utils/render.js";
@@ -34,7 +33,7 @@ const PhaserGamePage = () => {
   // therefore destroy any started game prior to recreate it
   if(game)
     game.destroy(true);
-  game = new Phaser.Game(config);
+  return game = new Phaser.Game(config);
 };
 
 export default PhaserGamePage;
