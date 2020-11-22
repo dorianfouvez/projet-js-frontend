@@ -210,31 +210,31 @@ class GameScene extends Phaser.Scene {
     }
   }
   
-    manageObjects(){
-      switch(this.currentMap){
-        case "map":
-          //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
-          break;
-        case "mapDodo":
-          // Changing Map Objects
-          let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
-          //entryHouse.x *= MAP_RESIZING_FACTOR;
-          this.warpObjects.push(entryHouse);
+  manageObjects(){
+    switch(this.currentMap){
+      case "map":
+        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
+        break;
+      case "mapDodo":
+        // Changing Map Objects
+        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+        //entryHouse.x *= MAP_RESIZING_FACTOR;
+        this.warpObjects.push(entryHouse);
 
-          this.warpObjects.forEach(element => {
-            element.x *= MAP_RESIZING_FACTOR;
-            element.y *= MAP_RESIZING_FACTOR;
-            // Set an image On each element For Debuging
-            this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
-          });
-          
-          break;
-        default:
-          this.currentMap = "map"
-          this.manageObjects();
-          break;
-      }
+        this.warpObjects.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+        
+        break;
+      default:
+        this.currentMap = "map"
+        this.manageObjects();
+        break;
     }
+  }
 
   manageColliders(){
     switch(this.currentMap){
