@@ -240,9 +240,24 @@ class GameScene extends Phaser.Scene {
     switch(this.currentMap){
       case "map":
         this.worldLayer.setCollisionByProperty({ collides: true });
+        this.cityLayer.setCollisionByProperty({ collides: true });
+        this.cityBuild1Layer.setCollisionByProperty({ collides: true });
+        this.cityBuild2Layer.setCollisionByProperty({ collides: true });
+        this.cityBuild3Layer.setCollisionByProperty({ collides: true });
+        this.cityBuild4Layer.setCollisionByProperty({ collides: true });
+        this.cityBuild5Layer.setCollisionByProperty({ collides: true });
+        this.cityBuild6Layer.setCollisionByProperty({ collides: true });
 
         // Colliders
         this.physics.add.collider(this.player, this.worldLayer);
+        this.physics.add.collider(this.player, this.cityLayer);
+        this.physics.add.collider(this.player, this.cityBuild1Layer);
+        this.physics.add.collider(this.player, this.cityBuild2Layer);
+        this.physics.add.collider(this.player, this.cityBuild3Layer);
+        this.physics.add.collider(this.player, this.cityBuild4Layer);
+        this.physics.add.collider(this.player, this.cityBuild5Layer);
+        this.physics.add.collider(this.player, this.cityBuild6Layer);
+
 
         // OverLaps
 
@@ -280,7 +295,7 @@ class GameScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const player = this.physics.add.sprite(100, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
+    const player = this.physics.add.sprite(900, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
