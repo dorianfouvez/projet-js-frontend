@@ -25,7 +25,7 @@ class GameScene extends Phaser.Scene {
     super("game-scene");
     this.player = undefined;
     this.cursors = undefined;
-    this.debugGraphics = undefined;
+    this.debugGraphics = [];
     this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
@@ -85,7 +85,7 @@ class GameScene extends Phaser.Scene {
 
     this.codeKonami();
 
-    console.log(this.warpObjects);
+    //(this.warpObjects);
   }
   
   update() {
@@ -94,13 +94,7 @@ class GameScene extends Phaser.Scene {
     }
     
     /* FOR DEBUGGING !!! Make all colliding object colloring in ORANGE ! */
-    if(this.debugingKey.isDown && !isDebugingKeyDown){
-      isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
-      this.setDebugingGraphics();
-      isDebugingKeyDown = !isDebugingKeyDown;
-    }else if(this.debugingKey.isUp && isDebugingKeyDown){
-      isDebugingKeyDown = !isDebugingKeyDown;
-    }
+    this.checkDebugingKey();
 
     if(this.player.ableToMove){
     let runSpeed;
@@ -130,7 +124,7 @@ class GameScene extends Phaser.Scene {
       this.player.setVelocityX(0);
       this.player.anims.play("playerDown");
     }
-
+    
     if (this.cursors.up.isDown) {
       this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
       if(runSpeed != 0){
@@ -283,69 +277,84 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  checkDebugingKey(){
+    if(this.debugingKey.isDown && !isDebugingKeyDown){
+      isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
+      this.setDebugingGraphics();
+      isDebugingKeyDown = !isDebugingKeyDown;
+    }else if(this.debugingKey.isUp && isDebugingKeyDown){
+      isDebugingKeyDown = !isDebugingKeyDown;
+    }
+  }
+
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
-      this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+      //this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+      this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
       switch(this.currentMap){
         case "map":
-          this.worldLayer.renderDebug(this.debugGraphics, {
+          this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityLayer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityLayer.renderDebug(this.debugGraphics[1], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild1Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild1Layer.renderDebug(this.debugGraphics[2], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild2Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild2Layer.renderDebug(this.debugGraphics[3], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild3Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild3Layer.renderDebug(this.debugGraphics[4], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild4Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild4Layer.renderDebug(this.debugGraphics[5], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild5Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild5Layer.renderDebug(this.debugGraphics[6], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-          this.cityBuild6Layer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.cityBuild6Layer.renderDebug(this.debugGraphics[7], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
           break;
         case "mapDodo":
-          this.worldLayer.renderDebug(this.debugGraphics, {
+          this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
           break;
       }
-    }else if(this.debugGraphics){
-      this.debugGraphics.destroy();
+    }else if(this.debugGraphics[0]){
+      //this.debugGraphics.destroy();
+      this.debugGraphics.forEach(element => {
+        element.destroy();
+      });
+      this.debugGraphics = [];
     }
   }
 
@@ -413,7 +422,7 @@ class GameScene extends Phaser.Scene {
 
   manageCamera() {
     this.cameras.main.startFollow(this.player);
-    console.log(this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels);
+    //console.log(this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels);
     this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
   }
 
@@ -421,8 +430,8 @@ class GameScene extends Phaser.Scene {
     this.player.ableToMove = false;
     if(!this.isReadyToTP){
       this.physics.moveTo(this.player,this.warpObjects[0].x+5,this.warpObjects[0].y,100);
-      console.log(player, tile);
-      console.log(tile.index, tile.properties.TP);
+      //console.log(player, tile);
+      //console.log(tile.index, tile.properties.TP);
     }
 
     if(this.player.x > (this.warpObjects[0].x - 1) && this.player.x < (this.warpObjects[0].x + 5) && this.player.y > (this.warpObjects[0].y - 1) && this.player.y < (this.warpObjects[0].y + 2)){
