@@ -6,12 +6,14 @@ import ZombieSpawner from "./ZombieSpawner.js";
 const PLAYER_KEY = "player";
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
+const BUTTON_KEY="button";
 
 const PATH_ASSETS = "../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
+const PATH_BUTTON = PATH_ASSETS + "button/";
 
 const PLAYER_SPEED = 160;
 const MAP_RESIZING_FACTOR = 0.5;
@@ -49,6 +51,8 @@ class GameScene extends Phaser.Scene {
 
     // Players
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
+    //button
+    this.load.image(BUTTON_KEY,PATH_BUTTON + "pause.png");
   }
 
   create() {
@@ -86,6 +90,8 @@ class GameScene extends Phaser.Scene {
     this.codeKonami();
 
     //(this.warpObjects);
+    //button
+    let pauseButton = this.add.sprite(55,55,BUTTON_KEY).setScrollFactor(0).setInteractive();
   }
   
   update() {
