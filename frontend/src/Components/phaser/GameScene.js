@@ -291,41 +291,48 @@ class GameScene extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          /*this.cityLayer.renderDebug(this.debugGraphics, {
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityLayer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild1Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild1Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild2Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild2Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild3Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild3Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild4Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild4Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild5Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild5Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild6Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+          this.cityBuild6Layer.renderDebug(this.debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
+          });
           break;
         case "mapDodo":
           this.worldLayer.renderDebug(this.debugGraphics, {
