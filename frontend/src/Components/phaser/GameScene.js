@@ -42,8 +42,9 @@ class GameScene extends Phaser.Scene {
   preload() {
     // Maps
     this.load.image("tiles", PATH_TILESHEETS + "winter.png");
-    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
+    this.load.image("tilesExtruded", PATH_TILESHEETS + "winter-extruded.png");
 
+    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
 
     // Enemies
@@ -97,7 +98,7 @@ class GameScene extends Phaser.Scene {
     this.setAudio();
   }
   
-  update() {
+  update(time, delta) {
     if (this.gameOver) {
       return;
     }
@@ -157,7 +158,6 @@ class GameScene extends Phaser.Scene {
    /* if(this.player.x >this.end.x - 2 && this.player.x < this.end.x +2){
       this.end = this.tilemap.findObject("Objects", obj => obj.name === "end");
     }*/
-
   }
 
   setLayer() {
@@ -192,7 +192,7 @@ class GameScene extends Phaser.Scene {
       case "mapDodo":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "mapDodo"});
-        this.tileset = this.tilemap.addTilesetImage("winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
 
         // Layers of Dorian's Map
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
