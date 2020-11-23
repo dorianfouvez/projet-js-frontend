@@ -166,7 +166,7 @@ class GameScene extends Phaser.Scene {
       case "map":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("Winter","tilesExtruded");
 
         this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
