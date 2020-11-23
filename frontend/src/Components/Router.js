@@ -1,3 +1,4 @@
+import { KillGame } from "./phaser/PhaserGamePage.js";
 import UserListPage from "./UserListPage.js";
 import LoginPage from "./LoginPage.js";
 import RegisterPage from "./RegisterPage.js";
@@ -23,6 +24,7 @@ let componentToRender;
 
 // dictionnary of routes
 const Router = () => {
+  //game = "coucou";
   /* manage to route the right component when the page is loaded */
   window.addEventListener("load", (e) => {
     console.log("onload page:", [window.location.pathname]);
@@ -36,20 +38,17 @@ const Router = () => {
 
   /* manage click on the navBar*/
   const onNavigate = (e) => {
+    //console.log('clic dans la navBar sur e.target:');
+    //console.log(e.target);
+    KillGame();
+
     let uri;
-    if (e.target.tagName === "A") {
+    if (e.target.tagName === "A" || e.target.tagName === "IMG") {
       e.preventDefault();
       uri = e.target.dataset.uri;
     }
     if (uri) {
-      console.log(
-        "onNavigate() uri:",
-        uri,
-        " location:",
-        window.location.pathname,
-        " origin :",
-        window.location.origin
-      );
+      console.log("onNavigate() uri:",uri," location:",window.location.pathname," origin :",window.location.origin);
       // use Web History API to add current page URL to the user's navigation history & set right URL in the browser (instead of "#")
       window.history.pushState({}, uri, window.location.origin + uri);
       // render the requested component

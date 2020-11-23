@@ -20,7 +20,7 @@ const Navbar = (userData) => {
 
         <!-- Centered Logo -->
         <div class="mx-auto">
-          <a class="navbar-brand" href="/game"><img src="assets/logo-site/logo.png" alt="Logo" id="logo-site" onmouseover="this.setAttribute('src', 'assets/logo-site/logo-over.png');" onmouseout="this.setAttribute('src', 'assets/logo-site/logo.png');"></a>
+          <a class="navbar-brand" href="#"><img src="assets/logo-site/logo.png" data-uri="/game" alt="Logo" id="logo-site" onmouseover="this.setAttribute('src', 'assets/logo-site/logo-over.png');" onmouseout="this.setAttribute('src', 'assets/logo-site/logo.png');"></a>
         </div>
 
         <!-- Navbar Left Side -->
@@ -48,7 +48,7 @@ const Navbar = (userData) => {
 
         <!-- Centered Logo -->
         <div class="mx-auto">
-          <a class="navbar-brand" href="/game"><img src="assets/logo-site/logo.png" alt="Logo" id="logo-site" onmouseover="this.setAttribute('src', 'assets/logo-site/logo-over.png');" onmouseout="this.setAttribute('src', 'assets/logo-site/logo.png');"></a>
+          <a class="navbar-brand" href="#"><img src="assets/logo-site/logo.png" data-uri="/game" alt="Logo" id="logo-site" onmouseover="this.setAttribute('src', 'assets/logo-site/logo-over.png');" onmouseout="this.setAttribute('src', 'assets/logo-site/logo.png');"></a>
         </div>
 
         <!-- Navbar Left Side -->
