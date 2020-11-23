@@ -36,8 +36,11 @@ const Router = () => {
 
   /* manage click on the navBar*/
   const onNavigate = (e) => {
+    console.log('clic dans la navBar sur e.target:');
+
+    console.log(e.target);
     let uri;
-    if (e.target.tagName === "A") {
+    if (e.target.tagName === "A" || e.target.tagName === "IMG") {
       e.preventDefault();
       uri = e.target.dataset.uri;
     }

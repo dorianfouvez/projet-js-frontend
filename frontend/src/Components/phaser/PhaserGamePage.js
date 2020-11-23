@@ -8,7 +8,12 @@ var game;
 
 const PhaserGamePage = () => {
   const user = getUserSessionData();
-  if (!user) RedirectUrl("/error", "Resource not authorized. Please login.");
+  console.log(user);
+  if (!user) {
+    RedirectUrl("/error", "Resource not authorized. Please login.");
+    if(game) return game.destroy(true);
+    return;
+  }
   
   setTitle("Game");
   let phaserGame = `
