@@ -94,10 +94,7 @@ class GameScene extends Phaser.Scene {
 
     //(this.warpObjects);
 
-    // Set BGM
-    this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
-    this.bgm.play();
-    this.bgm.volume = 0.5;
+    this.setAudio();
   }
   
   update() {
@@ -368,6 +365,36 @@ class GameScene extends Phaser.Scene {
         element.destroy();
       });
       this.debugGraphics = [];
+    }
+  }
+
+  setAudio(){
+    this.clearAudio();
+    
+    // Set BGM
+    this.manageBGM();
+  }
+
+  clearAudio(){
+    // Clear Possible BGM
+    if(this.bgm) this.bgm.stop();
+  }
+
+  manageBGM(){
+    switch (this.currentMap) {
+      case "map":
+
+        break;
+      case "mapDodo":
+        this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+        this.bgm.play();
+        this.bgm.volume = 0.1;
+
+        break;
+      default:
+        this.currentMap = "map"
+        this.manageBGM();
+        break;
     }
   }
 
