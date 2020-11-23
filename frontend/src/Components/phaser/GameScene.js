@@ -13,6 +13,8 @@ const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 
+const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
+
 const PLAYER_SPEED = 160;
 const MAP_RESIZING_FACTOR = 0.5;
 const PLAYER_RESIZING_FACTOR = 0.75;
@@ -34,6 +36,7 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
+    this.bgm = undefined;
   }
 
   preload() {
@@ -49,6 +52,10 @@ class GameScene extends Phaser.Scene {
 
     // Players
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
+
+    // Audios
+    //this.load.audio("explosionSound","explosion.ogg");
+    this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
   }
 
   create() {
@@ -86,6 +93,11 @@ class GameScene extends Phaser.Scene {
     this.codeKonami();
 
     //(this.warpObjects);
+
+    // Set BGM
+    this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+    this.bgm.play();
+    this.bgm.volume = 0.5;
   }
   
   update() {
@@ -279,6 +291,7 @@ class GameScene extends Phaser.Scene {
 
   checkDebugingKey(){
     if(this.debugingKey.isDown && !isDebugingKeyDown){
+      console.log("coucou");
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
       isDebugingKeyDown = !isDebugingKeyDown;
