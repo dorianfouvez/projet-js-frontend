@@ -12,6 +12,8 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
+const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
+const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 
 const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
@@ -41,8 +43,8 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     // Maps
-    this.load.image("tiles", PATH_TILESHEETS + "winter.png");
-    this.load.image("tilesExtruded", PATH_TILESHEETS + "winter-extruded.png");
+    this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
+    this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
 
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
