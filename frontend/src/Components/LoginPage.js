@@ -66,7 +66,7 @@ const onUserLogin = (userData) => {
   setUserSessionData(user);
   // re-render the navbar for the authenticated user
   Navbar(userData);
-  RedirectUrl("/list");
+  RedirectUrl("/game");
 };
 
 const onError = (err) => {
