@@ -3,7 +3,6 @@ import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
 import ZombieSpawner from "./ZombieSpawner.js";
 
-const PLAYER_KEY = "player";
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
 
@@ -17,9 +16,11 @@ const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 
 const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
-const PLAYER_SPEED = 160;
+const SCALE_DEBUG = 0.75;
+
+const PLAYER_SPEED = 80;
 const MAP_RESIZING_FACTOR = 0.5;
-const PLAYER_RESIZING_FACTOR = 0.75;
+const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
@@ -38,6 +39,10 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
+    //Idle and action attribut
+    this.lastDirection = "F";
+    //controls
+    this.keys = undefined
     this.bgm = undefined;
   }
 
@@ -54,7 +59,22 @@ class GameScene extends Phaser.Scene {
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
-    this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
+    this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+    this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+    this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+    this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+
+    //Controls
+    this.keys = this.input.keyboard.addKeys({
+      up: this.input.keyboard.addKey('z'),
+      down: this.input.keyboard.addKey('s'),
+      left: this.input.keyboard.addKey('q'),
+      right: this.input.keyboard.addKey('d'),
+      atq1: this.input.keyboard.addKey("LEFT"),
+      atq2: this.input.keyboard.addKey("RIGHT"),
+      run: this.input.keyboard.addKey("SHIFT"),
+      interact: this.input.keyboard.addKey('e')
+    })
 
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
@@ -109,57 +129,68 @@ class GameScene extends Phaser.Scene {
     this.checkDebugingKey();
 
     if(this.player.ableToMove){
-    let runSpeed;
-    if(this.cursors.shift.isDown){
-      runSpeed = 100;
-    } else {
-      runSpeed = 0;
-    }
+      let runSpeed;
+      if(this.keys.run.isDown){
+        runSpeed = 100;
+      } else {
+        runSpeed = 0;
+      }
 
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
-      if(runSpeed != 0){
-        this.player.anims.play("playerRun", true);
+      if (this.keys.up.isDown) {
+        this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
+        if(this.keys.left.isUp && this.keys.right.isUp){
+          this.lastDirection = "B";
+          if(runSpeed != 0){
+            this.player.anims.play("playerBackRun", true);
+          } else {
+            this.player.anims.play("playerBackWalk", true);
+          }
+        }
+      } else if (this.keys.down.isDown) {
+        this.player.setVelocityY(PLAYER_SPEED + runSpeed);
+        if(this.keys.left.isUp && this.keys.right.isUp){
+          this.lastDirection = "F";
+          if(runSpeed != 0){
+            this.player.anims.play("playerFrontRun", true);
+          } else {
+            this.player.anims.play("playerFrontWalk", true);
+          }
+        }
       } else {
-        this.player.anims.play("playerWalk", true);
+        this.player.setVelocityY(0);
+
+        if(this.lastDirection == "F")
+          this.player.anims.play("playerFrontIdle", true);
+        else if(this.lastDirection == "B")
+          this.player.anims.play("playerBackIdle", true);
       }
-      this.player.flipX = true;
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(PLAYER_SPEED + runSpeed);
-      if(runSpeed != 0){
-        this.player.anims.play("playerRun", true);
+
+      if (this.keys.left.isDown) {
+        this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
+        this.lastDirection = "L";
+        if(runSpeed != 0){
+          this.player.anims.play("playerLeftRun", true);
+        } else {
+          this.player.anims.play("playerLeftWalk", true);
+        }
+      } else if (this.keys.right.isDown) {
+        this.lastDirection = "R";
+        this.player.setVelocityX(PLAYER_SPEED + runSpeed);
+        if(runSpeed != 0){
+          this.player.anims.play("playerRightRun", true);
+        } else {
+          this.player.anims.play("playerRightWalk", true);
+        }
       } else {
-        this.player.anims.play("playerWalk", true);
+        this.player.setVelocityX(0);
+
+        if(this.lastDirection == "L")
+          this.player.anims.play("playerLeftIdle", true);
+        else if(this.lastDirection == "R")
+          this.player.anims.play("playerRightIdle", true);
       }
-      this.player.flipX = false;
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("playerDown");
-    }
-    
-    if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
-      if(runSpeed != 0){
-        this.player.anims.play("playerRunUp", true); // a changer ici, animation de sprint vers le haut
-      } else {
-        this.player.anims.play("playerUp", true);
-      }
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(PLAYER_SPEED + runSpeed);
-      if(runSpeed != 0){
-        this.player.anims.play("playerRunDown", true); // a changer ici, animation de sprint vers le bas
-      } else {
-        this.player.anims.play("playerDown", true);
-      }
-    } else {
-      this.player.setVelocityY(0);
-    }
 
     }
-
-   /* if(this.player.x >this.end.x - 2 && this.player.x < this.end.x +2){
-      this.end = this.tilemap.findObject("Objects", obj => obj.name === "end");
-    }*/
   }
 
   setLayer() {
@@ -302,7 +333,7 @@ class GameScene extends Phaser.Scene {
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
       //this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-      this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+      this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
       switch(this.currentMap){
         case "map":
           this.worldLayer.renderDebug(this.debugGraphics[0], {
@@ -310,43 +341,43 @@ class GameScene extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityLayer.renderDebug(this.debugGraphics[1], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild1Layer.renderDebug(this.debugGraphics[2], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild2Layer.renderDebug(this.debugGraphics[3], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild3Layer.renderDebug(this.debugGraphics[4], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild4Layer.renderDebug(this.debugGraphics[5], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild5Layer.renderDebug(this.debugGraphics[6], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild6Layer.renderDebug(this.debugGraphics[7], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
@@ -401,63 +432,94 @@ class GameScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const player = this.physics.add.sprite(900, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
+    const player = this.physics.add.sprite(900, 450, "playerFront", "Warrior_Idle_Blinking_0").setScale(PLAYER_RESIZING_FACTOR).setSize(170, 170).setOffset(470,670);
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
-    
+
     this.anims.create({
-      key : "playerWalk",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
-      frameRate : 5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontWalk",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRun",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontRun",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRunUp",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontIdle",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRunDown",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerBackWalk",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerDown",
-      frames : [{key: PLAYER_KEY, frame: "adventurer_stand"}],
-      frameRate : 5,
-      repeat : -1
+      key: "playerBackRun",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerUp",
-      frames : [{key: PLAYER_KEY, frame: "adventurer_back"}],
-      frameRate : 5,
-      repeat : -1
+      key: "playerBackIdle",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Idle_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
     });
 
-    // exemple of anims with more then 1 frame without following in the Atlas
-    /*this.anims.create({
-      key : "playerIdle",
-      frames : [
-          {key: PLAYER_KEY, frame: "adventurer_stand"},
-          {key: PLAYER_KEY, frame: "adventurer_idle"}
-      ],
-      frameRate : 2,
-      repeat : -1
-    });*/
+    this.anims.create({
+      key: "playerLeftWalk",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerLeftRun",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerLeftIdle",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightWalk",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightRun",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightIdle",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
+    });
 
     return player;
   }
