@@ -11,6 +11,12 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
+const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
+const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
+
+const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
+
+const SCALE_DEBUG = 0.75;
 
 const PLAYER_SPEED = 80;
 const MAP_RESIZING_FACTOR = 0.5;
@@ -24,7 +30,7 @@ class GameScene extends Phaser.Scene {
     super("game-scene");
     this.player = undefined;
     this.cursors = undefined;
-    this.debugGraphics = undefined;
+    this.debugGraphics = [];
     this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
@@ -37,13 +43,15 @@ class GameScene extends Phaser.Scene {
     this.lastDirection = "F";
     //controls
     this.keys = undefined
+    this.bgm = undefined;
   }
 
   preload() {
     // Maps
-    this.load.image("tiles", PATH_TILESHEETS + "winter.png");
-    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
+    this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
+    this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
 
+    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
 
     // Enemies
@@ -67,6 +75,10 @@ class GameScene extends Phaser.Scene {
       run: this.input.keyboard.addKey("SHIFT"),
       interact: this.input.keyboard.addKey('e')
     })
+
+    // Audios
+    //this.load.audio("explosionSound","explosion.ogg");
+    this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
   }
 
   create() {
@@ -103,23 +115,18 @@ class GameScene extends Phaser.Scene {
 
     this.codeKonami();
 
-    console.log(this.warpObjects);
+    //(this.warpObjects);
+
+    this.setAudio();
   }
   
-  update() {
-
+  update(time, delta) {
     if (this.gameOver) {
       return;
     }
     
     /* FOR DEBUGGING !!! Make all colliding object colloring in ORANGE ! */
-    if(this.debugingKey.isDown && !isDebugingKeyDown){
-      isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
-      this.setDebugingGraphics();
-      isDebugingKeyDown = !isDebugingKeyDown;
-    }else if(this.debugingKey.isUp && isDebugingKeyDown){
-      isDebugingKeyDown = !isDebugingKeyDown;
-    }
+    this.checkDebugingKey();
 
     if(this.player.ableToMove){
       let runSpeed;
@@ -192,7 +199,7 @@ class GameScene extends Phaser.Scene {
       case "map":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("Winter","tilesExtruded");
 
         this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -218,11 +225,13 @@ class GameScene extends Phaser.Scene {
       case "mapDodo":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "mapDodo"});
-        this.tileset = this.tilemap.addTilesetImage("winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
 
         // Layers of Dorian's Map
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldSecondFloorLayer = this.tilemap.createStaticLayer("worldSecondFloor",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldThirdFloorLayer = this.tilemap.createStaticLayer("worldThirdFloor",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
@@ -310,62 +319,115 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  checkDebugingKey(){
+    if(this.debugingKey.isDown && !isDebugingKeyDown){
+      console.log("coucou");
+      isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
+      this.setDebugingGraphics();
+      isDebugingKeyDown = !isDebugingKeyDown;
+    }else if(this.debugingKey.isUp && isDebugingKeyDown){
+      isDebugingKeyDown = !isDebugingKeyDown;
+    }
+  }
+
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
-      this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+      //this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
+      this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
       switch(this.currentMap){
         case "map":
-          this.worldLayer.renderDebug(this.debugGraphics, {
+          this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          /*this.cityLayer.renderDebug(this.debugGraphics, {
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityLayer.renderDebug(this.debugGraphics[1], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild1Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild1Layer.renderDebug(this.debugGraphics[2], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild2Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild2Layer.renderDebug(this.debugGraphics[3], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild3Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild3Layer.renderDebug(this.debugGraphics[4], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild4Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild4Layer.renderDebug(this.debugGraphics[5], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild5Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild5Layer.renderDebug(this.debugGraphics[6], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
-          /*this.cityBuild6Layer.renderDebug(this.debugGraphics, {
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.cityBuild6Layer.renderDebug(this.debugGraphics[7], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });*/
+          });
           break;
         case "mapDodo":
-          this.worldLayer.renderDebug(this.debugGraphics, {
+          this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
           break;
       }
-    }else if(this.debugGraphics){
-      this.debugGraphics.destroy();
+    }else if(this.debugGraphics[0]){
+      //this.debugGraphics.destroy();
+      this.debugGraphics.forEach(element => {
+        element.destroy();
+      });
+      this.debugGraphics = [];
+    }
+  }
+
+  setAudio(){
+    this.clearAudio();
+    
+    // Set BGM
+    this.manageBGM();
+  }
+
+  clearAudio(){
+    // Clear Possible BGM
+    if(this.bgm) this.bgm.stop();
+  }
+
+  manageBGM(){
+    switch (this.currentMap) {
+      case "map":
+
+        break;
+      case "mapDodo":
+        this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+        this.bgm.play();
+        this.bgm.volume = 0.1;
+
+        break;
+      default:
+        this.currentMap = "map"
+        this.manageBGM();
+        break;
     }
   }
 
@@ -464,7 +526,7 @@ class GameScene extends Phaser.Scene {
 
   manageCamera() {
     this.cameras.main.startFollow(this.player);
-    console.log(this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels);
+    //console.log(this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels);
     this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
   }
 
@@ -472,8 +534,8 @@ class GameScene extends Phaser.Scene {
     this.player.ableToMove = false;
     if(!this.isReadyToTP){
       this.physics.moveTo(this.player,this.warpObjects[0].x+5,this.warpObjects[0].y,100);
-      console.log(player, tile);
-      console.log(tile.index, tile.properties.TP);
+      //console.log(player, tile);
+      //console.log(tile.index, tile.properties.TP);
     }
 
     if(this.player.x > (this.warpObjects[0].x - 1) && this.player.x < (this.warpObjects[0].x + 5) && this.player.y > (this.warpObjects[0].y - 1) && this.player.y < (this.warpObjects[0].y + 2)){
