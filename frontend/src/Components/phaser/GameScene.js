@@ -41,6 +41,7 @@ class GameScene extends Phaser.Scene {
     this.ZombieSpawner = undefined;
     //Idle and action attribut
     this.lastDirection = "F";
+    this.test = [];
     //controls
     this.keys = undefined
     this.bgm = undefined;
@@ -155,11 +156,10 @@ class GameScene extends Phaser.Scene {
             if(runSpeed != 0){
               this.player.anims.play("playerBackRun", true);
             } else {
-              if(this.keys.atq1.isDown)
-                this.player.anims.play("playerBackAtq1", true);
-              else if(this.keys.atq2.isDown)
+              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+              if(this.keys.atq2.isDown)
                 this.player.anims.play("playerBackAtq2", true);
-              else
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
                 this.player.anims.play("playerBackWalk", true);
             }
           //}
@@ -174,11 +174,10 @@ class GameScene extends Phaser.Scene {
             if(runSpeed != 0){
               this.player.anims.play("playerFrontRun", true);
             } else {
-              if(this.keys.atq1.isDown)
-                this.player.anims.play("playerFrontAtq1", true);
-              else if(this.keys.atq2.isDown)
+              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+              if(this.keys.atq2.isDown)
                 this.player.anims.play("playerFrontAtq2", true);
-              else
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
                 this.player.anims.play("playerFrontWalk", true);
             }
           //}
@@ -196,11 +195,10 @@ class GameScene extends Phaser.Scene {
           if(runSpeed != 0){
             this.player.anims.play("playerLeftRun", true);
           } else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerLeftAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            else
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerLeftWalk", true);
           }
         //}
@@ -213,11 +211,10 @@ class GameScene extends Phaser.Scene {
           if(runSpeed != 0){
             this.player.anims.play("playerRightRun", true);
           } else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerRightAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            else
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerRightWalk", true);
           }
         //}
@@ -231,11 +228,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerBackHurt", true);
           //}else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerBackAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerBackAtq2", true);
-            else
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerBackIdle", true);
           //} 
         }
@@ -243,11 +239,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerFrontHurt", true);
           //}else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerFrontAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerFrontAtq2", true);
-            else
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerFrontIdle", true);
           //}
         }
@@ -255,11 +250,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerLeftHurt", true);
           //}else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerLeftAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            else
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerLeftIdle", true);
           //}
         }
@@ -267,19 +261,18 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerRightHurt", true);
           //}else {
-            if(this.keys.atq1.isDown)
-              this.player.anims.play("playerRightAtq1", true);
-            else if(this.keys.atq2.isDown)
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            else
-              this.player.anims.play("playerRightIdle", true)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerRightIdle", true);
           //}
         }
       }
     }
 
     /*possibilité de metre les attaques en mode 1 click = une attaque complète, à voir si cela nous intéresse et si on a le temps
-      this.keys.atq1.on("down", => { this.player.anims.play("playerFrontAtq1", true); });
+      this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
 
     /*if(mort){
       if(this.lastDirection == "B"){
@@ -574,7 +567,7 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
-      delay: 400
+      delay: 450
     });
 
     this.anims.create({
@@ -624,7 +617,7 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
-      delay: 400
+      delay: 450
     });
 
     this.anims.create({
@@ -674,7 +667,7 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
-      delay: 400
+      delay: 450
     });
 
     this.anims.create({
@@ -724,7 +717,7 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
-      delay: 400
+      delay: 450
     });
 
     this.anims.create({
