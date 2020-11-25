@@ -5,12 +5,14 @@ import ZombieSpawner from "./ZombieSpawner.js";
 
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
+const BUTTON_KEY="button";
 
 const PATH_ASSETS = "../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
+const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 
@@ -24,6 +26,7 @@ const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
+let isPause = false ;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -39,6 +42,7 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
+    this.pauseButton = undefined ;
     //Idle and action attribut
     this.lastDirection = "F";
     this.test = [];
@@ -58,7 +62,10 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
-
+    
+    //button
+    this.load.image(BUTTON_KEY,PATH_BUTTON + "pause.png");
+    
     // Players
     /*if(Female){
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
@@ -70,7 +77,7 @@ class GameScene extends Phaser.Scene {
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
       this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
-    //}
+      //}
     
 
     //Controls
@@ -125,6 +132,8 @@ class GameScene extends Phaser.Scene {
     this.codeKonami();
 
     //(this.warpObjects);
+    //button
+    this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
 
     this.setAudio();
   }
@@ -288,7 +297,25 @@ class GameScene extends Phaser.Scene {
         this.player.anims.play("playerRightDied", true);
       }
     }*/
+    this.callMenu();
+  
   }
+  callMenu(){
+    let jeu = this;
+    if(isPause){
+     // this.pauseButton.on("pointerup",function(){jeu.scene.resume();isPause = false;});
+    }else{
+      this.pauseButton.on("pointerup",function(){jeu.scene.pause();isPause = true;});
+      if(isPause){
+        this.input.once('pointerdown', function () {
+          
+          jeu.scene.resume();
+        }, this);
+      }
+      
+    }
+  }
+
 
   setLayer() {
     //if(!this.currentMap) this.currentMap = "map";
