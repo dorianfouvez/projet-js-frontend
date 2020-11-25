@@ -59,10 +59,18 @@ class GameScene extends Phaser.Scene {
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
-    this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-    this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
-    this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
-    this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+    /*if(Female){
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+    }else{*/
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+    //}
+    
 
     //Controls
     this.keys = this.input.keyboard.addKeys({
@@ -275,16 +283,16 @@ class GameScene extends Phaser.Scene {
 
     /*if(mort){
       if(this.lastDirection == "B"){
-        this.player.anims.play("playerBackDied", true)
+        this.player.anims.play("playerBackDied", true);
       }
       else if(this.lastDirection == "F"){
-        this.player.anims.play("playerFrontDied", true)
+        this.player.anims.play("playerFrontDied", true);
       }
       else if(this.lastDirection == "L"){
-        this.player.anims.play("playerLeftDied", true)
+        this.player.anims.play("playerLeftDied", true);
       }
       else {
-        this.player.anims.play("playerRightDied", true)
+        this.player.anims.play("playerRightDied", true);
       }
     }*/
   }
