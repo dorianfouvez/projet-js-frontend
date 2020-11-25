@@ -8,7 +8,9 @@ var game;
 
 const PhaserGamePage = () => {
   const user = getUserSessionData();
-  if (!user) RedirectUrl("/error", "Resource not authorized. Please login.");
+  if (!user) {
+    return RedirectUrl("/error", "Resource not authorized. Please login.");
+  }
   
   setTitle("Game");
   let phaserGame = `
@@ -36,9 +38,13 @@ const PhaserGamePage = () => {
 
   // there could be issues when a game was quit (events no longer working)
   // therefore destroy any started game prior to recreate it
-  if(game)
-    game.destroy(true);
+  //KillGame();
   return game = new Phaser.Game(config);
 };
 
+function KillGame() {
+  if(game) game.destroy(true);
+}
+
 export default PhaserGamePage;
+export { PhaserGamePage, KillGame };

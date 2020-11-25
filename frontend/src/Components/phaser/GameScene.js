@@ -3,7 +3,6 @@ import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
 import ZombieSpawner from "./ZombieSpawner.js";
 
-const PLAYER_KEY = "player";
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
 const BUTTON_KEY="button";
@@ -13,11 +12,20 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
+<<<<<<< HEAD
 const PATH_BUTTON = PATH_ASSETS + "button/";
+=======
+const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
+const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
+>>>>>>> origin/master
 
-const PLAYER_SPEED = 160;
+const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
+
+const SCALE_DEBUG = 0.75;
+
+const PLAYER_SPEED = 80;
 const MAP_RESIZING_FACTOR = 0.5;
-const PLAYER_RESIZING_FACTOR = 0.75;
+const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
@@ -37,14 +45,24 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
+<<<<<<< HEAD
     this.pauseButton = undefined ;
+=======
+    //Idle and action attribut
+    this.lastDirection = "F";
+    this.test = [];
+    //controls
+    this.keys = undefined
+    this.bgm = undefined;
+>>>>>>> origin/master
   }
 
   preload() {
     // Maps
-    this.load.image("tiles", PATH_TILESHEETS + "winter.png");
-    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
+    this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
+    this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
 
+    this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
 
     // Enemies
@@ -52,9 +70,40 @@ class GameScene extends Phaser.Scene {
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
+<<<<<<< HEAD
     this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
     //button
     this.load.image(BUTTON_KEY,PATH_BUTTON + "pause.png");
+=======
+    /*if(Female){
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+    }else{*/
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+    //}
+    
+
+    //Controls
+    this.keys = this.input.keyboard.addKeys({
+      up: this.input.keyboard.addKey('z'),
+      down: this.input.keyboard.addKey('s'),
+      left: this.input.keyboard.addKey('q'),
+      right: this.input.keyboard.addKey('d'),
+      atq1: this.input.keyboard.addKey("LEFT"),
+      atq2: this.input.keyboard.addKey("RIGHT"),
+      run: this.input.keyboard.addKey("SHIFT"),
+      interact: this.input.keyboard.addKey('e')
+    })
+
+    // Audios
+    //this.load.audio("explosionSound","explosion.ogg");
+    this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+>>>>>>> origin/master
   }
 
   create() {
@@ -92,11 +141,16 @@ class GameScene extends Phaser.Scene {
     this.codeKonami();
 
     //(this.warpObjects);
+<<<<<<< HEAD
     //button
     this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
+=======
+
+    this.setAudio();
+>>>>>>> origin/master
   }
   
-  update() {
+  update(time, delta) {
     if (this.gameOver) {
       return;
     }
@@ -105,59 +159,161 @@ class GameScene extends Phaser.Scene {
     this.checkDebugingKey();
 
     if(this.player.ableToMove){
-    let runSpeed;
-    if(this.cursors.shift.isDown){
-      runSpeed = 100;
-    } else {
-      runSpeed = 0;
+      let runSpeed;
+      if(this.keys.run.isDown){
+        runSpeed = 100;
+      } else {
+        runSpeed = 0;
+      }
+
+      if (this.keys.up.isDown) {
+        
+        this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
+        if(this.keys.left.isUp && this.keys.right.isUp){
+          this.lastDirection = "B";
+          //if(false){
+            //this.player.anims.play("playerBackHurt", true);
+          //}else {
+            if(runSpeed != 0){
+              this.player.anims.play("playerBackRun", true);
+            } else {
+              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+              if(this.keys.atq2.isDown)
+                this.player.anims.play("playerBackAtq2", true);
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+                this.player.anims.play("playerBackWalk", true);
+            }
+          //}
+        }
+      } else if (this.keys.down.isDown) {
+        this.player.setVelocityY(PLAYER_SPEED + runSpeed);
+        if(this.keys.left.isUp && this.keys.right.isUp){
+          this.lastDirection = "F";
+          //if(hurt){
+            //this.player.anims.play("playerFrontHurt", true);
+          //}else {
+            if(runSpeed != 0){
+              this.player.anims.play("playerFrontRun", true);
+            } else {
+              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+              if(this.keys.atq2.isDown)
+                this.player.anims.play("playerFrontAtq2", true);
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+                this.player.anims.play("playerFrontWalk", true);
+            }
+          //}
+        }
+      } else {
+        this.player.setVelocityY(0);
+      }
+
+      if (this.keys.left.isDown) {
+        this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
+        this.lastDirection = "L";
+        //if(hurt){
+          //this.player.anims.play("playerLeftHurt", true);
+        //}else {
+          if(runSpeed != 0){
+            this.player.anims.play("playerLeftRun", true);
+          } else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerLeftAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerLeftWalk", true);
+          }
+        //}
+      } else if (this.keys.right.isDown) {
+        this.player.setVelocityX(PLAYER_SPEED + runSpeed);
+        this.lastDirection = "R";
+        //if(hurt){
+          //this.player.anims.play("playerRightHurt", true);
+        //}else {
+          if(runSpeed != 0){
+            this.player.anims.play("playerRightRun", true);
+          } else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerRightAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerRightWalk", true);
+          }
+        //}
+      } else {
+        this.player.setVelocityX(0);
+      }
+
+      if(this.keys.up.isUp && this.keys.down.isUp && this.keys.left.isUp && this.keys.right.isUp){
+
+        if(this.lastDirection == "B"){
+          //if(hurt){
+            //this.player.anims.play("playerBackHurt", true);
+          //}else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerBackAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerBackIdle", true);
+          //} 
+        }
+        else if(this.lastDirection == "F"){
+          //if(hurt){
+            //this.player.anims.play("playerFrontHurt", true);
+          //}else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerFrontAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerFrontIdle", true);
+          //}
+        }
+        else if(this.lastDirection == "L"){
+          //if(hurt){
+            //this.player.anims.play("playerLeftHurt", true);
+          //}else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerLeftAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerLeftIdle", true);
+          //}
+        }
+        else if(this.lastDirection == "R"){
+          //if(hurt){
+            //this.player.anims.play("playerRightHurt", true);
+          //}else {
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
+              this.player.anims.play("playerRightAtq2", true);
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+              this.player.anims.play("playerRightIdle", true);
+          //}
+        }
+      }
     }
 
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
-      if(runSpeed != 0){
-        this.player.anims.play("playerRun", true);
-      } else {
-        this.player.anims.play("playerWalk", true);
-      }
-      this.player.flipX = true;
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(PLAYER_SPEED + runSpeed);
-      if(runSpeed != 0){
-        this.player.anims.play("playerRun", true);
-      } else {
-        this.player.anims.play("playerWalk", true);
-      }
-      this.player.flipX = false;
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("playerDown");
-    }
-    
-    if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
-      if(runSpeed != 0){
-        this.player.anims.play("playerRunUp", true); // a changer ici, animation de sprint vers le haut
-      } else {
-        this.player.anims.play("playerUp", true);
-      }
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(PLAYER_SPEED + runSpeed);
-      if(runSpeed != 0){
-        this.player.anims.play("playerRunDown", true); // a changer ici, animation de sprint vers le bas
-      } else {
-        this.player.anims.play("playerDown", true);
-      }
-    } else {
-      this.player.setVelocityY(0);
-    }
+    /*possibilité de metre les attaques en mode 1 click = une attaque complète, à voir si cela nous intéresse et si on a le temps
+      this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
 
-    }
-
-   /* if(this.player.x >this.end.x - 2 && this.player.x < this.end.x +2){
-      this.end = this.tilemap.findObject("Objects", obj => obj.name === "end");
+    /*if(mort){
+      if(this.lastDirection == "B"){
+        this.player.anims.play("playerBackDied", true);
+      }
+      else if(this.lastDirection == "F"){
+        this.player.anims.play("playerFrontDied", true);
+      }
+      else if(this.lastDirection == "L"){
+        this.player.anims.play("playerLeftDied", true);
+      }
+      else {
+        this.player.anims.play("playerRightDied", true);
+      }
     }*/
+<<<<<<< HEAD
     this.callMenu();
   
+=======
+>>>>>>> origin/master
   }
   callMenu(){
     let jeu = this;
@@ -182,7 +338,7 @@ class GameScene extends Phaser.Scene {
       case "map":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("Winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("Winter","tilesExtruded");
 
         this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -208,7 +364,7 @@ class GameScene extends Phaser.Scene {
       case "mapDodo":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "mapDodo"});
-        this.tileset = this.tilemap.addTilesetImage("winter","tiles");
+        this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
 
         // Layers of Dorian's Map
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -304,6 +460,7 @@ class GameScene extends Phaser.Scene {
 
   checkDebugingKey(){
     if(this.debugingKey.isDown && !isDebugingKeyDown){
+      console.log("coucou");
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
       isDebugingKeyDown = !isDebugingKeyDown;
@@ -315,7 +472,7 @@ class GameScene extends Phaser.Scene {
   setDebugingGraphics() {
     if(isDebugingGraphicsAllowed) {
       //this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
-      this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+      this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
       switch(this.currentMap){
         case "map":
           this.worldLayer.renderDebug(this.debugGraphics[0], {
@@ -323,43 +480,43 @@ class GameScene extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityLayer.renderDebug(this.debugGraphics[1], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild1Layer.renderDebug(this.debugGraphics[2], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild2Layer.renderDebug(this.debugGraphics[3], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild3Layer.renderDebug(this.debugGraphics[4], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild4Layer.renderDebug(this.debugGraphics[5], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild5Layer.renderDebug(this.debugGraphics[6], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20));
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
           this.cityBuild6Layer.renderDebug(this.debugGraphics[7], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
@@ -383,64 +540,241 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  setAudio(){
+    this.clearAudio();
+    
+    // Set BGM
+    this.manageBGM();
+  }
+
+  clearAudio(){
+    // Clear Possible BGM
+    if(this.bgm) this.bgm.stop();
+  }
+
+  manageBGM(){
+    switch (this.currentMap) {
+      case "map":
+
+        break;
+      case "mapDodo":
+        this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+        this.bgm.play();
+        this.bgm.volume = 0.1;
+
+        break;
+      default:
+        this.currentMap = "map"
+        this.manageBGM();
+        break;
+    }
+  }
+
   createPlayer() {
-    const player = this.physics.add.sprite(900, 450, PLAYER_KEY, "adventurer_stand").setScale(PLAYER_RESIZING_FACTOR).setSize(60, 50).setOffset(10,60);
+    const player = this.physics.add.sprite(900, 450, "playerFront", "Warrior_Idle_Blinking_0").setScale(PLAYER_RESIZING_FACTOR).setSize(170, 170).setOffset(470,670);
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
-    
+
     this.anims.create({
-      key : "playerWalk",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
-      frameRate : 5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontWalk",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRun",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}),
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontRun",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRunUp",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontIdle",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
     });
 
     this.anims.create({
-      key : "playerRunDown",
-      frames : this.anims.generateFrameNames(PLAYER_KEY, {prefix: "adventurer_walk", start:1, end: 2}), // animation a changer !
-      frameRate : 8.5,
-      repeat : -1 /* -1 value tells the animation to loop. */
+      key: "playerFrontAtq1",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
     });
 
     this.anims.create({
-      key : "playerDown",
-      frames : [{key: PLAYER_KEY, frame: "adventurer_stand"}],
-      frameRate : 5,
-      repeat : -1
+      key: "playerFrontAtq2",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 450
     });
 
     this.anims.create({
-      key : "playerUp",
-      frames : [{key: PLAYER_KEY, frame: "adventurer_back"}],
-      frameRate : 5,
-      repeat : -1
+      key: "playerFrontDied",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
     });
 
-    // exemple of anims with more then 1 frame without following in the Atlas
-    /*this.anims.create({
-      key : "playerIdle",
-      frames : [
-          {key: PLAYER_KEY, frame: "adventurer_stand"},
-          {key: PLAYER_KEY, frame: "adventurer_idle"}
-      ],
-      frameRate : 2,
-      repeat : -1
-    });*/
+    this.anims.create({
+      key: "playerFrontHurt",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerBackWalk",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerBackRun",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerBackIdle",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Idle_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerBackAtq1",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerBackAtq2",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 450
+    });
+
+    this.anims.create({
+      key: "playerBackDied",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerBackHurt",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerLeftWalk",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerLeftRun",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerLeftIdle",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerLeftAtq1",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerLeftAtq2",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 450
+    });
+
+    this.anims.create({
+      key: "playerLeftDied",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerLeftHurt",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerRightWalk",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Walk_", start: 0, end: 29}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightRun",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Run_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightIdle",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightAtq1",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerRightAtq2",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 450
+    });
+
+    this.anims.create({
+      key: "playerRightDied",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerRightHurt",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
 
     return player;
   }

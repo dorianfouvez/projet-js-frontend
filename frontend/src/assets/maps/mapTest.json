@@ -201,14 +201,20 @@
         {
          "columns":70,
          "firstgid":1,
-         "image":"..\/tilesheets\/winter.png",
-         "imageheight":9600,
-         "imagewidth":4480,
+         "grid":
+            {
+             "height":64,
+             "orientation":"orthogonal",
+             "width":64
+            },
+         "image":"..\/tilesheets\/winter-extruded.png",
+         "imageheight":9900,
+         "imagewidth":4620,
          "margin":0,
          "name":"Winter",
          "spacing":0,
          "tilecount":10500,
-         "tileheight":64,
+         "tileheight":66,
          "tiles":[
                 {
                  "id":0,
@@ -84450,7 +84456,7 @@
                          "value":false
                         }]
                 }],
-         "tilewidth":64
+         "tilewidth":66
         }],
  "tilewidth":64,
  "type":"map",
