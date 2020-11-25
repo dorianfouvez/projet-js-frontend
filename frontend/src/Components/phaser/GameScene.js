@@ -12,12 +12,9 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
-<<<<<<< HEAD
 const PATH_BUTTON = PATH_ASSETS + "button/";
-=======
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
->>>>>>> origin/master
 
 const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
@@ -45,16 +42,13 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
-<<<<<<< HEAD
     this.pauseButton = undefined ;
-=======
     //Idle and action attribut
     this.lastDirection = "F";
     this.test = [];
     //controls
     this.keys = undefined
     this.bgm = undefined;
->>>>>>> origin/master
   }
 
   preload() {
@@ -68,13 +62,11 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
-
-    // Players
-<<<<<<< HEAD
-    this.load.atlas(PLAYER_KEY, PATH_PLAYERS+"player.png", PATH_PLAYERS+"playerAtlas.json");
+    
     //button
     this.load.image(BUTTON_KEY,PATH_BUTTON + "pause.png");
-=======
+    
+    // Players
     /*if(Female){
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
@@ -85,7 +77,7 @@ class GameScene extends Phaser.Scene {
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
       this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
-    //}
+      //}
     
 
     //Controls
@@ -103,7 +95,6 @@ class GameScene extends Phaser.Scene {
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
->>>>>>> origin/master
   }
 
   create() {
@@ -141,13 +132,10 @@ class GameScene extends Phaser.Scene {
     this.codeKonami();
 
     //(this.warpObjects);
-<<<<<<< HEAD
     //button
     this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
-=======
 
     this.setAudio();
->>>>>>> origin/master
   }
   
   update(time, delta) {
@@ -309,11 +297,8 @@ class GameScene extends Phaser.Scene {
         this.player.anims.play("playerRightDied", true);
       }
     }*/
-<<<<<<< HEAD
     this.callMenu();
   
-=======
->>>>>>> origin/master
   }
   callMenu(){
     let jeu = this;
