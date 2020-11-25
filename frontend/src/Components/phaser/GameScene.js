@@ -59,10 +59,18 @@ class GameScene extends Phaser.Scene {
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
 
     // Players
-    this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-    this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
-    this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
-    this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+    /*if(Female){
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+    }else{*/
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+    //}
+    
 
     //Controls
     this.keys = this.input.keyboard.addKeys({
@@ -137,60 +145,156 @@ class GameScene extends Phaser.Scene {
       }
 
       if (this.keys.up.isDown) {
+        
         this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
         if(this.keys.left.isUp && this.keys.right.isUp){
           this.lastDirection = "B";
-          if(runSpeed != 0){
-            this.player.anims.play("playerBackRun", true);
-          } else {
-            this.player.anims.play("playerBackWalk", true);
-          }
+          //if(false){
+            //this.player.anims.play("playerBackHurt", true);
+          //}else {
+            if(runSpeed != 0){
+              this.player.anims.play("playerBackRun", true);
+            } else {
+              if(this.keys.atq1.isDown)
+                this.player.anims.play("playerBackAtq1", true);
+              else if(this.keys.atq2.isDown)
+                this.player.anims.play("playerBackAtq2", true);
+              else
+                this.player.anims.play("playerBackWalk", true);
+            }
+          //}
         }
       } else if (this.keys.down.isDown) {
         this.player.setVelocityY(PLAYER_SPEED + runSpeed);
         if(this.keys.left.isUp && this.keys.right.isUp){
           this.lastDirection = "F";
-          if(runSpeed != 0){
-            this.player.anims.play("playerFrontRun", true);
-          } else {
-            this.player.anims.play("playerFrontWalk", true);
-          }
+          //if(hurt){
+            //this.player.anims.play("playerFrontHurt", true);
+          //}else {
+            if(runSpeed != 0){
+              this.player.anims.play("playerFrontRun", true);
+            } else {
+              if(this.keys.atq1.isDown)
+                this.player.anims.play("playerFrontAtq1", true);
+              else if(this.keys.atq2.isDown)
+                this.player.anims.play("playerFrontAtq2", true);
+              else
+                this.player.anims.play("playerFrontWalk", true);
+            }
+          //}
         }
       } else {
         this.player.setVelocityY(0);
-
-        if(this.lastDirection == "F")
-          this.player.anims.play("playerFrontIdle", true);
-        else if(this.lastDirection == "B")
-          this.player.anims.play("playerBackIdle", true);
       }
 
       if (this.keys.left.isDown) {
         this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
         this.lastDirection = "L";
-        if(runSpeed != 0){
-          this.player.anims.play("playerLeftRun", true);
-        } else {
-          this.player.anims.play("playerLeftWalk", true);
-        }
+        //if(hurt){
+          //this.player.anims.play("playerLeftHurt", true);
+        //}else {
+          if(runSpeed != 0){
+            this.player.anims.play("playerLeftRun", true);
+          } else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerLeftAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerLeftAtq2", true);
+            else
+              this.player.anims.play("playerLeftWalk", true);
+          }
+        //}
       } else if (this.keys.right.isDown) {
-        this.lastDirection = "R";
         this.player.setVelocityX(PLAYER_SPEED + runSpeed);
-        if(runSpeed != 0){
-          this.player.anims.play("playerRightRun", true);
-        } else {
-          this.player.anims.play("playerRightWalk", true);
-        }
+        this.lastDirection = "R";
+        //if(hurt){
+          //this.player.anims.play("playerRightHurt", true);
+        //}else {
+          if(runSpeed != 0){
+            this.player.anims.play("playerRightRun", true);
+          } else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerRightAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerRightAtq2", true);
+            else
+              this.player.anims.play("playerRightWalk", true);
+          }
+        //}
       } else {
         this.player.setVelocityX(0);
-
-        if(this.lastDirection == "L")
-          this.player.anims.play("playerLeftIdle", true);
-        else if(this.lastDirection == "R")
-          this.player.anims.play("playerRightIdle", true);
       }
 
+      if(this.keys.up.isUp && this.keys.down.isUp && this.keys.left.isUp && this.keys.right.isUp){
+
+        if(this.lastDirection == "B"){
+          //if(hurt){
+            //this.player.anims.play("playerBackHurt", true);
+          //}else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerBackAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerBackAtq2", true);
+            else
+              this.player.anims.play("playerBackIdle", true);
+          //} 
+        }
+        else if(this.lastDirection == "F"){
+          //if(hurt){
+            //this.player.anims.play("playerFrontHurt", true);
+          //}else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerFrontAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerFrontAtq2", true);
+            else
+              this.player.anims.play("playerFrontIdle", true);
+          //}
+        }
+        else if(this.lastDirection == "L"){
+          //if(hurt){
+            //this.player.anims.play("playerLeftHurt", true);
+          //}else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerLeftAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerLeftAtq2", true);
+            else
+              this.player.anims.play("playerLeftIdle", true);
+          //}
+        }
+        else if(this.lastDirection == "R"){
+          //if(hurt){
+            //this.player.anims.play("playerRightHurt", true);
+          //}else {
+            if(this.keys.atq1.isDown)
+              this.player.anims.play("playerRightAtq1", true);
+            else if(this.keys.atq2.isDown)
+              this.player.anims.play("playerRightAtq2", true);
+            else
+              this.player.anims.play("playerRightIdle", true)
+          //}
+        }
+      }
     }
+
+    /*possibilité de metre les attaques en mode 1 click = une attaque complète, à voir si cela nous intéresse et si on a le temps
+      this.keys.atq1.on("down", => { this.player.anims.play("playerFrontAtq1", true); });
+
+    /*if(mort){
+      if(this.lastDirection == "B"){
+        this.player.anims.play("playerBackDied", true);
+      }
+      else if(this.lastDirection == "F"){
+        this.player.anims.play("playerFrontDied", true);
+      }
+      else if(this.lastDirection == "L"){
+        this.player.anims.play("playerLeftDied", true);
+      }
+      else {
+        this.player.anims.play("playerRightDied", true);
+      }
+    }*/
   }
 
   setLayer() {
@@ -459,6 +563,35 @@ class GameScene extends Phaser.Scene {
     });
 
     this.anims.create({
+      key: "playerFrontAtq1",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerFrontAtq2",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 400
+    });
+
+    this.anims.create({
+      key: "playerFrontDied",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerFrontHurt",
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.anims.create({
       key: "playerBackWalk",
       frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
@@ -477,6 +610,35 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Idle_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerBackAtq1",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerBackAtq2",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 400
+    });
+
+    this.anims.create({
+      key: "playerBackDied",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerBackHurt",
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
     });
 
     this.anims.create({
@@ -501,6 +663,35 @@ class GameScene extends Phaser.Scene {
     });
 
     this.anims.create({
+      key: "playerLeftAtq1",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerLeftAtq2",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 400
+    });
+
+    this.anims.create({
+      key: "playerLeftDied",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerLeftHurt",
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.anims.create({
       key: "playerRightWalk",
       frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
@@ -519,6 +710,35 @@ class GameScene extends Phaser.Scene {
       frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
+    });
+
+    this.anims.create({
+      key: "playerRightAtq1",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
+      frameRate: 35,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "playerRightAtq2",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
+      frameRate: 25,
+      repeat: 0,
+      delay: 400
+    });
+
+    this.anims.create({
+      key: "playerRightDied",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Died_", start: 0, end: 29}),
+      frameRate: 15,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "playerRightHurt",
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
+      frameRate: 20,
+      repeat: 0
     });
 
     return player;
