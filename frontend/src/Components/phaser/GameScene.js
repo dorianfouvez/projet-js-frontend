@@ -21,6 +21,7 @@ const PLAYER_RESIZING_FACTOR = 0.75;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
+let isPause = false ;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -36,6 +37,7 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.ZombieSpawner = undefined;
+    this.pauseButton = undefined ;
   }
 
   preload() {
@@ -91,7 +93,7 @@ class GameScene extends Phaser.Scene {
 
     //(this.warpObjects);
     //button
-    let pauseButton = this.add.sprite(55,55,BUTTON_KEY).setScrollFactor(0).setInteractive();
+    this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
   }
   
   update() {
@@ -154,8 +156,25 @@ class GameScene extends Phaser.Scene {
    /* if(this.player.x >this.end.x - 2 && this.player.x < this.end.x +2){
       this.end = this.tilemap.findObject("Objects", obj => obj.name === "end");
     }*/
-
+    this.callMenu();
+  
   }
+  callMenu(){
+    let jeu = this;
+    if(isPause){
+     // this.pauseButton.on("pointerup",function(){jeu.scene.resume();isPause = false;});
+    }else{
+      this.pauseButton.on("pointerup",function(){jeu.scene.pause();isPause = true;});
+      if(isPause){
+        this.input.once('pointerdown', function () {
+          
+          jeu.scene.resume();
+        }, this);
+      }
+      
+    }
+  }
+
 
   setLayer() {
     //if(!this.currentMap) this.currentMap = "map";
