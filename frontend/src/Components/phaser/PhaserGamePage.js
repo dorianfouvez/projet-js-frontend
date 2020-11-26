@@ -11,7 +11,7 @@ const PhaserGamePage = () => {
   if (!user) {
     return RedirectUrl("/error", "Resource not authorized. Please login.");
   }
-  
+
   setTitle("Game");
   let phaserGame = `
 <div id="gameDiv" class="d-flex justify-content-center my-3 offset-2 pl-4">
