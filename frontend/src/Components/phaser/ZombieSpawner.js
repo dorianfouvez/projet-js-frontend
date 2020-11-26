@@ -14,12 +14,11 @@ export default class  ZombieSpawner{
   get group() {
     return this._group;
   }
-  spawn(playerX = 0) {
-    let x = 100;
-    const zombie = this.group.create(x, 480, this.key).setScale(0.5).setSize(120,200).setOffset(30,50);
+  spawn(spawnX, spawnY) {
+    const zombie = this.group.create(spawnX, spawnY, this.key).setScale(0.5).setSize(120,200).setOffset(30,50);
     zombie.setCollideWorldBounds(true);
     this.animZombie();
-    this.deplacement(x,zombie);
+    this.deplacement(spawnX,zombie);
     return zombie;
     
   }

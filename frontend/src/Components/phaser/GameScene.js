@@ -181,10 +181,10 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
-    this.ladyBugSpawner.spawn(this.player.x);
+    this.ladyBugSpawner.spawn(this.player.x, 480);
     this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
     const zombieGroup = this.zombieSpawner.group;
-    this.zombieSpawner.spawn(this.player.x);
+    this.zombieSpawner.spawn(this.player.x, 480);
 
     // Cameras
     this.manageCamera();
