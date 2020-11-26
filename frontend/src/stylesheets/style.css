@@ -7,6 +7,15 @@
   background: radial-gradient(circle, rgba(31,0,75,1) 30%, rgba(0,0,0,1) 100%);
 }
 
+
+
+/********** Text-color and/or decoration, style **********/
+.alex{
+  font-family: 'Alex Brush';
+}
+
+
+
 /********** Logo site **********/
 #logo-site{
   width: 150px;

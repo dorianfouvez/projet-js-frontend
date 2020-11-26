@@ -8,11 +8,12 @@ const ZOMBIE_KEY = "zombie";
 const BUTTON_KEY="button";
 
 const PATH_ASSETS = "../assets/";
+const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
+const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
-const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 
@@ -324,19 +325,41 @@ class GameScene extends Phaser.Scene {
   }
 
   setProgressBar(){
-    var progressBar = this.add.graphics();
-    var progressBox = this.add.graphics();
-    progressBox.fillStyle(0x222222, 0.8);
-    progressBox.fillRect(240, 270, 320, 50);
+    this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
+    this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
+    this.load.audio("loadingBGM", PATH_ASSETS_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
+    let progressBox = undefined;
+    let progressBar = undefined;
+    let progressBarFullWidth = undefined;
+    let loadingBGM = undefined;
+    let jeu = this;
+
+    this.load.on('filecomplete-image-loadingBox', function (key, type, data) {
+      progressBox = jeu.add.image(240,270, 'loadingBox').setScale(0.3).setX(width / 2).setY(height / 2);
+    });
+
+    this.load.on('filecomplete-image-loadingBar', function (key, type, data) {
+      progressBar = jeu.add.image(240,270, 'loadingBar').setScale(0.3).setX(width / 2).setY(height / 2);
+      progressBarFullWidth = progressBar.y;
+      progressBar.displayWidth = progressBarFullWidth * 0.1;
+    });
+
+    this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
+      loadingBGM = jeu.sound.add("loadingBGM", { loop: true });
+      loadingBGM.play();
+      loadingBGM.volume = 0.05;
+    });
+
+
     var loadingText = this.make.text({
       x: width / 2,
       y: height / 2 - 50,
       text: 'Loading...',
       style: {
-        font: '20px monospace',
+        font: '40px Alex Brush',
         fill: '#ffffff'
       }
     });
@@ -377,10 +400,10 @@ class GameScene extends Phaser.Scene {
 
     this.load.on('progress', function (value) {
       //console.log(value);
-      progressBar.clear();
-      progressBar.fillStyle(0xffffff, 1);
-      progressBar.fillRect(250, 280, 300 * value, 30);
-      percentText.setText(parseInt((value * 100) - 0.1) + '%');
+      percentText.setText(parseInt((value * 100) - 0.01) + '%').setDepth(10);
+      if(progressBar) {
+        progressBar.displayWidth = progressBarFullWidth * value * 1.7; // *1.8 if progressBar 1, if ProgressBar 3 => 1.28 si 2 bar et 1.7 si seul
+      }
     });
     
     this.load.on('fileprogress', function (file) {
@@ -400,6 +423,8 @@ class GameScene extends Phaser.Scene {
       loadingText.destroy();
       percentText.destroy();
       assetText.destroy();
+      loadingBGM.stop();
+      loadingBGM.destroy();
     });
   }
 
