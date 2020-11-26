@@ -44,6 +44,7 @@ class GameScene extends Phaser.Scene {
     this.gameOver = false;
     this.ZombieSpawner = undefined;
     this.pauseButton = undefined ;
+    this.spawnEnnemi = undefined;
     //Idle and action attribut
     this.lastDirection = "F";
     this.test = [];
@@ -123,7 +124,10 @@ class GameScene extends Phaser.Scene {
     this.ladyBugSpawner.spawn(this.player.x, 480);
     this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
     const zombieGroup = this.zombieSpawner.group;
-    this.zombieSpawner.spawn(this.player.x, 480);
+  //  this.zombieSpawner.spawn(this.player.x, 480);
+  this.spawnEnnemi.forEach(element => {
+    this.zombieSpawner.spawn(element.x,element.y);
+  });
 
     // Cameras
     this.manageCamera();
@@ -456,6 +460,7 @@ class GameScene extends Phaser.Scene {
 
         // Set the point for changing the map
         this.warpObjects = [];
+        this.spawnEnnemi = [];
         break;
       case "mapDodo":
         // Images of Maps
@@ -475,6 +480,7 @@ class GameScene extends Phaser.Scene {
 
         // Set the point for changing the map
         this.warpObjects = [];
+        this.spawnEnnemi = [];
         break;
       default:
         this.currentMap = "map"
@@ -491,10 +497,21 @@ class GameScene extends Phaser.Scene {
       case "mapDodo":
         // Changing Map Objects
         let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+        for(let i =1 ;i<=3;i++){
+          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "spawnEnemies"+i);
+          this.spawnEnnemi.push(spawnEnemie);
+        }
+
         //entryHouse.x *= MAP_RESIZING_FACTOR;
         this.warpObjects.push(entryHouse);
 
         this.warpObjects.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+        this.spawnEnnemi.forEach(element => {
           element.x *= MAP_RESIZING_FACTOR;
           element.y *= MAP_RESIZING_FACTOR;
           // Set an image On each element For Debuging
