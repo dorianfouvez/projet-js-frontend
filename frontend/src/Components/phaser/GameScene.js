@@ -147,6 +147,9 @@ class GameScene extends Phaser.Scene {
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
 
+    // Button
+    this.load.image(BUTTON_KEY, PATH_BUTTON+"pause.png");
+
     // Players
     /*if(Female){
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
