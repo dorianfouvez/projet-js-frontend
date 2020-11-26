@@ -1,6 +1,6 @@
 import { RedirectUrl } from "./Router.js";
 import Navbar from "./Navbar.js";
-import { setUserSessionData } from "../utils/session.js";
+import { getUserSessionData, setUserSessionData } from "../utils/session.js";
 import { API_URL } from "../utils/server.js";
 import { setTitle } from "../utils/render.js";
 
@@ -26,7 +26,11 @@ const RegisterPage = () => {
   let page = document.querySelector("#page");
   page.innerHTML = registerPage;
   let registerForm = document.querySelector("form");
-  registerForm.addEventListener("submit", onRegister);
+  const user = getUserSessionData();
+  if (user) {
+    Navbar(user);
+    RedirectUrl("/game");
+  } else registerForm.addEventListener("submit", onRegister);
 };
 
 const onRegister = (e) => {
