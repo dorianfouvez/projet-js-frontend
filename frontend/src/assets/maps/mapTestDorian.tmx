@@ -3,8 +3,9 @@
  <editorsettings>
   <export target="mapTestDorian.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="winter" tilewidth="64" tileheight="64" tilecount="10500" columns="70">
-  <image source="../tilesheets/winter.png" width="4480" height="9600"/>
+ <tileset firstgid="1" name="winter" tilewidth="66" tileheight="66" tilecount="11088" columns="70">
+  <grid orientation="orthogonal" width="64" height="64"/>
+  <image source="../tilesheets/extruded/winter-extruded.png" width="4620" height="9900"/>
   <tile id="0">
    <properties>
     <property name="Collides" type="bool" value="false"/>

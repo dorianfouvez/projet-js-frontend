@@ -138,13 +138,13 @@
              "orientation":"orthogonal",
              "width":64
             },
-         "image":"..\/tilesheets\/winter-extruded.png",
+         "image":"..\/tilesheets\/extruded\/winter-extruded.png",
          "imageheight":9900,
          "imagewidth":4620,
          "margin":0,
          "name":"winter",
          "spacing":0,
-         "tilecount":11461,
+         "tilecount":11088,
          "tileheight":66,
          "tiles":[
                 {

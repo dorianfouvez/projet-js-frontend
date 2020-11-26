@@ -52,6 +52,74 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    // Progress Bar
+    var progressBar = this.add.graphics();
+    var progressBox = this.add.graphics();
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRect(240, 270, 320, 50);
+
+    var width = this.cameras.main.width;
+    var height = this.cameras.main.height;
+    var loadingText = this.make.text({
+      x: width / 2,
+      y: height / 2 - 50,
+      text: 'Loading...',
+      style: {
+        font: '20px monospace',
+        fill: '#ffffff'
+      }
+    });
+    loadingText.setOrigin(0.5, 0.5);
+
+    var percentText = this.make.text({
+      x: width / 2,
+      y: height / 2 - 5,
+      text: '0%',
+      style: {
+          font: '18px monospace',
+          fill: '#ffffff'
+      }
+    });
+    percentText.setOrigin(0.5, 0.5);
+
+    var assetText = this.make.text({
+      x: width / 2,
+      y: height / 2 + 50,
+      text: '',
+      style: {
+          font: '18px monospace',
+          fill: '#ffffff'
+      }
+    });
+    assetText.setOrigin(0.5, 0.5);
+
+    this.load.on('progress', function (value) {
+      console.log(value);
+      progressBar.clear();
+      progressBar.fillStyle(0xffffff, 1);
+      progressBar.fillRect(250, 280, 300 * value, 30);
+      percentText.setText(parseInt((value * 100) - 0.1) + '%');
+    });
+    
+    this.load.on('fileprogress', function (file) {
+      console.log(file.src);
+      assetText.setText('Loading asset: ' + file.key);
+    });
+
+    this.load.on('filecomplete', function (key, type, data) {
+      console.log("Value : "+key, type, data);
+      console.log("name : "+data.meta);
+    });
+   
+    this.load.on('complete', function () {
+      console.log('complete');
+      progressBar.destroy();
+      progressBox.destroy();
+      loadingText.destroy();
+      percentText.destroy();
+      assetText.destroy();
+    });
+
     // Maps
     this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
     this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
@@ -62,23 +130,6 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
-    
-    //button
-    this.load.image(BUTTON_KEY,PATH_BUTTON + "pause.png");
-    
-    // Players
-    /*if(Female){
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
-      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
-      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
-    }else{*/
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
-      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
-      //}
-    
 
     //Controls
     this.keys = this.input.keyboard.addKeys({
@@ -95,6 +146,19 @@ class GameScene extends Phaser.Scene {
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+
+    // Players
+    /*if(Female){
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+    }else{*/
+      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+    //}
   }
 
   create() {
@@ -117,10 +181,10 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
-    this.ladyBugSpawner.spawn(this.player.x);
+    this.ladyBugSpawner.spawn(this.player.x, 480);
     this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
     const zombieGroup = this.zombieSpawner.group;
-    this.zombieSpawner.spawn(this.player.x);
+    this.zombieSpawner.spawn(this.player.x, 480);
 
     // Cameras
     this.manageCamera();
@@ -136,6 +200,8 @@ class GameScene extends Phaser.Scene {
     this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
 
     this.setAudio();
+
+    this.setInvisibleCollideZones();
   }
   
   update(time, delta) {
@@ -808,6 +874,28 @@ class GameScene extends Phaser.Scene {
         jeu.scene.restart();
     });
   }
+
+  setInvisibleCollideZones(){
+    this.spawns = this.physics.add.group({ classType: Phaser.GameObjects.Zone });
+        for(var i = 0; i < 30; i++) {
+            var x = Phaser.Math.RND.between(0, this.physics.world.bounds.width);
+            var y = Phaser.Math.RND.between(0, this.physics.world.bounds.height);
+            // parameters are x, y, width, height
+            this.spawns.create(x, y, 20, 20);            
+        }        
+        this.physics.add.overlap(this.player, this.spawns, this.onMeetEnemy, false, this);
+  }
+
+  onMeetEnemy(player, zone){        
+    // we move the zone to some other location
+    zone.x = Phaser.Math.RND.between(0, this.physics.world.bounds.width);
+    zone.y = Phaser.Math.RND.between(0, this.physics.world.bounds.height);
+    
+    // shake the world
+    this.cameras.main.shake(300);
+    
+    // start battle 
+}
 
 }
 
