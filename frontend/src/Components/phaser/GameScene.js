@@ -42,7 +42,7 @@ class GameScene extends Phaser.Scene {
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
-    this.ZombieSpawner = undefined;
+    this.zombieSpawner = undefined;
     this.pauseButton = undefined ;
     this.spawnEnnemi = undefined;
     //Idle and action attribut

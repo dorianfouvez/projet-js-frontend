@@ -16,11 +16,15 @@ export default class  ZombieSpawner{
   }
   spawn(spawnX, spawnY) {
     const zombie = this.group.create(spawnX, spawnY, this.key).setScale(0.5).setSize(120,200).setOffset(30,50);
-    zombie.setCollideWorldBounds(true);
+    this.manageCollides(zombie);
     this.animZombie();
     this.deplacement(spawnX,zombie);
     return zombie;
     
+  }
+  manageCollides(zombie){
+    zombie.setCollideWorldBounds(true);
+    this.scene.physics.add.overlap(this.scene.player, zombie, function () { console.log("coucou"); });
   }
   animZombie(){
     this.scene.anims.create({
