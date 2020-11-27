@@ -142,17 +142,29 @@ class GameScene extends Phaser.Scene {
   
 
   setProgressBar(){
+    //this.load.image("loadingSpine", PATH_PROGRESSBAR + "spinning_loading.png");
     this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
     this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
     this.load.audio("loadingBGM", PATH_ASSETS_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
+    //let spinningLoad = undefined;
     let progressBox = undefined;
     let progressBar = undefined;
     let progressBarFullWidth = undefined;
     let loadingBGM = undefined;
     let jeu = this;
+
+    /*this.load.on('filecomplete-image-loadingSpine', function (key, type, data) {
+      spinningLoad = jeu.add.image(240,270, 'loadingSpine').setScale(0.2).setX(width / 2 + 100).setY(height / 2 - 50);
+      jeu.tweens.add({
+        targets: spinningLoad,
+        rotation: 10,
+        duration: 2000,
+        repeat: -1
+      });
+    });*/
 
     this.load.on('filecomplete-image-loadingBox', function (key, type, data) {
       progressBox = jeu.add.image(240,270, 'loadingBox').setScale(0.3).setX(width / 2).setY(height / 2);
