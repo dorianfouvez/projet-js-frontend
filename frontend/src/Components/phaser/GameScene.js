@@ -16,6 +16,10 @@ const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
+const PATH_UI = PATH_ASSETS + "ui/";
+const PATH_CURSORS = PATH_UI + "cursors/";
+const PATH_GENDERS = PATH_UI + "genders/";
+const PATH_SELECTS = PATH_UI + "selects/";
 
 const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
@@ -79,13 +83,19 @@ class GameScene extends Phaser.Scene {
     this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
     this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
     this.load.image("switch_arrow", PATH_BUTTON + "CC_SwitchSelect_Arrow.png");
+    this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
+    this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
+    this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
+
+    // Mouse
+    this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
 
     // Players
-    if(this.globals.sexe == "F"){
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+    if(this.globals.gender == "F"){
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
     }else{
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
@@ -685,7 +695,7 @@ class GameScene extends Phaser.Scene {
   }
 
   setMenuButton(){
-    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive().setScrollFactor(0);
+    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setScrollFactor(0);
     let buttonBorder = this.add.sprite(this.cameras.main.width-30,30,"button_border").setScale(0.7).setScrollFactor(0);
     this.pauseButton.setTint("0xB6AA9A");
     buttonBorder.setTint("0xFFA600");
