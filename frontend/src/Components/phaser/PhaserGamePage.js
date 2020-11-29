@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
+import MenuScene from "./MenuScene.js";
 import { RedirectUrl } from "../Router.js";
 import { setTitle } from "../../utils/render.js";
 import { getUserSessionData } from "../../utils/session.js";
@@ -14,8 +15,8 @@ const PhaserGamePage = () => {
 
   setTitle("Game");
   let phaserGame = `
-<div id="gameDiv" class="d-flex justify-content-center my-3 offset-2 pl-4">
-</div>`;
+  <div id="gameDiv" class="d-flex justify-content-center my-3 offset-2 pl-4">
+  </div>`;
 
   let page = document.querySelector("#page");
   page.innerHTML = phaserGame;
@@ -31,7 +32,7 @@ const PhaserGamePage = () => {
         debug: true,
       },
     },
-    scene: [GameScene],
+    scene: [ GameScene, MenuScene ],
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: "gameDiv",
   };
@@ -39,7 +40,8 @@ const PhaserGamePage = () => {
   // there could be issues when a game was quit (events no longer working)
   // therefore destroy any started game prior to recreate it
   //KillGame();
-  return game = new Phaser.Game(config);
+  game = new Phaser.Game(config);
+  return game.globals = { musicVolume: 0.2, sexe: "H" };
 };
 
 function KillGame() {

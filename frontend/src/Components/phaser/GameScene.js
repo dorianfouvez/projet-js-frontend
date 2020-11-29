@@ -5,7 +5,7 @@ import ZombieSpawner from "./ZombieSpawner.js";
 
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
-const BUTTON_KEY="button";
+const BUTTON_KEY="button_settings";
 
 const PATH_ASSETS = "../assets/";
 const PATH_BUTTON = PATH_ASSETS + "button/";
@@ -31,7 +31,7 @@ let isPause = false ;
 
 class GameScene extends Phaser.Scene {
   constructor() {
-    super("game-scene");
+    super("game_scene");
     this.player = undefined;
     this.cursors = undefined;
     this.debugGraphics = [];
@@ -51,9 +51,11 @@ class GameScene extends Phaser.Scene {
     //controls
     this.keys = undefined
     this.bgm = undefined;
+    this.globals = undefined;
   }
 
   preload() {
+    this.globals = this.sys.game.globals;
     // Progress Bar
     this.setProgressBar();
 
@@ -73,23 +75,29 @@ class GameScene extends Phaser.Scene {
     this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
 
     // Button
-    this.load.image(BUTTON_KEY, PATH_BUTTON+"pause.png");
+    this.load.image(BUTTON_KEY, PATH_BUTTON+"Settings.png");
+    this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
+    this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
+    this.load.image("switch_arrow", PATH_BUTTON + "CC_SwitchSelect_Arrow.png");
 
     // Players
-    /*if(Female){
+    if(this.globals.sexe == "F"){
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
       this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
-    }else{*/
+    }else{
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
       this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-    //}
+    }
   }
 
   create() {
+    console.log(this.globals);
+    this.globals.musicVolume = 0.3;
+    console.log(this.globals);
     this.isReadyToTP = false;
     // Set the point for changing the map
     this.setArray();
@@ -677,7 +685,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setMenuButton(){
-    this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
+    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive().setScrollFactor(0);
+    let buttonBorder = this.add.sprite(this.cameras.main.width-30,30,"button_border").setScale(0.7).setScrollFactor(0);
+    this.pauseButton.setTint("0xB6AA9A");
+    buttonBorder.setTint("0xFFA600");
   }
 
   setAudio(){
@@ -971,18 +982,10 @@ class GameScene extends Phaser.Scene {
 
   callMenu(){
     let jeu = this;
-    if(isPause){
-     // this.pauseButton.on("pointerup",function(){jeu.scene.resume();isPause = false;});
-    }else{
-      this.pauseButton.on("pointerup",function(){jeu.scene.pause();isPause = true;});
-      if(isPause){
-        this.input.once('pointerdown', function () {
-          
-          jeu.scene.resume();
-        }, this);
-      }
-      
-    }
+    this.pauseButton.on("pointerdown",function(){
+      jeu.scene.launch('menu_scene');
+      jeu.scene.pause();
+    });
   }
 
 }
