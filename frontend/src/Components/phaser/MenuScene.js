@@ -19,6 +19,8 @@ class MenuScene extends Phaser.Scene {
     }
   
     preload() {
+        this.globals = this.sys.game.globals;
+
         this.load.image("button_settings", PATH_BUTTON+"Settings.png");
         this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
         this.load.image("switch_arrow", PATH_BUTTON + "CC_SwitchSelect_Arrow.png");
@@ -32,12 +34,21 @@ class MenuScene extends Phaser.Scene {
     }
 
     create(){
-        this.globals = this.sys.game.globals;
         let jeu = this;
         let width = this.cameras.main.width;
         let height = this.cameras.main.height;
 
-        // Exit Button
+        this.setExitButton(jeu, width, height);
+        this.setVolumeSonore(jeu, width, height);
+        this.showGender(width, height);
+
+    }
+
+    update(){
+        //
+    }
+
+    setExitButton(jeu, width, height){
         this.exitButton = this.add.sprite(width-30,30,"button_settings").setScale(1.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setScrollFactor(0);
         this.exitButton.setTint("0xB6AA9A");
         this.add.sprite(width / 2, height / 2, "windows_menu").setScale(4);
@@ -45,8 +56,9 @@ class MenuScene extends Phaser.Scene {
             jeu.scene.resume('game_scene');
             jeu.scene.stop();
         });
-        
-        // Volume Sonore
+    }
+
+    setVolumeSonore(jeu, width, height){
         this.add.sprite(width / 2 - 60, height / 2 - 130, "volume_text");
         this.add.image(240,270, 'loadingBar').setScale(0.17).setX(width / 2 + 9).setY(height / 2 -70);
         this.dragButton = this.add.sprite(/*width / 2 + 25*/(this.globals.musicVolume*280)+260, height / 2 - 70, "switch_arrow").setScale(0.7).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setFlipX(true);
@@ -60,21 +72,26 @@ class MenuScene extends Phaser.Scene {
             jeu.globals.bgm.volume = jeu.globals.musicVolume;
             //console.log(jeu.globals);
         });
-        
-        // Gender
-        this.add.sprite(width / 2 - 130, height / 2, "gender_M").setScale(0.5);
-        this.add.sprite(width / 2 - 20, height / 2, "gender_F").setScale(0.5);
-        if(this.globals.gender == "F"){
-            this.add.sprite(width / 2 + 25, height / 2, "switch_arrow").setScale(0.7).setInteractive();
-        }else{
-            this.add.sprite(width / 2 - 85, height / 2, "switch_arrow").setScale(0.7).setInteractive();
-        }
-
-
     }
 
-    update(){
-        //
+    showGender(width, height){
+        this.add.sprite(width / 2 - 130, height / 2, "gender_M").setScale(0.5);
+        this.add.sprite(width / 2 - 20, height / 2, "gender_F").setScale(0.5);
+
+        let widthFixed = undefined;
+        if(this.globals.gender == "F") widthFixed = width / 2 + 25;
+        else widthFixed = width / 2 - 90;
+
+        let switchArrow = this.add.sprite(widthFixed, height / 2, "switch_arrow").setScale(0.7).setInteractive();
+
+        this.tweens.add({
+            targets : switchArrow,
+            x : widthFixed + 10,
+            ease : "linear",
+            duration : 1500,
+            yoyo : true ,
+            repeat : -1,
+        })
     }
 }
 

@@ -109,7 +109,7 @@ class GameScene extends Phaser.Scene {
     /*this.globals.musicVolume = 0.3;
     console.log(this.globals);*/
     this.isReadyToTP = false;
-    // Set the point for changing the map
+    // Set the points for changing the map
     this.setArray();
     
     // Set all layers of the map in params
@@ -709,7 +709,19 @@ class GameScene extends Phaser.Scene {
 
   clearAudio(){
     // Clear Possible BGM
-    if(this.globals.bgm) this.globals.bgm.stop();
+    //if(this.globals.bgm) this.globals.bgm.stop();
+
+    // Permet un fondu de la musique
+    if(this.globals.bgm){
+      let jeu = this;
+
+      this.tweens.add({
+        targets: jeu.globals.bgm,
+        volume: 0,
+        ease: 'Linear',
+        duration: 500
+      });
+    }
   }
 
   manageBGM(){
