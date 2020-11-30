@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import ScoreLabel from "./ScoreLabel.js";
-import LadyBugSpawner from "./LadyBugSpawner.js";
-import ZombieSpawner from "./ZombieSpawner.js";
+import PlayerSpawn from "./player/PlayerSpawn.js";
+import LadyBugSpawner from "./enemies/LadyBugSpawner.js";
+import ZombieSpawner from "./enemies/ZombieSpawner.js";
 import GuardianSpawn from "./enemies/GuardianSpawn.js";
 
 const LADYBUG_KEY = "ladyBug";
