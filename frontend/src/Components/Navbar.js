@@ -15,7 +15,7 @@ const Navbar = (userData) => {
       <!-- Navbar Right Side -->
         <div class="navbar-nav mt-auto">
           <a class="nav-item nav-link" href="#" data-uri="/"><i class="fab fa-rebel text-black"></i> Synopsis</a>
-          <a class="nav-item nav-link" href="#" data-uri="/"><i class="fas fa-address-book"></i> Contactez-nous</a>
+          <a class="nav-item nav-link" href="#" data-uri="/contact"><i class="fas fa-address-book"></i> Contactez-nous</a>
         </div>
 
         <!-- Centered Logo -->

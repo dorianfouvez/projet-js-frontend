@@ -5,7 +5,7 @@ import ZombieSpawner from "./ZombieSpawner.js";
 
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
-const BUTTON_KEY="button";
+const BUTTON_KEY="button_settings";
 
 const PATH_ASSETS = "../assets/";
 const PATH_BUTTON = PATH_ASSETS + "button/";
@@ -13,11 +13,15 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
+const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
+const PATH_UI = PATH_ASSETS + "ui/";
+const PATH_CURSORS = PATH_UI + "cursors/";
+const PATH_GENDERS = PATH_UI + "genders/";
+const PATH_SELECTS = PATH_UI + "selects/";
 
-const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
 const SCALE_DEBUG = 0.75;
 
@@ -27,11 +31,10 @@ const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
-let isPause = false ;
 
 class GameScene extends Phaser.Scene {
   constructor() {
-    super("game-scene");
+    super("game_scene");
     this.player = undefined;
     this.cursors = undefined;
     this.debugGraphics = [];
@@ -42,18 +45,18 @@ class GameScene extends Phaser.Scene {
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
-    this.ZombieSpawner = undefined;
+    this.zombieSpawner = undefined;
     this.pauseButton = undefined ;
     this.spawnEnnemi = undefined;
     //Idle and action attribut
     this.lastDirection = "F";
-    this.test = [];
     //controls
-    this.keys = undefined
-    this.bgm = undefined;
+    this.keys = undefined;
+    this.globals = undefined;
   }
 
   preload() {
+    this.globals = this.sys.game.globals;
     // Progress Bar
     this.setProgressBar();
 
@@ -70,28 +73,41 @@ class GameScene extends Phaser.Scene {
 
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
-    this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+    this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
 
     // Button
-    this.load.image(BUTTON_KEY, PATH_BUTTON+"pause.png");
+    this.load.image(BUTTON_KEY, PATH_BUTTON+"Settings.png");
+    this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
+    this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
+    this.load.image("switch_arrow", PATH_SELECTS + "CC_SwitchSelect_Arrow.png");
+    this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
+    this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
+    this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
+
+    // Mouse
+    this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
 
     // Players
-    /*if(Female){
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+    if(this.globals.gender == "F"){
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
-    }else{*/
+      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+    }else{
       this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
       this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
       this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
       this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-    //}
+    }
   }
 
   create() {
+    console.log(this.globals);
+    if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
+    /*this.globals.musicVolume = 0.3;
+    console.log(this.globals);*/
     this.isReadyToTP = false;
-    // Set the point for changing the map
+    // Set the points for changing the map
     this.setArray();
     
     // Set all layers of the map in params
@@ -142,17 +158,28 @@ class GameScene extends Phaser.Scene {
   
 
   setProgressBar(){
+    //this.load.image("loadingSpine", PATH_PROGRESSBAR + "spinning_loading.png");
     this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
     this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
-    this.load.audio("loadingBGM", PATH_ASSETS_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
+    this.load.audio("loadingBGM", PATH_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
+    //let spinningLoad = undefined;
     let progressBox = undefined;
     let progressBar = undefined;
     let progressBarFullWidth = undefined;
-    let loadingBGM = undefined;
     let jeu = this;
+
+    /*this.load.on('filecomplete-image-loadingSpine', function (key, type, data) {
+      spinningLoad = jeu.add.image(240,270, 'loadingSpine').setScale(0.2).setX(width / 2 + 100).setY(height / 2 - 50);
+      jeu.tweens.add({
+        targets: spinningLoad,
+        rotation: 10,
+        duration: 2000,
+        repeat: -1
+      });
+    });*/
 
     this.load.on('filecomplete-image-loadingBox', function (key, type, data) {
       progressBox = jeu.add.image(240,270, 'loadingBox').setScale(0.3).setX(width / 2).setY(height / 2);
@@ -164,10 +191,11 @@ class GameScene extends Phaser.Scene {
       progressBar.displayWidth = progressBarFullWidth * 0.1;
     });
 
+    console.log(this.globals);
     this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
-      loadingBGM = jeu.sound.add("loadingBGM", { loop: true });
-      loadingBGM.play();
-      loadingBGM.volume = 0.03;
+      jeu.globals.bgm = jeu.sound.add("loadingBGM", { loop: true });
+      jeu.globals.bgm.play();
+      jeu.globals.bgm.volume = 0.03;
     });
 
 
@@ -240,9 +268,9 @@ class GameScene extends Phaser.Scene {
       loadingText.destroy();
       percentText.destroy();
       assetText.destroy();
-      loadingBGM.stop();
-      loadingBGM.destroy();
+      jeu.globals.bgm.stop();
     });
+    
   }
 
   setArray(){
@@ -665,7 +693,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setMenuButton(){
-    this.pauseButton = this.add.sprite(55,55,BUTTON_KEY).setInteractive().setScrollFactor(0);
+    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setScrollFactor(0);
+    let buttonBorder = this.add.sprite(this.cameras.main.width-30,30,"button_border").setScale(0.7).setScrollFactor(0);
+    this.pauseButton.setTint("0xB6AA9A");
+    buttonBorder.setTint("0xFFA600");
   }
 
   setAudio(){
@@ -677,7 +708,19 @@ class GameScene extends Phaser.Scene {
 
   clearAudio(){
     // Clear Possible BGM
-    if(this.bgm) this.bgm.stop();
+    //if(this.globals.bgm) this.globals.bgm.stop();
+
+    // Permet un fondu de la musique
+    if(this.globals.bgm){
+      let jeu = this;
+
+      this.tweens.add({
+        targets: jeu.globals.bgm,
+        volume: 0,
+        ease: 'Linear',
+        duration: 500
+      });
+    }
   }
 
   manageBGM(){
@@ -686,9 +729,9 @@ class GameScene extends Phaser.Scene {
 
         break;
       case "mapDodo":
-        this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
-        this.bgm.play();
-        this.bgm.volume = 0.1;
+        this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+        this.globals.bgm.play();
+        this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
       default:
@@ -959,18 +1002,10 @@ class GameScene extends Phaser.Scene {
 
   callMenu(){
     let jeu = this;
-    if(isPause){
-     // this.pauseButton.on("pointerup",function(){jeu.scene.resume();isPause = false;});
-    }else{
-      this.pauseButton.on("pointerup",function(){jeu.scene.pause();isPause = true;});
-      if(isPause){
-        this.input.once('pointerdown', function () {
-          
-          jeu.scene.resume();
-        }, this);
-      }
-      
-    }
+    this.pauseButton.on("pointerdown",function(){
+      jeu.scene.launch('menu_scene');
+      jeu.scene.pause();
+    });
   }
 
 }
