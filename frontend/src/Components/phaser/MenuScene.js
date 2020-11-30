@@ -68,7 +68,7 @@ class MenuScene extends Phaser.Scene {
             else if(pointer.x >= 540) gameObject.x = 540;
             else gameObject.x = pointer.x;
             //console.log(pointer.x);
-            jeu.globals.musicVolume = (gameObject.x-260)/280;
+            jeu.globals.musicVolume = ((gameObject.x-260)/280).toFixed(2);
             jeu.globals.bgm.volume = jeu.globals.musicVolume;
             //console.log(jeu.globals);
         });

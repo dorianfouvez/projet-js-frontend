@@ -270,6 +270,7 @@ class GameScene extends Phaser.Scene {
       assetText.destroy();
       jeu.globals.bgm.stop();
     });
+    
   }
 
   setArray(){
