@@ -8,7 +8,7 @@ export default class  GuardianSpawner{
     /**
    * @param {Phaser.Scene} scene
    */
-  constructor(scene, resizingFactor, guardianKey = "guardian", range = 200) {
+  constructor(scene, resizingFactor, guardianKey = "guardian", range = 300) {
     this.scene = scene;
     this.resizingFactor = resizingFactor;
     this.key = guardianKey;
