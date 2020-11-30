@@ -41,7 +41,7 @@ class GameScene extends Phaser.Scene {
     this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
-    this.currentMap = "winterMap";
+    this.currentMap = undefined;
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
@@ -346,7 +346,7 @@ class GameScene extends Phaser.Scene {
 
         break;
       default:
-        this.currentMap = "map"
+        this.currentMap = "winterMap"
         this.setLayer();
         break;
     }
@@ -389,7 +389,7 @@ class GameScene extends Phaser.Scene {
         
         break;
       default:
-        this.currentMap = "map"
+        this.currentMap = "winterMap"
         this.manageObjects();
         break;
     }
@@ -673,7 +673,7 @@ class GameScene extends Phaser.Scene {
         
         break;
       default:
-        this.currentMap = "map"
+        this.currentMap = "winterMap"
         this.manageColliders();
         break;
     }
@@ -797,7 +797,7 @@ class GameScene extends Phaser.Scene {
 
         break;
       default:
-        this.currentMap = "map"
+        this.currentMap = "winterMap"
         this.manageBGM();
         break;
     }
