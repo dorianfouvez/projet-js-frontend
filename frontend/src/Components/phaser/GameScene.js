@@ -13,6 +13,7 @@ const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
+const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
@@ -21,7 +22,6 @@ const PATH_CURSORS = PATH_UI + "cursors/";
 const PATH_GENDERS = PATH_UI + "genders/";
 const PATH_SELECTS = PATH_UI + "selects/";
 
-const PATH_ASSETS_SOUNDS = PATH_ASSETS + "sounds/";
 
 const SCALE_DEBUG = 0.75;
 
@@ -31,7 +31,6 @@ const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
-let isPause = false ;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -51,7 +50,6 @@ class GameScene extends Phaser.Scene {
     this.spawnEnnemi = undefined;
     //Idle and action attribut
     this.lastDirection = "F";
-    this.test = [];
     //controls
     this.keys = undefined;
     this.globals = undefined;
@@ -75,13 +73,13 @@ class GameScene extends Phaser.Scene {
 
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
-    this.load.audio("bgm_cimetronelle", PATH_ASSETS_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+    this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
 
     // Button
     this.load.image(BUTTON_KEY, PATH_BUTTON+"Settings.png");
     this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
     this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
-    this.load.image("switch_arrow", PATH_BUTTON + "CC_SwitchSelect_Arrow.png");
+    this.load.image("switch_arrow", PATH_SELECTS + "CC_SwitchSelect_Arrow.png");
     this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
     this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
     this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
@@ -163,7 +161,7 @@ class GameScene extends Phaser.Scene {
     //this.load.image("loadingSpine", PATH_PROGRESSBAR + "spinning_loading.png");
     this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
     this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
-    this.load.audio("loadingBGM", PATH_ASSETS_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
+    this.load.audio("loadingBGM", PATH_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;

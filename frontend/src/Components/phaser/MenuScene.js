@@ -23,7 +23,7 @@ class MenuScene extends Phaser.Scene {
 
         this.load.image("button_settings", PATH_BUTTON+"Settings.png");
         this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
-        this.load.image("switch_arrow", PATH_BUTTON + "CC_SwitchSelect_Arrow.png");
+        this.load.image("switch_arrow", PATH_SELECTS + "CC_SwitchSelect_Arrow.png");
         this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
         this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
         this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
