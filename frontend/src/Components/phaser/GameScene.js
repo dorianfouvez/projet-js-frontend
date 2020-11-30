@@ -53,8 +53,7 @@ class GameScene extends Phaser.Scene {
     this.lastDirection = "F";
     this.test = [];
     //controls
-    this.keys = undefined
-    this.bgm = undefined;
+    this.keys = undefined;
     this.globals = undefined;
   }
 
@@ -106,8 +105,9 @@ class GameScene extends Phaser.Scene {
 
   create() {
     console.log(this.globals);
-    this.globals.musicVolume = 0.3;
-    console.log(this.globals);
+    if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
+    /*this.globals.musicVolume = 0.3;
+    console.log(this.globals);*/
     this.isReadyToTP = false;
     // Set the point for changing the map
     this.setArray();
@@ -171,7 +171,6 @@ class GameScene extends Phaser.Scene {
     let progressBox = undefined;
     let progressBar = undefined;
     let progressBarFullWidth = undefined;
-    let loadingBGM = undefined;
     let jeu = this;
 
     /*this.load.on('filecomplete-image-loadingSpine', function (key, type, data) {
@@ -194,10 +193,11 @@ class GameScene extends Phaser.Scene {
       progressBar.displayWidth = progressBarFullWidth * 0.1;
     });
 
+    console.log(this.globals);
     this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
-      loadingBGM = jeu.sound.add("loadingBGM", { loop: true });
-      loadingBGM.play();
-      loadingBGM.volume = 0.03;
+      jeu.globals.bgm = jeu.sound.add("loadingBGM", { loop: true });
+      jeu.globals.bgm.play();
+      jeu.globals.bgm.volume = 0.03;
     });
 
 
@@ -270,8 +270,7 @@ class GameScene extends Phaser.Scene {
       loadingText.destroy();
       percentText.destroy();
       assetText.destroy();
-      loadingBGM.stop();
-      loadingBGM.destroy();
+      jeu.globals.bgm.stop();
     });
   }
 
@@ -710,7 +709,7 @@ class GameScene extends Phaser.Scene {
 
   clearAudio(){
     // Clear Possible BGM
-    if(this.bgm) this.bgm.stop();
+    if(this.globals.bgm) this.globals.bgm.stop();
   }
 
   manageBGM(){
@@ -719,9 +718,9 @@ class GameScene extends Phaser.Scene {
 
         break;
       case "mapDodo":
-        this.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
-        this.bgm.play();
-        this.bgm.volume = 0.1;
+        this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+        this.globals.bgm.play();
+        this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
       default:

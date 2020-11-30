@@ -49,7 +49,7 @@ class MenuScene extends Phaser.Scene {
         // Volume Sonore
         this.add.sprite(width / 2 - 60, height / 2 - 130, "volume_text");
         this.add.image(240,270, 'loadingBar').setScale(0.17).setX(width / 2 + 9).setY(height / 2 -70);
-        this.dragButton = this.add.sprite(/*width / 2 + 25*/(this.globals.musicVolume*280)+260, height / 2 - 70, "switch_arrow").setScale(0.7).setInteractive().setFlipX(true);
+        this.dragButton = this.add.sprite(/*width / 2 + 25*/(this.globals.musicVolume*280)+260, height / 2 - 70, "switch_arrow").setScale(0.7).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setFlipX(true);
         this.input.setDraggable(this.dragButton);
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             if(pointer.x <= 260) gameObject.x = 260;
@@ -57,6 +57,7 @@ class MenuScene extends Phaser.Scene {
             else gameObject.x = pointer.x;
             //console.log(pointer.x);
             jeu.globals.musicVolume = (gameObject.x-260)/280;
+            jeu.globals.bgm.volume = jeu.globals.musicVolume;
             //console.log(jeu.globals);
         });
         
