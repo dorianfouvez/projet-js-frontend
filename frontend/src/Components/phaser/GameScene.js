@@ -2,14 +2,17 @@ import Phaser from "phaser";
 import ScoreLabel from "./ScoreLabel.js";
 import LadyBugSpawner from "./LadyBugSpawner.js";
 import ZombieSpawner from "./ZombieSpawner.js";
+import GuardianSpawn from "./enemies/GuardianSpawn.js";
 
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
+const GUARDIAN_KEY = "guardian";
 const BUTTON_KEY="button_settings";
 
 const PATH_ASSETS = "../assets/";
 const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
+const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
@@ -41,11 +44,12 @@ class GameScene extends Phaser.Scene {
     this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
+    this.zombieSpawner = undefined;
+    this.guardianSpawner = undefined;
     this.currentMap = undefined;
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
-    this.zombieSpawner = undefined;
     this.pauseButton = undefined ;
     this.spawnPlayer = undefined;
     this.spawnEnnemi = undefined;
@@ -54,6 +58,7 @@ class GameScene extends Phaser.Scene {
     //controls
     this.keys = undefined;
     this.globals = undefined;
+    this.guardianGroup = undefined;
   }
 
   preload() {
@@ -72,6 +77,7 @@ class GameScene extends Phaser.Scene {
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
+    GuardianSpawn.loadAssets(this);
 
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
@@ -154,6 +160,10 @@ class GameScene extends Phaser.Scene {
     this.managePlayerMovements();
 
     this.callMenu();
+    
+    this.guardianGroup.getChildren().forEach(element => {
+      this.guardianSpawner.manageMovements(element);
+    });
   
   }
 
@@ -707,6 +717,10 @@ class GameScene extends Phaser.Scene {
     this.spawnEnnemi.forEach(element => {
       this.zombieSpawner.spawn(element.x,element.y);
     });
+
+    this.guardianSpawner = new GuardianSpawn(this, PLAYER_RESIZING_FACTOR, GUARDIAN_KEY);
+    this.guardianSpawner.spawn(4900, 500);
+    this.guardianGroup = this.guardianSpawner.group;
   }
 
   manageCamera() {
