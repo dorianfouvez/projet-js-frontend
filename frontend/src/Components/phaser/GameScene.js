@@ -41,12 +41,13 @@ class GameScene extends Phaser.Scene {
     this.debugingKey = undefined;
     this.scoreLabel = undefined;
     this.ladyBugSpawner = undefined;
-    this.currentMap = undefined;
+    this.currentMap = "winterMap";
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.zombieSpawner = undefined;
     this.pauseButton = undefined ;
+    this.spawnPlayer = undefined;
     this.spawnEnnemi = undefined;
     //Idle and action attribut
     this.lastDirection = "F";
@@ -66,6 +67,7 @@ class GameScene extends Phaser.Scene {
 
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
+    this.load.tilemapTiledJSON("winterMap", PATH_MAPS + "WinterMap.json");
 
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
@@ -116,10 +118,10 @@ class GameScene extends Phaser.Scene {
     // Set the Bounds of the map
     this.physics.world.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
     
+    this.manageObjects();
     // Player
     this.player = this.createPlayer();
 
-    this.manageObjects();
     this.manageColliders();
     
     // Enemies
@@ -305,6 +307,27 @@ class GameScene extends Phaser.Scene {
         this.abovePlayerLayer.setDepth(10);
 
         break;
+        case "winterMap":
+          // Images of Maps
+          this.tilemap = this.make.tilemap({key: "winterMap"});
+          this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
+
+          this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides9Layer = this.tilemap.createStaticLayer("worldCollides9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides8Layer = this.tilemap.createStaticLayer("worldCollides8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides7Layer = this.tilemap.createStaticLayer("worldCollides7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides6Layer = this.tilemap.createStaticLayer("worldCollides6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides5Layer = this.tilemap.createStaticLayer("worldCollides5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides4Layer = this.tilemap.createStaticLayer("worldCollides4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides3Layer = this.tilemap.createStaticLayer("worldCollides3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldSpecialLayer = this.tilemap.createStaticLayer("worldSpecial",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+
+          this.worldTop1Layer.setDepth(10);
+
+          break;
       case "mapDodo":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "mapDodo"});
@@ -329,8 +352,58 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  manageObjects(){
+    switch(this.currentMap){
+      case "map":
+        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
+        break;
+      case "winterMap":
+        this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
+        this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
+        this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
+
+        break;
+      case "mapDodo":
+        // Changing Map Objects
+        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
+        for(let i =1 ;i<=3;i++){
+          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "spawnEnemies"+i);
+          this.spawnEnnemi.push(spawnEnemie);
+        }
+
+        //entryHouse.x *= MAP_RESIZING_FACTOR;
+        this.warpObjects.push(entryHouse);
+
+        this.warpObjects.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+        this.spawnEnnemi.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+        
+        break;
+      default:
+        this.currentMap = "map"
+        this.manageObjects();
+        break;
+    }
+  }
+
   createPlayer() {
-    const player = this.physics.add.sprite(900, 450, "playerFront", "Warrior_Idle_Blinking_0").setScale(PLAYER_RESIZING_FACTOR).setSize(170, 170).setOffset(470,670);
+    let spawnX = 900;
+    let spawnY = 450;
+    if(this.spawnPlayer){
+      console.log(this.spawnPlayer);
+      spawnX = this.spawnPlayer.x;
+      spawnY = this.spawnPlayer.y;
+    }
+    const player = this.physics.add.sprite(spawnX, spawnY, "playerFront", "Warrior_Idle_Blinking_0").setScale(PLAYER_RESIZING_FACTOR).setSize(170, 170).setOffset(470,670);
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
@@ -537,43 +610,6 @@ class GameScene extends Phaser.Scene {
 
     return player;
   }
-  
-  manageObjects(){
-    switch(this.currentMap){
-      case "map":
-        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
-        break;
-      case "mapDodo":
-        // Changing Map Objects
-        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
-        for(let i =1 ;i<=3;i++){
-          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "spawnEnemies"+i);
-          this.spawnEnnemi.push(spawnEnemie);
-        }
-
-        //entryHouse.x *= MAP_RESIZING_FACTOR;
-        this.warpObjects.push(entryHouse);
-
-        this.warpObjects.forEach(element => {
-          element.x *= MAP_RESIZING_FACTOR;
-          element.y *= MAP_RESIZING_FACTOR;
-          // Set an image On each element For Debuging
-          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
-        });
-        this.spawnEnnemi.forEach(element => {
-          element.x *= MAP_RESIZING_FACTOR;
-          element.y *= MAP_RESIZING_FACTOR;
-          // Set an image On each element For Debuging
-          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
-        });
-        
-        break;
-      default:
-        this.currentMap = "map"
-        this.manageObjects();
-        break;
-    }
-  }
 
   manageColliders(){
     switch(this.currentMap){
@@ -600,6 +636,29 @@ class GameScene extends Phaser.Scene {
 
         // OverLaps
 
+
+        break;
+      case "winterMap":
+        this.worldCollides9Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides8Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides7Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides6Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides5Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides4Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides3Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides2Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides1Layer.setCollisionByProperty({ collides: true });
+
+        // Colliders
+        this.physics.add.collider(this.player, this.worldCollides9Layer);
+        this.physics.add.collider(this.player, this.worldCollides8Layer);
+        this.physics.add.collider(this.player, this.worldCollides7Layer);
+        this.physics.add.collider(this.player, this.worldCollides6Layer);
+        this.physics.add.collider(this.player, this.worldCollides5Layer);
+        this.physics.add.collider(this.player, this.worldCollides4Layer);
+        this.physics.add.collider(this.player, this.worldCollides3Layer);
+        this.physics.add.collider(this.player, this.worldCollides2Layer);
+        this.physics.add.collider(this.player, this.worldCollides1Layer);
 
         break;
       case "mapDodo":
@@ -728,6 +787,9 @@ class GameScene extends Phaser.Scene {
       case "map":
 
         break;
+      case "winterMap":
+
+        break;
       case "mapDodo":
         this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
         this.globals.bgm.play();
@@ -765,7 +827,7 @@ class GameScene extends Phaser.Scene {
 
   checkDebugingKey(){
     if(this.debugingKey.isDown && !isDebugingKeyDown){
-      console.log("coucou");
+      console.log("Run debbug color");
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
       isDebugingKeyDown = !isDebugingKeyDown;
@@ -827,6 +889,62 @@ class GameScene extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
+          break;
+        case "winterMap":
+          this.worldCollides9Layer.renderDebug(this.debugGraphics[0], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides8Layer.renderDebug(this.debugGraphics[1], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides7Layer.renderDebug(this.debugGraphics[2], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides6Layer.renderDebug(this.debugGraphics[3], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides5Layer.renderDebug(this.debugGraphics[4], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides4Layer.renderDebug(this.debugGraphics[5], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides3Layer.renderDebug(this.debugGraphics[6], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides2Layer.renderDebug(this.debugGraphics[7], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides1Layer.renderDebug(this.debugGraphics[8], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+
           break;
         case "mapDodo":
           this.worldLayer.renderDebug(this.debugGraphics[0], {
