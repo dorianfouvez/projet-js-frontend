@@ -78,13 +78,14 @@ class GameScene extends Phaser.Scene {
     this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
 
     // Button
-    this.load.image(BUTTON_KEY, PATH_BUTTON+"Settings.png");
-    this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
-    this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
-    this.load.image("switch_arrow", PATH_SELECTS + "CC_SwitchSelect_Arrow.png");
+    this.load.image(BUTTON_KEY, PATH_BUTTON+"settingButton.png");
+    this.load.image("windows_menu", PATH_BUTTON + "menu.png");
+    this.load.image("switchToggle", PATH_SELECTS + "SwitchToggle.png");
     this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
     this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
     this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
+    this.load.image("buttonTribal", PATH_SELECTS + "ButtonTribal.png");
+    this.load.image("loadingBar1", PATH_PROGRESSBAR + "LoadingBar_Fill.png");
 
     // Mouse
     this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
@@ -752,10 +753,7 @@ class GameScene extends Phaser.Scene {
   }
 
   setMenuButton(){
-    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setScrollFactor(0);
-    let buttonBorder = this.add.sprite(this.cameras.main.width-30,30,"button_border").setScale(0.7).setScrollFactor(0);
-    this.pauseButton.setTint("0xB6AA9A");
-    buttonBorder.setTint("0xFFA600");
+    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
   }
 
   setAudio(){
