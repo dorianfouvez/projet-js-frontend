@@ -42,7 +42,19 @@ const PhaserGamePage = () => {
   // therefore destroy any started game prior to recreate it
   //KillGame();
   game = new Phaser.Game(config);
-  return game.globals = { musicVolume: 0.2, bgm: undefined, gender: "M", playerName: "Jojo" };
+  return game.globals = { 
+    musicVolume: 0.2, 
+    bgm: undefined, 
+    gender: "M", 
+    playerName: "Jojo",
+    modifSetting: false,
+    up: 90,
+    down: 83,
+    left: 81,
+    right: 68,
+    atq1: 37,
+    atq2: 39,
+    run: 16};
 };
 
 function KillGame() {
