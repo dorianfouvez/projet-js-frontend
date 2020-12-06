@@ -67,22 +67,20 @@ class MenuScene extends Phaser.Scene {
         this.setExitButton(width, height);
         this.setVolumeSonore(width, height);
         this.setTouches(width, height);
-        this.manageTouches(jeu, width, height);   
+        this.setInteractTouches(jeu, width, height);   
     }
 
     update(){
+        let jeu = this;
+
         if(this.flecheTribal)
             this.exitButton.setVisible(false);
         else
             this.exitButton.setVisible(true);
-        
-        let jeu = this;
-        let width = this.cameras.main.width;
-        let height = this.cameras.main.height;
 
         this.manageExitButton(jeu);
         this.manageVolume(jeu);
-        this.testTouches(jeu);
+        this.manageTouches(jeu);
     }
 
     setExitButton(width, height){
@@ -113,11 +111,11 @@ class MenuScene extends Phaser.Scene {
         if(this.scale.isFullscreen){
             this.add.sprite(width / 2, height / 2 - 350, "volumeSonore").setScale(1.4);
             this.add.image(240,270, 'sonoreBar').setScale(0.3).setX(width / 2).setY(height / 2 - 280).setFlipX(true);
-            this.dragButton = this.add.sprite((this.globals.musicVolume*280)+1000, height / 2 - 280, "switchToggle").setScale(0.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setFlipX(true);
+            this.dragButton = this.add.sprite((this.globals.musicVolume*495)+710, height / 2 - 280, "switchToggle").setScale(0.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setFlipX(true);
         }else{
             this.add.sprite(width / 2, height / 2 - 210, "volumeSonore").setScale(0.8);
             this.add.image(240,270, 'sonoreBar').setScale(0.17).setX(width / 2).setY(height / 2 - 160).setFlipX(true);
-            this.dragButton = this.add.sprite((this.globals.musicVolume*280)+260, height / 2 - 160, "switchToggle").setScale(0.3).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setFlipX(true);
+            this.dragButton = this.add.sprite((this.globals.musicVolume*280)+258, height / 2 - 160, "switchToggle").setScale(0.3).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setFlipX(true);
         }
 
         this.input.setDraggable(this.dragButton);
@@ -127,10 +125,10 @@ class MenuScene extends Phaser.Scene {
     manageVolume(jeu){
         if(this.scale.isFullscreen){
             this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-                if(pointer.x <= 708) gameObject.x = 710;
+                if(pointer.x <= 710) gameObject.x = 710;
                 else if(pointer.x >= 1212) gameObject.x = 1212;
                 else gameObject.x = pointer.x;
-                jeu.globals.musicVolume = ((gameObject.x-1000)/280).toFixed(2);
+                jeu.globals.musicVolume = ((gameObject.x-710)/495).toFixed(2);
                 jeu.globals.bgm.volume = jeu.globals.musicVolume;
             });
         }else{
@@ -138,7 +136,7 @@ class MenuScene extends Phaser.Scene {
                 if(pointer.x <= 258) gameObject.x = 258;
                 else if(pointer.x >= 542) gameObject.x = 542;
                 else gameObject.x = pointer.x;
-                jeu.globals.musicVolume = ((gameObject.x-260)/280).toFixed(2);
+                jeu.globals.musicVolume = ((gameObject.x-258)/280).toFixed(2);
                 jeu.globals.bgm.volume = jeu.globals.musicVolume;
             });
         }  
@@ -164,53 +162,79 @@ class MenuScene extends Phaser.Scene {
         }
     }
 
-    testTouches(jeu){
+    manageTouches(jeu){
         this.deplacementVersLeHaut.on("pointerdown", () => {
             jeu.verification = "up";
         });
+
         this.deplacementVersLeBas.on("pointerdown", () => {
             jeu.verification = "down";
         });
+
+        this.deplacementVersLaGauche.on("pointerdown", () => {
+            jeu.verification = "left";
+        });
+
+        this.deplacementVersLaDroite.on("pointerdown", () => {
+            jeu.verification = "right";
+        });
+
+        this.courir.on("pointerdown", () => {
+            jeu.verification = "run";
+        });
+
+        this.attaqueDeBase.on("pointerdown", () => {
+            jeu.verification = "atq1";
+        });
+
+        this.attaqueChargee.on("pointerdown", () => {
+            jeu.verification = "atq2";
+        });   
     }
 
-    manageTouches(jeu,width, height){
+    setInteractTouches(jeu,width, height){
        
         this.deplacementVersLeHaut.on("pointerup", () => {
-            if(this.scale.isFullscreen)
-                this.commencerAnimationFull(width/2 - 223, height/2 - 174);
-            else
-                this.commencerAnimationMin(width/2 - 142, height/2 - 94);
+            if(this.flecheTribal == undefined){
+                if(this.scale.isFullscreen)
+                    this.commencerAnimationFull(width/2 - 223, height/2 - 174);
+                else
+                    this.commencerAnimationMin(width/2 - 142, height/2 - 94);
 
-            this.input.keyboard.on("keydown", (e) => {
-                if(e.keyCode != 112 && jeu.verification == "up"){
-                    jeu.globals.up = e.keyCode;
-                    jeu.arreterAnimation();
-                }
-            });
+                this.input.keyboard.on("keydown", (e) => {
+                    if(e.keyCode != 112 && jeu.verification == "up"){
+                        jeu.globals.up = e.keyCode;
+                        jeu.arreterAnimation();
+                    }
+                });
+            }
         });
 
         this.deplacementVersLeBas.on("pointerup", () => {
-            if(this.scale.isFullscreen)
-                this.commencerAnimationFull(width/2 - 213, height/2 - 94);
-            else
-                this.commencerAnimationMin(width/2 - 135, height/2 - 44);
-            
-            this.input.keyboard.on("keyup", (e) => {
-                if(e.keyCode != 112 && jeu.verification == "down"){
-                    jeu.globals.down = e.keyCode;
-                    jeu.arreterAnimation();
-                }
-            });
+            if(this.flecheTribal == undefined){
+                if(this.scale.isFullscreen)
+                    this.commencerAnimationFull(width/2 - 213, height/2 - 94);
+                else
+                    this.commencerAnimationMin(width/2 - 135, height/2 - 44);
+                
+                this.input.keyboard.on("keyup", (e) => {
+                    if(e.keyCode != 112 && jeu.verification == "down"){
+                        jeu.globals.down = e.keyCode;
+                        jeu.arreterAnimation();
+                    }
+                });
+            }
         });
 
-        this.deplacementVersLaGauche.on("pointerdown", () => {
+        this.deplacementVersLaGauche.on("pointerup", () => {
             if(this.flecheTribal == undefined){
                 if(this.scale.isFullscreen)
                     this.commencerAnimationFull(width/2 - 235, height/2 - 14);
                 else
                     this.commencerAnimationMin(width/2 - 150, height/2 + 6);
+
                 this.input.keyboard.on("keyup", (e) => {
-                    if(e.keyCode != 112){
+                    if(e.keyCode != 112 && jeu.verification == "left"){
                         jeu.globals.left = e.keyCode;
                         this.arreterAnimation();
                     }
@@ -218,14 +242,15 @@ class MenuScene extends Phaser.Scene {
             }
         });
 
-        this.deplacementVersLaDroite.on("pointerdown", () => {
+        this.deplacementVersLaDroite.on("pointerup", () => {
             if(this.flecheTribal == undefined){
                 if(this.scale.isFullscreen)
                     this.commencerAnimationFull(width/2 - 232, height/2 + 66);
                 else
                     this.commencerAnimationMin(width/2 - 148, height/2 + 56);
+
                 this.input.keyboard.on("keyup", (e) => {
-                    if(e.keyCode != 112){
+                    if(e.keyCode != 112 && jeu.verification == "right"){
                         jeu.globals.right = e.keyCode;
                         this.arreterAnimation();
                     }   
@@ -233,14 +258,15 @@ class MenuScene extends Phaser.Scene {
             }
         });
 
-        this.courir.on("pointerdown", () => {
+        this.courir.on("pointerup", () => {
             if(this.flecheTribal == undefined){
                 if(this.scale.isFullscreen)
                     this.commencerAnimationFull(width/2 - 90, height/2 + 144);
                 else
                     this.commencerAnimationMin(width/2 - 55, height/2 + 104);
+
                 this.input.keyboard.on("keyup", (e) => {
-                    if(e.keyCode != 112){
+                    if(e.keyCode != 112 && jeu.verification == "run"){
                         jeu.globals.run = e.keyCode;
                         this.arreterAnimation();
                     }
@@ -248,14 +274,15 @@ class MenuScene extends Phaser.Scene {
             }
         });
 
-        this.attaqueDeBase.on("pointerdown", () => {
+        this.attaqueDeBase.on("pointerup", () => {
             if(this.flecheTribal == undefined){
                 if(this.scale.isFullscreen)
                     this.commencerAnimationFull(width/2 - 152, height/2 + 230);
                 else
                     this.commencerAnimationMin(width/2 - 95, height/2 + 157);
+
                 this.input.keyboard.on("keyup", (e) => {
-                    if(e.keyCode != 112){
+                    if(e.keyCode != 112 && jeu.verification == "atq1"){
                         jeu.globals.atq1 = e.keyCode;
                         this.arreterAnimation();
                     }
@@ -263,35 +290,21 @@ class MenuScene extends Phaser.Scene {
             }
         });
 
-        this.attaqueChargee.on("pointerdown", () => {
+        this.attaqueChargee.on("pointerup", () => {
             if(this.flecheTribal == undefined){
                 if(this.scale.isFullscreen)
                     this.commencerAnimationFull(width/2 - 152, height/2 + 310);
                 else
                     this.commencerAnimationMin(width/2 - 95, height/2 + 207);
+
                 this.input.keyboard.on("keyup", (e) => {
-                    if(e.keyCode != 112){
+                    if(e.keyCode != 112 && jeu.verification == "atq2"){
                         jeu.globals.atq2 = e.keyCode;
                         this.arreterAnimation();
                     }
                 });
             }
         });
-    }
-
-    assignation(signe, code){
-        if(this.verif1){
-            this.verif1 = false;
-            this.verif2 = true;
-            if(this.verif2){
-                this.verif2 = false;
-                if(signe == "up"){
-                    this.test.up = code;
-                }else{
-                    this.test.down = code;
-                }
-            }
-        }
     }
 
     commencerAnimationMin(width, height){
@@ -323,17 +336,11 @@ class MenuScene extends Phaser.Scene {
     }
 
     arreterAnimation(){
-        if(this.flecheTribal != null && this.tribal != null){
-            this.flecheTribal.remove();
-            this.tribal.destroy();
-            this.tribal = undefined;
-            this.flecheTribal = undefined;
-        }
+        this.flecheTribal.remove();
+        this.tribal.destroy();
+        this.tribal = undefined;
+        this.flecheTribal = undefined;
     }
 }
-
-/*  la touche ESC a fixer
-    le switchToggle qui bug quand on passe du grand ecran au petit (il reste à une certaine place en fonction de ou on l'a mis )
-    fixer la modification du volume sonore*/
 
 export default MenuScene;
