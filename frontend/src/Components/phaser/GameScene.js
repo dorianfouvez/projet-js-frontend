@@ -78,6 +78,7 @@ class GameScene extends Phaser.Scene {
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+    this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
 
     // Button
     this.load.image(BUTTON_KEY, PATH_BUTTON + "settingButton.png");
@@ -852,6 +853,9 @@ class GameScene extends Phaser.Scene {
 
         break;
       case "winterMap":
+        this.globals.bgm = this.sound.add("musicTest", { loop: true });
+        this.globals.bgm.play();
+        this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
       case "mapDodo":
