@@ -132,7 +132,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(this.globals);
+    //console.log(this.globals);
     if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
     /*this.globals.musicVolume = 0.3;
     console.log(this.globals);*/
@@ -223,7 +223,6 @@ class GameScene extends Phaser.Scene {
       progressBar.displayWidth = progressBarFullWidth * 0.1;
     });
 
-    console.log(this.globals);
     this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
       jeu.globals.bgm = jeu.sound.add("loadingBGM", { loop: true });
       jeu.globals.bgm.play();
@@ -429,7 +428,6 @@ class GameScene extends Phaser.Scene {
     let spawnX = 900;
     let spawnY = 450;
     if(this.spawnPlayer){
-      console.log(this.spawnPlayer);
       spawnX = this.spawnPlayer.x;
       spawnY = this.spawnPlayer.y;
     }
