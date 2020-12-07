@@ -309,13 +309,14 @@ export default class  GuardianSpawner{
     }
   }
 
-  takeDamage(guardian){
+  takeDamage(guardian, typeOfAtk){
     if(guardian.isInvulnerability) return;
 
     guardian.setVelocity(0);
     guardian.hurt = true;
     guardian.anims.play("frontHurt", true);
-    guardian.hp -= 1;
+    if(typeOfAtk == 1) guardian.hp -= 1;
+    else guardian.hp -= 2;
     console.log("Guardian lose HP ! ("+guardian.hp+"/10)");
     guardian.greenBar.setScale((guardian.hp/10)*0.3, 0.3);
     guardian.isInvulnerability = true;

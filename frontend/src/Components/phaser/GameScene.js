@@ -435,8 +435,8 @@ class GameScene extends Phaser.Scene {
   }
 
   createHpBar(){
-    this.redBar = this.physics.add.sprite(10, 10, "red_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0);
-    this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0);
+    this.redBar = this.physics.add.sprite(10, 10, "red_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(15);
+    this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(16);
   }
 
   createEnemies(){

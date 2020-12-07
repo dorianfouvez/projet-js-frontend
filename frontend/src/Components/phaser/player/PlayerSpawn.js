@@ -272,7 +272,7 @@ export default class PlayerSpawner{
                   this.himSelf.anims.play("playerBackRun", true);
                   this.destroyZoneAtk();
                 } else {
-                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(); }; });
+                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(1); }; });
                   if(this.scene.keys.atq2.isDown)
                     this.himSelf.anims.play("playerBackAtq2", true);
                   else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerBackAtq1" || !this.himSelf.anims.isPlaying){
@@ -296,7 +296,7 @@ export default class PlayerSpawner{
                   this.himSelf.anims.play("playerFrontRun", true);
                   this.destroyZoneAtk();
                 } else {
-                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(); }; });
+                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(1); }; });
                   if(this.scene.keys.atq2.isDown)
                     this.himSelf.anims.play("playerFrontAtq2", true);
                   else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerFrontAtq1" || !this.himSelf.anims.isPlaying){
@@ -323,7 +323,7 @@ export default class PlayerSpawner{
                 this.himSelf.anims.play("playerLeftRun", true);
                 this.destroyZoneAtk();
               } else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(1); }; });
                 if(this.scene.keys.atq2.isDown)
                   this.himSelf.anims.play("playerLeftAtq2", true);
                 else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerLeftAtq1" || !this.himSelf.anims.isPlaying){
@@ -345,7 +345,7 @@ export default class PlayerSpawner{
                 this.himSelf.anims.play("playerRightRun", true);
                 this.destroyZoneAtk();
               } else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(1); }; });
                 if(this.scene.keys.atq2.isDown)
                   this.himSelf.anims.play("playerRightAtq2", true);
                 else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerRightAtq1" || !this.himSelf.anims.isPlaying){
@@ -367,7 +367,7 @@ export default class PlayerSpawner{
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(1); }; });
                 if(this.scene.keys.atq2.isDown)
                   this.himSelf.anims.play("playerBackAtq2", true);
                 else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerBackAtq1" || !this.himSelf.anims.isPlaying){
@@ -382,7 +382,7 @@ export default class PlayerSpawner{
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(1); }; });
                 if(this.scene.keys.atq2.isDown)
                   this.himSelf.anims.play("playerFrontAtq2", true);
                 else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerFrontAtq1" || !this.himSelf.anims.isPlaying){
@@ -397,7 +397,7 @@ export default class PlayerSpawner{
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(1); }; });
                 if(this.scene.keys.atq2.isDown)
                   this.himSelf.anims.play("playerLeftAtq2", true);
                 else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerLeftAtq1" || !this.himSelf.anims.isPlaying){
@@ -412,10 +412,11 @@ export default class PlayerSpawner{
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(); }; });
-                if(this.scene.keys.atq2.isDown)
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(1); }; });
+                if(this.scene.keys.atq2.isDown){
                   this.himSelf.anims.play("playerRightAtq2", true);
-                else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerRightAtq1" || !this.himSelf.anims.isPlaying){
+                  this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
+                }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerRightAtq1" || !this.himSelf.anims.isPlaying){
                   this.himSelf.anims.play("playerRightIdle", true);
                   this.destroyZoneAtk();
                 }
@@ -424,7 +425,7 @@ export default class PlayerSpawner{
         }
     }
 
-    setZoneAtk(){
+    setZoneAtk(typeOfAtk){
         if(this.alreadyatk) return;
 
         this.aoeX = 0;
@@ -452,7 +453,7 @@ export default class PlayerSpawner{
                 break;
             default:
                 this.lastDirection = "B";
-                this.setZoneAtk();
+                this.setZoneAtk(typeOfAtk);
                 break;
         }
 
@@ -461,7 +462,7 @@ export default class PlayerSpawner{
         this.scene.physics.world.enable(this.aoe, 0);
         this.scene.guardianGroup.getChildren().forEach(element => {
             let jeu = this.scene;
-            this.scene.physics.add.overlap(this.aoe, element, function () { jeu.guardianSpawner.takeDamage(element); });
+            this.scene.physics.add.overlap(this.aoe, element, function () { jeu.guardianSpawner.takeDamage(element, typeOfAtk); });
         });
     }
 
@@ -490,6 +491,7 @@ export default class PlayerSpawner{
             console.log("Game Over");
             this.himSelf.body.stop();
             this.ableToMove = false;
+            //this.himSelf.anims.play("playerBackDied", true);
             //this.scene.restart();
         }
     }
