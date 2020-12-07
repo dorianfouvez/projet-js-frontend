@@ -14,6 +14,7 @@ const PATH_ASSETS = "../assets/";
 const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
+const PATH_HEALBAR = PATH_ASSETS + "healBar/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
@@ -35,6 +36,7 @@ const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
+let alreadyatk = false;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -60,6 +62,12 @@ class GameScene extends Phaser.Scene {
     this.keys = undefined;
     this.globals = undefined;
     this.guardianGroup = undefined;
+    this.aoe = undefined;
+    this.aoeX = 0;
+    this.aoeY = 0;
+    // Player HealBar
+    this.redBar = undefined;
+    this.greenBar = undefined;
   }
 
   preload() {
@@ -74,6 +82,9 @@ class GameScene extends Phaser.Scene {
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
     this.load.tilemapTiledJSON("winterMap", PATH_MAPS + "WinterMap.json");
+
+    this.load.image("red_healbar", PATH_HEALBAR + "red_healbar_background.png");
+    this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
 
     // Enemies
     this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
@@ -97,17 +108,8 @@ class GameScene extends Phaser.Scene {
     this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
 
     // Players
-    if(this.globals.gender == "F"){
-      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
-      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
-    }else{
-      this.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
-      this.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
-      this.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
-      this.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-    }
+    PlayerSpawn.loadAssets(this, this.globals);
+    
   }
 
   create() {
@@ -129,10 +131,10 @@ class GameScene extends Phaser.Scene {
     // Player
     this.player = this.createPlayer();
 
-    this.manageColliders();
-    
     // Enemies
     this.createEnemies();
+    
+    this.manageColliders();
 
     // Cameras
     this.manageCamera();
@@ -148,6 +150,7 @@ class GameScene extends Phaser.Scene {
     this.setAudio();
 
     this.setInvisibleCollideZones();
+    //this.setZoneAtk();
   }
   
   update(time, delta) {
@@ -165,6 +168,8 @@ class GameScene extends Phaser.Scene {
     this.guardianGroup.getChildren().forEach(element => {
       this.guardianSpawner.manageMovements(element);
     });
+
+    this.updateZoneAtk();
   
   }
 
@@ -418,6 +423,9 @@ class GameScene extends Phaser.Scene {
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
+    player.hurt = false;
+    player.isInvulnerability = false;
+    player.hp = 10;
 
     this.anims.create({
       key: "playerFrontWalk",
@@ -619,10 +627,32 @@ class GameScene extends Phaser.Scene {
       repeat: 0
     });
 
+    this.createHpBar();
     return player;
   }
 
-  manageColliders(){
+  createHpBar(){
+    this.redBar = this.physics.add.sprite(10, 10, "red_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0);
+    this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0);
+  }
+
+  createEnemies(){
+    this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
+    const ladyBugsGroup = this.ladyBugSpawner.group;
+    this.ladyBugSpawner.spawn(this.player.x, 480);
+    this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
+    const zombieGroup = this.zombieSpawner.group;
+    //  this.zombieSpawner.spawn(this.player.x, 480);
+    this.spawnEnnemi.forEach(element => {
+      this.zombieSpawner.spawn(element.x,element.y);
+    });
+
+    this.guardianSpawner = new GuardianSpawn(this, PLAYER_RESIZING_FACTOR, GUARDIAN_KEY);
+    this.guardianSpawner.spawn(4900, 500);
+    this.guardianGroup = this.guardianSpawner.group;
+  }
+
+  manageColliders(objectToCollideToTheWorld){
     switch(this.currentMap){
       case "map":
         this.worldLayer.setCollisionByProperty({ collides: true });
@@ -671,6 +701,19 @@ class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.worldCollides2Layer);
         this.physics.add.collider(this.player, this.worldCollides1Layer);
 
+        // Enemies
+        this.guardianGroup.getChildren().forEach(element => {
+          this.physics.add.collider(element, this.worldCollides9Layer);
+          this.physics.add.collider(element, this.worldCollides8Layer);
+          this.physics.add.collider(element, this.worldCollides7Layer);
+          this.physics.add.collider(element, this.worldCollides6Layer);
+          this.physics.add.collider(element, this.worldCollides5Layer);
+          this.physics.add.collider(element, this.worldCollides4Layer);
+          this.physics.add.collider(element, this.worldCollides3Layer);
+          this.physics.add.collider(element, this.worldCollides2Layer);
+          this.physics.add.collider(element, this.worldCollides1Layer);
+        });
+
         break;
       case "mapDodo":
         this.worldLayer.setCollisionByProperty({ Collides: true });
@@ -706,22 +749,6 @@ class GameScene extends Phaser.Scene {
       //this.changeMap(tile.properties.TP);
       //this.player.ableToMove = true;
     }
-  }
-
-  createEnemies(){
-    this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
-    const ladyBugsGroup = this.ladyBugSpawner.group;
-    this.ladyBugSpawner.spawn(this.player.x, 480);
-    this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
-    const zombieGroup = this.zombieSpawner.group;
-    //  this.zombieSpawner.spawn(this.player.x, 480);
-    this.spawnEnnemi.forEach(element => {
-      this.zombieSpawner.spawn(element.x,element.y);
-    });
-
-    this.guardianSpawner = new GuardianSpawn(this, PLAYER_RESIZING_FACTOR, GUARDIAN_KEY);
-    this.guardianSpawner.spawn(4900, 500);
-    this.guardianGroup = this.guardianSpawner.group;
   }
 
   manageCamera() {
@@ -978,6 +1005,62 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  setZoneAtk(){
+    if(alreadyatk) return;
+
+    this.aoeX = 0;
+    this.aoeY = 0;
+    let sizeX = 20;
+    let sizeY = 20;
+    switch(this.lastDirection){
+      case "B":
+        //this.aoeY += 10;
+        sizeX += 20;
+        break;
+      case "F":
+        this.aoeY += 40;
+        sizeX += 20;
+        break;
+      case "L":
+        this.aoeX -= 20;
+        this.aoeY += 20;
+        sizeY += 20;
+        break;
+      case "R":
+        this.aoeX += 20;
+        this.aoeY += 20;
+        sizeY += 20;
+        break;
+      default:
+        this.lastDirection = "B";
+        this.setZoneAtk();
+        break;
+    }
+
+    alreadyatk=true;
+    this.aoe = this.add.zone(this.player.x + this.aoeX, this.player.y + this.aoeY).setSize(sizeX, sizeY);
+    this.physics.world.enable(this.aoe, 0);
+    this.guardianGroup.getChildren().forEach(element => {
+      let jeu = this;
+      this.physics.add.overlap(this.aoe, element, function () { jeu.guardianSpawner.takeDamage(element); });
+    });
+  }
+
+  updateZoneAtk(){
+    if(this.aoe && this.aoe.x != this.player.x+this.aoeX) this.aoe.x = this.player.x+this.aoeX;
+    if(this.aoe && this.aoe.y != this.player.y+this.aoeY) this.aoe.y = this.player.y+this.aoeY;
+  }
+
+  destroyZoneAtk(){
+    if(this.aoe && this.aoe.body) {
+      this.aoe.destroy();
+      this.guardianGroup.getChildren().forEach(element => {
+        element.isInvulnerability = false;
+      });
+      alreadyatk = false;
+    }
+  }
+
   managePlayerMovements(){
     if(this.player.ableToMove){
       let runSpeed;
@@ -986,43 +1069,57 @@ class GameScene extends Phaser.Scene {
       } else {
         runSpeed = 0;
       }
+      let player = this.player;
+
 
       if (this.keys.up.isDown) {
         
         this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
         if(this.keys.left.isUp && this.keys.right.isUp){
           this.lastDirection = "B";
-          //if(false){
-            //this.player.anims.play("playerBackHurt", true);
-          //}else {
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerBackHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
             if(runSpeed != 0){
               this.player.anims.play("playerBackRun", true);
+              this.destroyZoneAtk();
             } else {
-              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+              this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerBackAtq1", true); this.setZoneAtk(); }; });
               if(this.keys.atq2.isDown)
                 this.player.anims.play("playerBackAtq2", true);
-              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying){
                 this.player.anims.play("playerBackWalk", true);
+                this.destroyZoneAtk();
+              }
             }
-          //}
+          }
         }
       } else if (this.keys.down.isDown) {
         this.player.setVelocityY(PLAYER_SPEED + runSpeed);
         if(this.keys.left.isUp && this.keys.right.isUp){
           this.lastDirection = "F";
-          //if(hurt){
-            //this.player.anims.play("playerFrontHurt", true);
-          //}else {
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerFrontHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
             if(runSpeed != 0){
               this.player.anims.play("playerFrontRun", true);
+              this.destroyZoneAtk();
             } else {
-              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+              this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerFrontAtq1", true); this.setZoneAtk(); }; });
               if(this.keys.atq2.isDown)
                 this.player.anims.play("playerFrontAtq2", true);
-              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying){
                 this.player.anims.play("playerFrontWalk", true);
+                this.destroyZoneAtk();
+              }
             }
-          //}
+          }
         }
       } else {
         this.player.setVelocityY(0);
@@ -1031,35 +1128,47 @@ class GameScene extends Phaser.Scene {
       if (this.keys.left.isDown) {
         this.player.setVelocityX(-(PLAYER_SPEED + runSpeed));
         this.lastDirection = "L";
-        //if(hurt){
-          //this.player.anims.play("playerLeftHurt", true);
-        //}else {
+        if(this.player.hurt && !this.player.isInvulnerability){
+          this.player.setVelocity(0);
+          this.player.anims.play("playerLeftHurt", true);
+          this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+          this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+        }else {
           if(runSpeed != 0){
             this.player.anims.play("playerLeftRun", true);
+            this.destroyZoneAtk();
           } else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerLeftAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerLeftWalk", true);
+              this.destroyZoneAtk();
+            }
           }
-        //}
+        }
       } else if (this.keys.right.isDown) {
         this.player.setVelocityX(PLAYER_SPEED + runSpeed);
         this.lastDirection = "R";
-        //if(hurt){
-          //this.player.anims.play("playerRightHurt", true);
-        //}else {
+        if(this.player.hurt && !this.player.isInvulnerability){
+          this.player.setVelocity(0);
+          this.player.anims.play("playerRightHurt", true);
+          this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+          this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+        }else {
           if(runSpeed != 0){
             this.player.anims.play("playerRightRun", true);
+            this.destroyZoneAtk();
           } else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerRightAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerRightWalk", true);
+              this.destroyZoneAtk();
+            }
           }
-        //}
+        }
       } else {
         this.player.setVelocityX(0);
       }
@@ -1067,54 +1176,71 @@ class GameScene extends Phaser.Scene {
       if(this.keys.up.isUp && this.keys.down.isUp && this.keys.left.isUp && this.keys.right.isUp){
 
         if(this.lastDirection == "B"){
-          //if(hurt){
-            //this.player.anims.play("playerBackHurt", true);
-          //}else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerBackHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerBackAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerBackAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerBackIdle", true);
-          //} 
-        }
-        else if(this.lastDirection == "F"){
-          //if(hurt){
-            //this.player.anims.play("playerFrontHurt", true);
-          //}else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+              this.destroyZoneAtk();
+            }
+          } 
+        }else if(this.lastDirection == "F"){
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerFrontHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerFrontAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerFrontAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerFrontIdle", true);
-          //}
-        }
-        else if(this.lastDirection == "L"){
-          //if(hurt){
-            //this.player.anims.play("playerLeftHurt", true);
-          //}else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+              this.destroyZoneAtk();
+            }
+          }
+        }else if(this.lastDirection == "L"){
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerLeftHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerLeftAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerLeftIdle", true);
-          //}
-        }
-        else if(this.lastDirection == "R"){
-          //if(hurt){
-            //this.player.anims.play("playerRightHurt", true);
-          //}else {
-            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+              this.destroyZoneAtk();
+            }
+          }
+        }else if(this.lastDirection == "R"){
+          if(this.player.hurt && !this.player.isInvulnerability){
+            this.player.setVelocity(0);
+            this.player.anims.play("playerRightHurt", true);
+            this.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
+            this.time.delayedCall(600, () => { player.isInvulnerability = false; });
+          }else {
+            this.keys.atq1.once("down", ()=> { if(!this.player.hurt){ this.player.anims.play("playerRightAtq1", true); this.setZoneAtk(); }; });
             if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying){
               this.player.anims.play("playerRightIdle", true);
-          //}
+              this.destroyZoneAtk();
+            }
+          }
         }
       }
     }
 
     /*possibilité de metre les attaques en mode 1 click = une attaque complète, à voir si cela nous intéresse et si on a le temps
-      this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+      this.keys.atq1.once("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
 
     /*if(mort){
       if(this.lastDirection == "B"){
