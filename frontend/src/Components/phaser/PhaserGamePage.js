@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import GameScene from "./GameScene.js";
+import GenreScene from "./GenreScene.js";
 import MenuScene from "./MenuScene.js";
 import { RedirectUrl } from "../Router.js";
 import { setTitle } from "../../utils/render.js";
@@ -32,7 +33,7 @@ const PhaserGamePage = () => {
         debug: true,
       },
     },
-    scene: [ GameScene, MenuScene ],
+    scene: [ GenreScene, GameScene, MenuScene ],
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: "gameDiv",
   };
@@ -41,7 +42,19 @@ const PhaserGamePage = () => {
   // therefore destroy any started game prior to recreate it
   //KillGame();
   game = new Phaser.Game(config);
-  return game.globals = { musicVolume: 0.2, bgm: undefined, gender: "M", playerName: "Jojo" };
+  return game.globals = { 
+    musicVolume: 0.1, 
+    bgm: undefined, 
+    gender: "M", 
+    playerName: "Jojo",
+    modifSetting: false,
+    up: 90,
+    down: 83,
+    left: 81,
+    right: 68,
+    atq1: 37,
+    atq2: 39,
+    run: 16};
 };
 
 function KillGame() {

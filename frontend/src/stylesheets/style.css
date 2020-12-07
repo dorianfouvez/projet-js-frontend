@@ -1,10 +1,10 @@
 /********** Backgrounds **********/
 .bg-gradient-dark-purple{
-  background: radial-gradient(circle, rgba(67,0,102,1) 0%, rgba(0,0,0,1) 75%);
+  background: radial-gradient(circle, rgb(90, 6, 52) 0%, rgba(0,0,0,1) 75%);
 }
 
 .bg-big-gradient-dark-purple{
-  background: radial-gradient(circle, rgba(31,0,75,1) 30%, rgba(0,0,0,1) 100%);
+  background: radial-gradient(circle, rgb(58, 3, 134) 30%, rgba(0,0,0,1) 100%);
 }
 
 

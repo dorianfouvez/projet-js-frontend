@@ -8,10 +8,9 @@ import GuardianSpawn from "./enemies/GuardianSpawn.js";
 const LADYBUG_KEY = "ladyBug";
 const ZOMBIE_KEY = "zombie";
 const GUARDIAN_KEY = "guardian";
-const BUTTON_KEY="button_settings";
+const BUTTON_KEY="settingButton";
 
 const PATH_ASSETS = "../assets/";
-const PATH_BUTTON = PATH_ASSETS + "button/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
 const PATH_HEALBAR = PATH_ASSETS + "healBar/";
@@ -23,10 +22,10 @@ const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
 const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 const PATH_UI = PATH_ASSETS + "ui/";
+const PATH_BUTTON = PATH_UI + "button/";
 const PATH_CURSORS = PATH_UI + "cursors/";
-const PATH_GENDERS = PATH_UI + "genders/";
-const PATH_SELECTS = PATH_UI + "selects/";
-
+const PATH_MENU = PATH_UI + "menu/";
+const PATH_TEXT = PATH_UI + "textAffichage/";
 
 const SCALE_DEBUG = 0.75;
 
@@ -53,7 +52,11 @@ class GameScene extends Phaser.Scene {
     this.warpObjects = undefined;
     this.isReadyToTP = undefined;
     this.gameOver = false;
-    this.pauseButton = undefined ;
+    this.zombieSpawner = undefined;
+    this.settingFullButton = undefined ;
+    this.settingMinButton = undefined;
+    this.fullButton = undefined;
+    this.minButton = undefined;
     this.spawnPlayer = undefined;
     this.spawnEnnemi = undefined;
     //Idle and action attribut
@@ -94,15 +97,30 @@ class GameScene extends Phaser.Scene {
     // Audios
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
+    this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
 
     // Button
-    this.load.image(BUTTON_KEY, PATH_BUTTON+"Settings.png");
-    this.load.image("button_border", PATH_BUTTON + "Minimap_Button_Border.png");
-    this.load.image("windows_menu", PATH_BUTTON + "panelInset_brown.png");
-    this.load.image("switch_arrow", PATH_SELECTS + "CC_SwitchSelect_Arrow.png");
-    this.load.image("volume_text", PATH_BUTTON + "Volume Sonore.png");
-    this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
-    this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
+    this.load.image(BUTTON_KEY, PATH_BUTTON + "settingButton.png");
+    this.load.image("switchToggle", PATH_BUTTON + "switchToggle.png");
+    this.load.image('fullScreen', PATH_BUTTON + "fullScreen.png");
+    this.load.image('minScreen', PATH_BUTTON + "minScreen.png");
+
+    //UI Affichage
+    this.load.image("sonoreBar", PATH_PROGRESSBAR + "LoadingBar_Fill.png");
+    this.load.image("flecheTribal", PATH_MENU + "flecheTribal.png");
+    this.load.image("popupAide", PATH_MENU + "popupAide.png");
+    this.load.image("menu", PATH_MENU + "menu.png");
+
+    //text
+    this.load.image("volumeSonore", PATH_TEXT + "volumeSonore.png");
+    this.load.image("attaqueChargee", PATH_TEXT + "attaqueChargee.png");
+    this.load.image("attaqueDeBase", PATH_TEXT + "attaqueDeBase.png");
+    this.load.image("choisissezVotreCorrompu", PATH_TEXT + "choisissezVotreCorrompu.png");
+    this.load.image("courir", PATH_TEXT + "courir.png");
+    this.load.image("deplacementVersLaDroite", PATH_TEXT + "deplacementVersLaDroite.png");
+    this.load.image("deplacementVersLaGauche", PATH_TEXT + "deplacementVersLaGauche.png");
+    this.load.image("deplacementVersLeBas", PATH_TEXT + "deplacementVersLeBas.png");
+    this.load.image("deplacementVersLeHaut", PATH_TEXT + "deplacementVersLeHaut.png");
 
     // Mouse
     this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
@@ -150,14 +168,20 @@ class GameScene extends Phaser.Scene {
     this.setAudio();
 
     this.setInvisibleCollideZones();
-    //this.setZoneAtk();
+
+    this.setFullscreen();
   }
   
   update(time, delta) {
     if (this.gameOver) {
       return;
     }
-    
+
+    if(this.globals.modifSetting)
+      this.setControls();
+
+    this.manageFullscreen();
+
     /* FOR DEBUGGING !!! Make all colliding object colloring in ORANGE ! */
     this.checkDebugingKey();
 
@@ -176,28 +200,16 @@ class GameScene extends Phaser.Scene {
   
 
   setProgressBar(){
-    //this.load.image("loadingSpine", PATH_PROGRESSBAR + "spinning_loading.png");
     this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
     this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
     this.load.audio("loadingBGM", PATH_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
-    //let spinningLoad = undefined;
     let progressBox = undefined;
     let progressBar = undefined;
     let progressBarFullWidth = undefined;
     let jeu = this;
-
-    /*this.load.on('filecomplete-image-loadingSpine', function (key, type, data) {
-      spinningLoad = jeu.add.image(240,270, 'loadingSpine').setScale(0.2).setX(width / 2 + 100).setY(height / 2 - 50);
-      jeu.tweens.add({
-        targets: spinningLoad,
-        rotation: 10,
-        duration: 2000,
-        repeat: -1
-      });
-    });*/
 
     this.load.on('filecomplete-image-loadingBox', function (key, type, data) {
       progressBox = jeu.add.image(240,270, 'loadingBox').setScale(0.3).setX(width / 2).setY(height / 2);
@@ -757,19 +769,75 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
   }
 
+  setFullscreen(){
+    this.fullButton = this.add.image(770, 570, 'fullScreen', 0).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
+  }
+
+  manageFullscreen() {
+
+    var debugTouche = this.input.keyboard.addKey(112); //F1 touche de débug pour pallier l'impossibilité de modifier la touche ESC
+
+    debugTouche.on("down", () => {
+      this.scale.resize(800, 600);
+
+      this.fullButton.setVisible(true);
+      this.settingMinButton.setVisible(true);
+    }, this);
+
+    if(this.scale.isFullscreen){
+
+      this.minButton.setVisible(true);
+      this.settingFullButton.setVisible(true);
+
+      this.fullButton.setVisible(false);
+      this.settingMinButton.setVisible(false);
+
+      this.minButton.on("pointerup", () => {
+        this.scale.resize(800, 600);
+        this.scale.stopFullscreen();
+
+        //ne pas modifier d'attribut avant car on modifie pas d'attribut enfant après l'attribut parent
+        
+        this.settingMinButton.setVisible(true);
+        this.fullButton.setVisible(true);
+
+        this.settingFullButton.destroy(); 
+        this.minButton.destroy();
+      }, this);
+      
+    }else {
+
+      this.fullButton.setVisible(true);
+      this.settingMinButton.setVisible(true); 
+
+      this.fullButton.on("pointerup", () => {
+        this.scale.resize(window.screen.width, window.screen.height);
+        this.scale.startFullscreen();
+
+        this.minButton = this.add.image(window.screen.width-30, window.screen.height-30, 'minScreen', 0).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
+        this.settingFullButton = this.add.image(window.screen.width-30,30,BUTTON_KEY).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
+      }, this);
+
+    }
+
+    //optimisation possible pour même problème -> valeur undefined, à besoin d'un if aussi non erreur est envoyée
+  }
+
   setControls(){
     this.keys = this.input.keyboard.addKeys({
-      up: this.input.keyboard.addKey('z'),
-      down: this.input.keyboard.addKey('s'),
-      left: this.input.keyboard.addKey('q'),
-      right: this.input.keyboard.addKey('d'),
-      atq1: this.input.keyboard.addKey("LEFT"),
-      atq2: this.input.keyboard.addKey("RIGHT"),
-      run: this.input.keyboard.addKey("SHIFT"),
-      interact: this.input.keyboard.addKey('e')
+      up: this.input.keyboard.addKey(this.globals.up),
+      down: this.input.keyboard.addKey(this.globals.down),
+      left: this.input.keyboard.addKey(this.globals.left),
+      right: this.input.keyboard.addKey(this.globals.right),
+      atq1: this.input.keyboard.addKey(this.globals.atq1),
+      atq2: this.input.keyboard.addKey(this.globals.atq2),
+      run: this.input.keyboard.addKey(this.globals.run),
     })
     this.cursors = this.input.keyboard.createCursorKeys();
     this.debugingKey = this.input.keyboard.addKey('C');
+
+    console.log(this.keys);
+    this.globals.modifSetting = false;
   }
 
   codeKonami(){
@@ -794,10 +862,7 @@ class GameScene extends Phaser.Scene {
   }
 
   setMenuButton(){
-    this.pauseButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setScale(1.5).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'cursorGauntlet_bronze.png), pointer' }).setScrollFactor(0);
-    let buttonBorder = this.add.sprite(this.cameras.main.width-30,30,"button_border").setScale(0.7).setScrollFactor(0);
-    this.pauseButton.setTint("0xB6AA9A");
-    buttonBorder.setTint("0xFFA600");
+    this.settingMinButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
   }
 
   setAudio(){
@@ -830,6 +895,9 @@ class GameScene extends Phaser.Scene {
 
         break;
       case "winterMap":
+        this.globals.bgm = this.sound.add("musicTest", { loop: true });
+        this.globals.bgm.play();
+        this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
       case "mapDodo":
@@ -1073,7 +1141,6 @@ class GameScene extends Phaser.Scene {
 
 
       if (this.keys.up.isDown) {
-        
         this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
         if(this.keys.left.isUp && this.keys.right.isUp){
           this.lastDirection = "B";
@@ -1261,10 +1328,29 @@ class GameScene extends Phaser.Scene {
 
   callMenu(){
     let jeu = this;
-    this.pauseButton.on("pointerdown",function(){
-      jeu.scene.launch('menu_scene');
-      jeu.scene.pause();
-    });
+    
+    if(this.scale.isFullscreen){
+      this.settingFullButton.on("pointerdown",function(){
+
+        jeu.minButton.setVisible(false);
+        jeu.settingFullButton.setVisible(false);
+
+        jeu.scene.launch('menu_scene');
+        jeu.scene.pause();
+      });
+    }else{
+      this.settingMinButton.on("pointerdown",function(){
+
+        jeu.fullButton.setVisible(false);
+        jeu.settingMinButton.setVisible(false);
+
+        jeu.scene.launch('menu_scene');
+        jeu.scene.pause();
+      });
+    }
+    //Peut éventuellement être optimisé, ici je dois mettre un if aussi non j'ai une erreur 
+    // car le setting button est undefined
+    //Pas moyen de retirer les buttons fullscreen car il ne reconnait pas this 
   }
 
 }
