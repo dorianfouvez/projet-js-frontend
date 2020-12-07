@@ -9,7 +9,7 @@ export default class PlayerSpawner{
     /**
    * @param {Phaser.Scene} scene
    */
-  constructor(scene, resizingFactor, playerKey = "guardian", spawnX = 900, spawnY = 450) {
+  constructor(scene, resizingFactor, playerKey = "player", spawnX = 900, spawnY = 450) {
     this.scene = scene;
     this.resizingFactor = resizingFactor;
     this.key = playerKey;
@@ -259,7 +259,7 @@ export default class PlayerSpawner{
 
         if (this.scene.keys.up.isDown) {
         
-            this.setVelocityY(-(PLAYER_SPEED + runSpeed));
+            this.himSelf.setVelocityY(-(PLAYER_SPEED + runSpeed));
             if(this.scene.keys.left.isUp && this.scene.keys.right.isUp){
               this.lastDirection = "B";
               if(this.hurt && !this.isInvulnerability){
@@ -457,7 +457,7 @@ export default class PlayerSpawner{
         }
 
         this.alreadyatk = true;
-        this.aoe = this.scene.add.zone(this.himself.x + this.aoeX, this.himself.y + this.aoeY).setSize(sizeX, sizeY);
+        this.aoe = this.scene.add.zone(this.himSelf.x + this.aoeX, this.himSelf.y + this.aoeY).setSize(sizeX, sizeY);
         this.scene.physics.world.enable(this.aoe, 0);
         this.scene.guardianGroup.getChildren().forEach(element => {
             let jeu = this.scene;
@@ -473,10 +473,24 @@ export default class PlayerSpawner{
     destroyZoneAtk(){
         if(this.aoe && this.aoe.body) {
             this.aoe.destroy();
-            this.guardianGroup.getChildren().forEach(element => {
+            this.scene.guardianGroup.getChildren().forEach(element => {
               element.isInvulnerability = false;
             });
-            alreadyatk = false;
+            this.alreadyatk = false;
+        }
+    }
+
+    takeDamage(){
+        if(this.isInvulnerability) return;
+    
+        this.hurt = true;
+        this.hp -= 1;
+        this.scene.greenBar.setScale((this.hp/10), 1);
+        if(this.hp == 0){
+            console.log("Game Over");
+            this.himSelf.body.stop();
+            this.ableToMove = false;
+            //this.scene.restart();
         }
     }
 

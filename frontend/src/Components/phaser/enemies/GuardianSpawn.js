@@ -52,7 +52,7 @@ export default class  GuardianSpawner{
 
   manageCollides(guardian){
     guardian.setCollideWorldBounds(true);
-    this.scene.physics.add.overlap(this.scene.player, guardian, () => { this.swingSword(guardian); });
+    this.scene.physics.add.overlap(this.scene.player.himSelf, guardian, () => { this.swingSword(guardian); });
   }
 
   createAnims(){
@@ -260,16 +260,16 @@ export default class  GuardianSpawner{
   }
 
   manageMovements(guardian){
-    if(Math.abs(guardian.x - this.scene.player.x) < this.range && Math.abs(guardian.y - this.scene.player.y) < this.range){
+    if(Math.abs(guardian.x - this.scene.player.himSelf.x) < this.range && Math.abs(guardian.y - this.scene.player.himSelf.y) < this.range){
         console.log("In the range");
 
         if(guardian.anims.currentAnim == null || !guardian.anims.isPlaying || (guardian.anims.currentAnim.key != "frontHurt"
         && guardian.anims.currentAnim.key != "backHurt"  && guardian.anims.currentAnim.key != "frontAtq1" && guardian.anims.currentAnim.key != "backAtq1")){
 
-            if(guardian.y > this.scene.player.y){
+            if(guardian.y > this.scene.player.himSelf.y){
                 guardian.lastDirection = "B";
                 guardian.anims.play("backWalk", true);
-            }else if(guardian.y < this.scene.player.y){
+            }else if(guardian.y < this.scene.player.himSelf.y){
                 guardian.lastDirection = "F";
                 guardian.anims.play("frontWalk", true);
             }else if(guardian.lastDirection == "B"){
@@ -280,8 +280,8 @@ export default class  GuardianSpawner{
                     guardian.anims.play("frontIdle", true);
             }
     
-            if(guardian.x < this.scene.player.x - 15 || guardian.y < this.scene.player.y - 15 || guardian.x > this.scene.player.x + 15 || guardian.y > this.scene.player.y + 15)
-                this.scene.physics.moveTo(guardian, this.scene.player.x, this.scene.player.y,100);
+            if(guardian.x < this.scene.player.himSelf.x - 15 || guardian.y < this.scene.player.himSelf.y - 15 || guardian.x > this.scene.player.himSelf.x + 15 || guardian.y > this.scene.player.himSelf.y + 15)
+                this.scene.physics.moveTo(guardian, this.scene.player.himSelf.x, this.scene.player.himSelf.y,100);
             guardian.redBar.x = guardian.x - (guardian.redBar.width/6.66);
             guardian.redBar.y = guardian.y - 45;
             guardian.greenBar.x = guardian.x - (guardian.greenBar.width/6.4);
@@ -340,12 +340,7 @@ export default class  GuardianSpawner{
     let player = this.scene.player;
     this.scene.time.delayedCall(800, ()=>{ guardian.isAttacking = false; });
 
-    if(player.isInvulnerability) return;
-    
-    player.hurt = true;
-    player.hp -= 1;
-    this.scene.greenBar.setScale((player.hp/10), 1);
-    if(player.hp == 0) console.log("Game Over");
+    this.scene.player.takeDamage();
     
   }
 
