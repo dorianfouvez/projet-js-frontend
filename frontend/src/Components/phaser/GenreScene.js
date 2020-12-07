@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 const PATH_ASSETS = "../assets/";
 const PATH_UI = PATH_ASSETS + "ui/";
-const PATH_GENDERS = PATH_UI + "genders/";
+const PATH_TEXT = PATH_UI + "textAffichage/";
 const PATH_GENREMENU = PATH_UI + "genreMenu/";
 const PATH_CURSORS = PATH_UI + "cursors/";
 
@@ -22,13 +22,14 @@ class GenreScene extends Phaser.Scene {
     preload() {
         this.globals = this.sys.game.globals;
 
-        this.load.image("gender_M", PATH_GENDERS + "Gender_Male.png");
-        this.load.image("gender_F", PATH_GENDERS + "Gender_Female.png");
         this.load.image("background", PATH_GENREMENU + "Background.png");
         this.load.image("warriorM", PATH_GENREMENU + "WarriorMSelect.png");
         this.load.image("warriorF", PATH_GENREMENU + "WarriorFSelect.png");
         this.load.image("border", PATH_GENREMENU + "Border.png");
         this.load.image("shadow", PATH_GENREMENU + "Shadow.png");
+
+        //text
+        this.load.image("choisissezVotreCorrompu", PATH_TEXT + "choisissezVotreCorrompu.png");
 
         // Mouse
         this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
@@ -38,18 +39,9 @@ class GenreScene extends Phaser.Scene {
         let width = this.cameras.main.width;
         let height = this.cameras.main.height;
 
-        this.add.sprite(0,0,"background").setSize(width,height);
+        this.add.image(width/2,height/2,"background");
 
-        var loadingText = this.make.text({
-            x: width / 2,
-            y: height / 2 - 50,
-            text: 'Choose Your Character',
-            style: {
-              font: '40px Alex Brush',
-              fill: '#ffffff'
-            }
-          });
-        loadingText.setOrigin(0.5, 0.5).setX(width / 2).setY(height / 2 - 200);
+        this.add.image(width/2, height/2 - 200, "choisissezVotreCorrompu").setScale(1.2);
 
         this.warriorM = this.add.sprite(width / 2 - 140, height / 2, "warriorM").setScale(0.4).setFlipX(true).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' });
         this.borderM = this.add.sprite(width / 2 - 175, height / 2 + 177, "border").setScale(0.3).setFlipY(true).setVisible(false);
