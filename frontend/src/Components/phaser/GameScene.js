@@ -56,6 +56,9 @@ class GameScene extends Phaser.Scene {
     //controls
     this.keys = undefined;
     this.globals = undefined;
+    //Music Manage
+    this.music = undefined;
+    this.trackNumber = 0;
   }
 
   preload() {
@@ -178,6 +181,8 @@ class GameScene extends Phaser.Scene {
     this.managePlayerMovements();
 
     this.callMenu();
+
+    this.manageAudio()
   
   }
 
@@ -847,27 +852,53 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  manageBGM(){
-    switch (this.currentMap) {
-      case "map":
+  // manageBGM(){
+  //   switch (this.currentMap) {
+  //     case "map":
 
-        break;
-      case "winterMap":
-        this.globals.bgm = this.sound.add("musicTest", { loop: true });
+  //       break;
+  //     case "winterMap":
+  //       this.globals.bgm = this.sound.add("musicTest", { loop: false});
+  //       this.music = this.globals.bgm;
+  //       this.globals.bgm.play();
+  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
+
+  //       break;
+  //     case "mapDodo":
+  //       this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+  //       this.globals.bgm.play();
+  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
+
+  //       break;
+  //     default:
+  //       this.currentMap = "winterMap"
+  //       this.manageBGM();
+  //       break;
+  //   }
+  // }
+
+  manageBGM(){
+    switch (this.trackNumber) {
+      case 0:
+        this.globals.bgm = this.sound.add("musicTest", { loop: false});
+        this.music = this.globals.bgm;
         this.globals.bgm.play();
         this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
-      case "mapDodo":
+      case 1:
         this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
         this.globals.bgm.play();
         this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
-      default:
-        this.currentMap = "winterMap"
-        this.manageBGM();
-        break;
+    }
+  }
+
+  manageAudio(){
+    if(!this.music.isPlaying){
+      this.trackNumber++;
+      this.manageBGM();
     }
   }
 
