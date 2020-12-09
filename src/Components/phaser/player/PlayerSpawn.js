@@ -498,12 +498,29 @@ export default class PlayerSpawner{
         this.hp -= 1;
         this.scene.greenBar.setScale((this.hp/10), 1);
         if(this.hp == 0){
-            console.log("Game Over");
-            this.himSelf.body.stop();
-            this.ableToMove = false;
-            //this.himSelf.anims.play("playerBackDied", true);
-            //this.scene.restart();
+            this.gameOver();
         }
+    }
+  
+    gameOver(){
+      console.log("Game Over");
+      this.himSelf.body.stop();
+      this.ableToMove = false;
+      switch(this.lastDirection){
+        case "B":
+          this.himSelf.anims.play("playerBackDied", true);
+          break;
+        case "F":
+          this.himSelf.anims.play("playerFrontDied", true);
+          break;
+        case "L":
+          this.himSelf.anims.play("playerLeftDied", true);
+          break;
+        case "R":
+          this.himSelf.anims.play("playerRightDied", true);
+          break;
+      }
+      //this.scene.restart();
     }
 
 }

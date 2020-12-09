@@ -23,15 +23,14 @@ export default class  GuardianSpawner{
   }
 
   static loadAssets(jeu){
-    jeu.load.atlas("back", PATH_GUARDIAN+"guardian_back.png", PATH_GUARDIAN+"guardian_back_atlas.json");
-    /*jeu.load.atlas("right", PATH_GUARDIAN+"guardian_right.png", PATH_GUARDIAN+"guardian_right_atlas.json");
-    jeu.load.atlas("left", PATH_GUARDIAN+"guardian_left.png", PATH_GUARDIAN+"guardian_left_atlas.json");*/
-    jeu.load.atlas("front", PATH_GUARDIAN+"guardian_front_movements_atlas.png", PATH_GUARDIAN+"guardian_front_movements_atlas.json");
-    jeu.load.atlas("frontAtk", PATH_GUARDIAN+"guardian_front_atk_atlas.png", PATH_GUARDIAN+"guardian_front_atk_atlas.json");
+    jeu.load.atlas("back", PATH_GUARDIAN+"guardian_back_atlas.png", PATH_GUARDIAN+"guardian_back_atlas.json");
+    jeu.load.atlas("right", PATH_GUARDIAN+"guardian_right_atlas.png", PATH_GUARDIAN+"guardian_right_atlas.json");
+    jeu.load.atlas("left", PATH_GUARDIAN+"guardian_left_atlas.png", PATH_GUARDIAN+"guardian_left_atlas.json");
+    jeu.load.atlas("front", PATH_GUARDIAN+"guardian_front_atlas (1).png", PATH_GUARDIAN+"guardian_front_atlas (1).json");
   }
 
   spawn(spawnX, spawnY) {
-    const guardian = this.group.create(spawnX, spawnY, this.key).setScale(this.resizingFactor).setSize(230, 170).setOffset(435,670);
+    const guardian = this.group.create(spawnX, spawnY, this.key)/*.setScale(this.resizingFactor).setSize(230, 170).setOffset(435,670)*/.setSize(16, 16).setOffset(47,68);;
 
     guardian.hp = 10;
     guardian.isInvulnerability = false;
@@ -42,6 +41,9 @@ export default class  GuardianSpawner{
     guardian.greenBar = this.scene.physics.add.sprite(spawnX,spawnY - 42,"green_healbar").setScale(0.3).setOrigin(0,0).setX(60).setDisplaySize(60, 9);
     guardian.greenBar.setPosition(spawnX - (guardian.greenBar.width/6.4), spawnY - 45);
     guardian.hurt = false;
+    guardian.isDead = false;
+
+    this.scene.add.sprite(this.scene.player.himSelf.x + 50,this.scene.player.himSelf.x + 50, "0_Warrior_Died_00");
 
     this.manageCollides(guardian);
     this.createAnims();
@@ -73,21 +75,21 @@ export default class  GuardianSpawner{
   
     this.scene.anims.create({
         key: "frontAtq1",
-        frames: this.scene.anims.generateFrameNames("frontAtk", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+        frames: this.scene.anims.generateFrameNames("front", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
         frameRate: 35,
         repeat: 0,
     });
   
     this.scene.anims.create({
         key: "frontDied",
-        frames: this.scene.anims.generateFrameNames("frontAtk", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+        frames: this.scene.anims.generateFrameNames("front", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
         frameRate: 15,
         repeat: 0
     });
   
     this.scene.anims.create({
         key: "frontHurt",
-        frames: this.scene.anims.generateFrameNames("frontAtk", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+        frames: this.scene.anims.generateFrameNames("front", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
         frameRate: 20,
         repeat: 0
     });
@@ -127,11 +129,11 @@ export default class  GuardianSpawner{
         repeat: 0
     });
   
-    /*this.scene.anims.create({
+    this.scene.anims.create({
         key: "leftWalk",
         frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
         frameRate: 20,
-        repeat: 0
+        repeat: -1
     });
   
     this.scene.anims.create({
@@ -160,13 +162,13 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
         frameRate: 20,
         repeat: 0
-    });*/
+    });
   
-    /*this.scene.anims.create({
+    this.scene.anims.create({
         key: "rightWalk",
         frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
         frameRate: 20,
-        repeat: 0
+        repeat: -1
     });
   
     this.scene.anims.create({
@@ -195,11 +197,12 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
         frameRate: 20,
         repeat: 0
-    });*/
+    });
 
   }
 
   manageMovements(guardian){
+    if(guardian.isDead) return;
     if(Math.abs(guardian.x - this.scene.player.himSelf.x) < this.range && Math.abs(guardian.y - this.scene.player.himSelf.y) < this.range){
         console.log("In the range");
 
@@ -261,9 +264,7 @@ export default class  GuardianSpawner{
     guardian.greenBar.setScale((guardian.hp/10)*0.3, 0.3);
     guardian.isInvulnerability = true;
     if(guardian.hp <= 0){
-        guardian.redBar.destroy();
-        guardian.greenBar.destroy();
-        guardian.destroy();
+        this.die(guardian);
     }
   }
 
@@ -275,14 +276,38 @@ export default class  GuardianSpawner{
 
     if(guardian.lastDirection == "B")
         guardian.anims.play("backAtq1", true);
+    else if(guardian.lastDirection == "F")
+        guardian.anims.play("frontAtq1", true);
+    else if(guardian.lastDirection == "L")
+        guardian.anims.play("leftAtq1", true);
     else
-        guardian.anims.play("frontAtq1", true)
+        guardian.anims.play("rightAtq1", true);
 
-    let player = this.scene.player;
     this.scene.time.delayedCall(800, ()=>{ guardian.isAttacking = false; });
 
     this.scene.player.takeDamage();
     
+  }
+
+  die(guardian){
+    guardian.isDead = true;
+    guardian.redBar.destroy();
+    guardian.greenBar.destroy();
+    switch(guardian.lastDirection){
+        case "B":
+            guardian.anims.play("backDied", true);
+          break;
+        case "F":
+            guardian.anims.play("frontDied", true);
+          break;
+        case "L":
+            guardian.anims.play("leftDied", true);
+          break;
+        case "R":
+            guardian.anims.play("rightDied", true);
+          break;
+    }
+    this.scene.time.delayedCall(1900, ()=>{ guardian.destroy(); });
   }
 
 }
