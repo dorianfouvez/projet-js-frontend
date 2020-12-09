@@ -496,7 +496,7 @@ export default class PlayerSpawner{
     
         this.hurt = true;
         this.hp -= 1;
-        this.scene.greenBar.setScale((this.hp/10), 1);
+        if(this.ableToMove) this.scene.greenBar.setScale((this.hp/10), 1);
         if(this.hp == 0){
             this.gameOver();
         }
@@ -520,7 +520,12 @@ export default class PlayerSpawner{
           this.himSelf.anims.play("playerRightDied", true);
           break;
       }
-      //this.scene.restart();
+      
+      let cameras = this.scene.cameras;
+      this.scene.time.delayedCall(1900, () => { cameras.main.fadeOut(4000); });
+      this.scene.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.scene.restart();
+      });
     }
 
 }
