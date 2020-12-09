@@ -65,13 +65,6 @@ export default class  GuardianSpawner{
     });
   
     this.scene.anims.create({
-        key: "frontRun",
-        frames: this.scene.anims.generateFrameNames("front", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
-        frameRate: 20,
-        repeat: 0
-    });
-  
-    this.scene.anims.create({
         key: "frontIdle",
         frames: this.scene.anims.generateFrameNames("front", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
         frameRate: 15,
@@ -83,14 +76,6 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("frontAtk", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
         frameRate: 35,
         repeat: 0,
-    });
-  
-    this.scene.anims.create({
-        key: "frontAtq2",
-        frames: this.scene.anims.generateFrameNames("frontAtk", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
-        frameRate: 25,
-        repeat: 0,
-        delay: 450
     });
   
     this.scene.anims.create({
@@ -115,13 +100,6 @@ export default class  GuardianSpawner{
     });
   
     this.scene.anims.create({
-        key: "backRun",
-        frames: this.scene.anims.generateFrameNames("back", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
-        frameRate: 20,
-        repeat: 0
-    });
-  
-    this.scene.anims.create({
         key: "backIdle",
         frames: this.scene.anims.generateFrameNames("back", {prefix: "0_Warrior_Idle_0", start: 0, end: 29}),
         frameRate: 15,
@@ -133,14 +111,6 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("back", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
         frameRate: 35,
         repeat: 0,
-    });
-  
-    this.scene.anims.create({
-        key: "backAtq2",
-        frames: this.scene.anims.generateFrameNames("back", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
-        frameRate: 25,
-        repeat: 0,
-        delay: 450
     });
   
     this.scene.anims.create({
@@ -165,13 +135,6 @@ export default class  GuardianSpawner{
     });
   
     this.scene.anims.create({
-        key: "leftRun",
-        frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
-        frameRate: 20,
-        repeat: 0
-    });
-  
-    this.scene.anims.create({
         key: "leftIdle",
         frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Idle_Blinking_0", start: 0, end: 29}),
         frameRate: 15,
@@ -183,14 +146,6 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
         frameRate: 35,
         repeat: 0,
-    });
-  
-    this.scene.anims.create({
-        key: "leftAtq2",
-        frames: this.scene.anims.generateFrameNames("left", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
-        frameRate: 25,
-        repeat: 0,
-        delay: 450
     });
   
     this.scene.anims.create({
@@ -215,13 +170,6 @@ export default class  GuardianSpawner{
     });
   
     this.scene.anims.create({
-        key: "rightRun",
-        frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
-        frameRate: 20,
-        repeat: 0
-    });
-  
-    this.scene.anims.create({
         key: "rightIdle",
         frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Idle_Blinking_0", start: 0, end: 29}),
         frameRate: 15,
@@ -233,14 +181,6 @@ export default class  GuardianSpawner{
         frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
         frameRate: 35,
         repeat: 0,
-    });
-  
-    this.scene.anims.create({
-        key: "rightAtq2",
-        frames: this.scene.anims.generateFrameNames("right", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
-        frameRate: 25,
-        repeat: 0,
-        delay: 450
     });
   
     this.scene.anims.create({
