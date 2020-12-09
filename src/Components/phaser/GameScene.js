@@ -82,7 +82,7 @@ class GameScene extends Phaser.Scene {
     // Maps
     this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
     this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
-
+    
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
     this.load.tilemapTiledJSON("winterMap", PATH_MAPS + "WinterMap.json");
