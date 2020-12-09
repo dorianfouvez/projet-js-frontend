@@ -1,0 +1,17 @@
+{
+    "root": "dist/",
+    "routes": {
+        "/**": "index.html"
+    },
+    "https_only": true,
+    "headers": {
+        "/**": {
+            "Strict-TransportSecurity": "max-age=31557600"
+        }
+    },
+    "proxies": {
+        "/api/": {
+            "origin": "https://the-choice-api.herokuapp.com/api/"
+        }
+    }
+}   
