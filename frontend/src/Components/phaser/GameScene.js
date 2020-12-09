@@ -60,7 +60,6 @@ class GameScene extends Phaser.Scene {
     this.music = undefined;
     this.trackNumber = 0;
     this.atq1Sound = undefined;
-    this.atq2Sound = undefined;
   }
 
   preload() {
@@ -84,8 +83,7 @@ class GameScene extends Phaser.Scene {
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
     this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
-    this.load.audio("atq1Sound", PATH_SOUNDS+"atq1.mp3");
-    this.load.audio("atq2Sound", PATH_SOUNDS+"atq2.mp3");
+    this.load.audio("atq1Sound", PATH_SOUNDS + "atq1.mp3");
 
     // Button
     this.load.image(BUTTON_KEY, PATH_BUTTON + "settingButton.png");
@@ -170,8 +168,6 @@ class GameScene extends Phaser.Scene {
   }
   
   update(time, delta) {
-    let jeu = this;
-
     if (this.gameOver) {
       return;
     }
@@ -188,7 +184,7 @@ class GameScene extends Phaser.Scene {
 
     this.callMenu();
 
-    this.manageAudio(jeu);
+    this.manageAudio()
   
   }
 
@@ -216,8 +212,11 @@ class GameScene extends Phaser.Scene {
       progressBar.displayWidth = progressBarFullWidth * 0.1;
     });
 
+    console.log(this.globals);
     this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
-      jeu.music = jeu.globals.bgm;
+      jeu.globals.bgm = jeu.sound.add("loadingBGM", { loop: true });
+      jeu.globals.bgm.play();
+      jeu.globals.bgm.volume = 0.03;
     });
 
 
@@ -266,6 +265,7 @@ class GameScene extends Phaser.Scene {
     doneText.setOrigin(0.5, 0.5);
 
     this.load.on('progress', function (value) {
+      //console.log(value);
       percentText.setText(parseInt((value * 100) - 0.01) + '%').setDepth(10);
       if(progressBar) {
         progressBar.displayWidth = progressBarFullWidth * value * 1.7; // *1.8 if progressBar 1, if ProgressBar 3 => 1.28 si 2 bar et 1.7 si seul
@@ -273,19 +273,23 @@ class GameScene extends Phaser.Scene {
     });
     
     this.load.on('fileprogress', function (file) {
+      //console.log(file.src);
       assetText.setText('Loading asset: ' + file.key);
     });
 
     this.load.on('filecomplete', function (key, type, data) {
+      //console.log("Done : "+key, type, data);
       doneText.setText('Done: ' + key);
     });
    
     this.load.on('complete', function () {
+      //console.log('complete');
       progressBar.destroy();
       progressBox.destroy();
       loadingText.destroy();
       percentText.destroy();
       assetText.destroy();
+      jeu.globals.bgm.stop();
     });
     
   }
@@ -418,42 +422,42 @@ class GameScene extends Phaser.Scene {
       spawnX = this.spawnPlayer.x;
       spawnY = this.spawnPlayer.y;
     }
-    const player = this.physics.add.sprite(spawnX, spawnY, "playerFront", "0_Warrior_Idle Blinking_00").setSize(16, 16).setOffset(47,68);
+    const player = this.physics.add.sprite(spawnX, spawnY, "playerFront", "Warrior_Idle_Blinking_0").setScale(PLAYER_RESIZING_FACTOR).setSize(170, 170).setOffset(470,670);
     player.setCollideWorldBounds(true);
 
     player.ableToMove = true;
 
     this.anims.create({
       key: "playerFrontWalk",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerFrontRun",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Run_", start: 0, end: 14}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerFrontIdle",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerFrontAtq1",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
       frameRate: 35,
       repeat: 0,
     });
 
     this.anims.create({
       key: "playerFrontAtq2",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
       delay: 450
@@ -461,49 +465,49 @@ class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: "playerFrontDied",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Died_", start: 0, end: 29}),
       frameRate: 15,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerFrontHurt",
-      frames: this.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerFront", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
       frameRate: 20,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerBackWalk",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerBackRun",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Run_", start: 0, end: 14}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerBackIdle",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Idle_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Idle_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerBackAtq1",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
       frameRate: 35,
       repeat: 0,
     });
 
     this.anims.create({
       key: "playerBackAtq2",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
       delay: 450
@@ -511,49 +515,49 @@ class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: "playerBackDied",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Died_", start: 0, end: 29}),
       frameRate: 15,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerBackHurt",
-      frames: this.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerBack", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
       frameRate: 20,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerLeftWalk",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerLeftRun",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Run_", start: 0, end: 14}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerLeftIdle",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerLeftAtq1",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
       frameRate: 35,
       repeat: 0,
     });
 
     this.anims.create({
       key: "playerLeftAtq2",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
       delay: 450
@@ -561,49 +565,49 @@ class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: "playerLeftDied",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Died_", start: 0, end: 29}),
       frameRate: 15,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerLeftHurt",
-      frames: this.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
       frameRate: 20,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerRightWalk",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Walk_", start: 0, end: 29}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerRightRun",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Run_", start: 0, end: 14}),
       frameRate: 20,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerRightIdle",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
       frameRate: 15,
       repeat: -1
     });
 
     this.anims.create({
       key: "playerRightAtq1",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
       frameRate: 35,
       repeat: 0,
     });
 
     this.anims.create({
       key: "playerRightAtq2",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
       frameRate: 25,
       repeat: 0,
       delay: 450
@@ -611,14 +615,14 @@ class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: "playerRightDied",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Died_", start: 0, end: 29}),
       frameRate: 15,
       repeat: 0
     });
 
     this.anims.create({
       key: "playerRightHurt",
-      frames: this.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+      frames: this.anims.generateFrameNames("playerRight", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
       frameRate: 20,
       repeat: 0
     });
@@ -797,6 +801,7 @@ class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.debugingKey = this.input.keyboard.addKey('C');
 
+    console.log(this.keys);
     this.globals.modifSetting = false;
   }
 
@@ -826,10 +831,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setAudio(){
-    this.atq1Sound = this.sound.add("atq1Sound", { loop: false});
-    this.atq2Sound = this.sound.add("atq2Sound", { loop: false});
+    this.atq1Sound = this.add.audio("atq1Sound");
+    this.atq1Sound.volume = 1;
 
-    // this.clearAudio();
+    this.clearAudio();
     
     // Set BGM
     this.manageBGM();
@@ -880,10 +885,10 @@ class GameScene extends Phaser.Scene {
   manageBGM(){
     switch (this.trackNumber) {
       case 0:
-        // this.globals.bgm = this.sound.add("musicTest", { loop: false});
-        // this.music = this.globals.bgm;
-        // this.globals.bgm.play();
-        // this.globals.bgm.volume = this.globals.musicVolume; //0.1
+        this.globals.bgm = this.sound.add("musicTest", { loop: false});
+        this.music = this.globals.bgm;
+        //this.globals.bgm.play();
+        this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
       case 1:
@@ -895,10 +900,7 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  manageAudio(jeu){
-    this.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
-    this.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
-
+  manageAudio(){
     if(!this.music.isPlaying){
       this.trackNumber++;
       this.manageBGM();
@@ -1077,6 +1079,8 @@ class GameScene extends Phaser.Scene {
       if (this.keys.up.isDown) {
         this.player.setVelocityY(-(PLAYER_SPEED + runSpeed));
         if(this.keys.left.isUp && this.keys.right.isUp){
+          console.log(this.atq1Sound);
+          console.log("passe");
           this.lastDirection = "B";
           //if(false){
             //this.player.anims.play("playerBackHurt", true);
@@ -1088,12 +1092,9 @@ class GameScene extends Phaser.Scene {
                 this.atq1Sound.play();
                 this.player.anims.play("playerBackAtq1", true); 
               });
-              if(this.keys.atq2.isDown){
-                this.keys.atq2.on("down", () => {
-                  this.atq2Sound.play();
-                });
+              if(this.keys.atq2.isDown)
                 this.player.anims.play("playerBackAtq2", true);
-              }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
                 this.player.anims.play("playerBackWalk", true);
             }
           //}
@@ -1108,16 +1109,10 @@ class GameScene extends Phaser.Scene {
             if(runSpeed != 0){
               this.player.anims.play("playerFrontRun", true);
             } else {
-              this.keys.atq1.on("down", ()=> { 
-                this.atq1Sound.play();
-                this.player.anims.play("playerFrontAtq1", true); 
-              });
-              if(this.keys.atq2.isDown){
-                this.keys.atq2.on("down", () => {
-                  this.atq2Sound.play();
-                });
+              this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+              if(this.keys.atq2.isDown)
                 this.player.anims.play("playerFrontAtq2", true);
-              }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+              else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
                 this.player.anims.play("playerFrontWalk", true);
             }
           //}
@@ -1135,16 +1130,10 @@ class GameScene extends Phaser.Scene {
           if(runSpeed != 0){
             this.player.anims.play("playerLeftRun", true);
           } else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerLeftAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerLeftWalk", true);
           }
         //}
@@ -1157,16 +1146,10 @@ class GameScene extends Phaser.Scene {
           if(runSpeed != 0){
             this.player.anims.play("playerRightRun", true);
           } else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerRightAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerRightWalk", true);
           }
         //}
@@ -1180,16 +1163,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerBackHurt", true);
           //}else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerBackAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerBackAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerBackAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerBackAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerBackIdle", true);
           //} 
         }
@@ -1197,16 +1174,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerFrontHurt", true);
           //}else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerFrontAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerFrontAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerFrontAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerFrontAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerFrontIdle", true);
           //}
         }
@@ -1214,16 +1185,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerLeftHurt", true);
           //}else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerLeftAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerLeftAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerLeftAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerLeftAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerLeftIdle", true);
           //}
         }
@@ -1231,16 +1196,10 @@ class GameScene extends Phaser.Scene {
           //if(hurt){
             //this.player.anims.play("playerRightHurt", true);
           //}else {
-            this.keys.atq1.on("down", ()=> { 
-              this.atq1Sound.play();
-              this.player.anims.play("playerRightAtq1", true); 
-            });
-            if(this.keys.atq2.isDown){
-              this.keys.atq2.on("down", () => {
-                this.atq2Sound.play();
-              });
+            this.keys.atq1.on("down", ()=> { this.player.anims.play("playerRightAtq1", true); });
+            if(this.keys.atq2.isDown)
               this.player.anims.play("playerRightAtq2", true);
-            }else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
+            else if(this.player.anims.currentAnim == null || this.player.anims.currentAnim.key != "playerRightAtq1" || !this.player.anims.isPlaying)
               this.player.anims.play("playerRightIdle", true);
           //}
         }
@@ -1276,8 +1235,6 @@ class GameScene extends Phaser.Scene {
         jeu.minButton.setVisible(false);
         jeu.settingFullButton.setVisible(false);
 
-        jeu.globals.bgm.pause();
-
         jeu.scene.launch('menu_scene');
         jeu.scene.pause();
       });
@@ -1286,8 +1243,6 @@ class GameScene extends Phaser.Scene {
 
         jeu.fullButton.setVisible(false);
         jeu.settingMinButton.setVisible(false);
-
-        jeu.globals.bgm.pause();
 
         jeu.scene.launch('menu_scene');
         jeu.scene.pause();

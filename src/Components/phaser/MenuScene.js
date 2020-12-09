@@ -101,6 +101,7 @@ class MenuScene extends Phaser.Scene {
         this.exitButton.on("pointerdown",function(){
             jeu.premiereFois = false;
             jeu.globals.modifSetting = true;
+            jeu.globals.bgm.resume();
             jeu.scene.resume('game_scene');
             jeu.scene.stop(); 
         });
