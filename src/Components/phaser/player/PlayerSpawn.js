@@ -9,13 +9,12 @@ export default class PlayerSpawner{
     /**
    * @param {Phaser.Scene} scene
    */
-  constructor(scene, resizingFactor, playerKey = "player", spawnX = 900, spawnY = 450) {
+  constructor(scene, playerKey = "player", spawnX = 900, spawnY = 450) {
     this.scene = scene;
-    this.resizingFactor = resizingFactor;
     this.key = playerKey;
     //this.globals = this.scene.sys.game.globals;
-    this.createAnims();
-    this.himSelf = this.scene.physics.add.sprite(spawnX, spawnY, "playerFront", "Warrior_Idle_Blinking_0").setScale(resizingFactor).setSize(170, 170).setOffset(470,670);
+    this.createAnims(this);
+    this.himSelf = this.scene.physics.add.sprite(spawnX, spawnY, "playerFront", "0_Warrior_Idle Blinking_00").setSize(16, 16).setOffset(47,68);
     this.hp = 10;
     this.lastDirection = "F";
     this.ableToMove = true;
@@ -46,206 +45,206 @@ export default class PlayerSpawner{
         }
     }
 
-    createAnims(){
-        this.scene.anims.create({
-            key: "playerFrontWalk",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Walk_", start: 0, end: 29}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontRun",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Run_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontIdle",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontAtq1",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
-            frameRate: 35,
-            repeat: 0,
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontAtq2",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
-            frameRate: 25,
-            repeat: 0,
-            delay: 450
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontDied",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Died_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerFrontHurt",
-            frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackWalk",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Walk_", start: 0, end: 29}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackRun",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Run_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackIdle",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Idle_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackAtq1",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
-            frameRate: 35,
-            repeat: 0,
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackAtq2",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
-            frameRate: 25,
-            repeat: 0,
-            delay: 450
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackDied",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Died_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerBackHurt",
-            frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftWalk",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Walk_", start: 0, end: 29}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftRun",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Run_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftIdle",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftAtq1",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
-            frameRate: 35,
-            repeat: 0,
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftAtq2",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
-            frameRate: 25,
-            repeat: 0,
-            delay: 450
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftDied",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Died_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerLeftHurt",
-            frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightWalk",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Walk_", start: 0, end: 29}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightRun",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Run_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightIdle",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Idle_Blinking_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: -1
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightAtq1",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_1_", start: 0, end: 14}),
-            frameRate: 35,
-            repeat: 0,
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightAtq2",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Attack_2_", start: 0, end: 14}),
-            frameRate: 25,
-            repeat: 0,
-            delay: 450
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightDied",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Died_", start: 0, end: 29}),
-            frameRate: 15,
-            repeat: 0
-        });
-      
-        this.scene.anims.create({
-            key: "playerRightHurt",
-            frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "Warrior_Hurt_", start: 0, end: 14}),
-            frameRate: 20,
-            repeat: 0
-        });
+    createAnims() {
+      this.scene.anims.create({
+        key: "playerFrontWalk",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontRun",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontIdle",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontAtq1",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+        frameRate: 35,
+        repeat: 0,
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontAtq2",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+        frameRate: 25,
+        repeat: 0,
+        delay: 450
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontDied",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerFrontHurt",
+        frames: this.scene.anims.generateFrameNames("playerFront", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackWalk",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackRun",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackIdle",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Idle_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackAtq1",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+        frameRate: 35,
+        repeat: 0,
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackAtq2",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+        frameRate: 25,
+        repeat: 0,
+        delay: 450
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackDied",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerBackHurt",
+        frames: this.scene.anims.generateFrameNames("playerBack", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftWalk",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftRun",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftIdle",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftAtq1",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+        frameRate: 35,
+        repeat: 0,
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftAtq2",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+        frameRate: 25,
+        repeat: 0,
+        delay: 450
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftDied",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerLeftHurt",
+        frames: this.scene.anims.generateFrameNames("playerLeft", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightWalk",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Walk_0", start: 0, end: 29}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightRun",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Run_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightIdle",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Idle Blinking_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: -1
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightAtq1",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Attack_1_0", start: 0, end: 14}),
+        frameRate: 35,
+        repeat: 0,
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightAtq2",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Attack_2_0", start: 0, end: 14}),
+        frameRate: 25,
+        repeat: 0,
+        delay: 450
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightDied",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Died_0", start: 0, end: 29}),
+        frameRate: 15,
+        repeat: 0
+      });
+  
+      this.scene.anims.create({
+        key: "playerRightHurt",
+        frames: this.scene.anims.generateFrameNames("playerRight", {prefix: "0_Warrior_Hurt_0", start: 0, end: 14}),
+        frameRate: 20,
+        repeat: 0
+      });
     }
 
     manageMovements(){

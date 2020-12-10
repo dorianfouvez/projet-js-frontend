@@ -5,6 +5,7 @@ const PATH_UI = PATH_ASSETS + "ui/";
 const PATH_TEXT = PATH_UI + "textAffichage/";
 const PATH_GENREMENU = PATH_UI + "genreMenu/";
 const PATH_CURSORS = PATH_UI + "cursors/";
+const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 
 class GenreScene extends Phaser.Scene {
     constructor() {
@@ -31,11 +32,15 @@ class GenreScene extends Phaser.Scene {
         //text
         this.load.image("choisissezVotreCorrompu", PATH_TEXT + "choisissezVotreCorrompu.png");
 
+        //music
+        this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
+
         // Mouse
         this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
     }
 
     create() {
+        let jeu = this;
         let width = this.cameras.main.width;
         let height = this.cameras.main.height;
 
@@ -52,11 +57,13 @@ class GenreScene extends Phaser.Scene {
         this.borderF = this.add.sprite(width / 2 + 170, height / 2 + 177, "border").setScale(0.3).setFlipY(true).setVisible(false);
         this.shadowF = this.add.sprite(width / 2 + 85, height / 2, "shadow").setFlipY(true).setVisible(false);
         this.shadowF.alpha = 0.4;
+
+        jeu.globals.bgm = jeu.sound.add("musicTest");
+        jeu.globals.bgm.play();
+        jeu.globals.bgm.volume = 0.2;
     }
 
     update() {
-        let jeu = this;
-
         this.warriorM.on("pointerover", () => {
             this.shadowM.setVisible(true);
             this.borderM.setVisible(true);

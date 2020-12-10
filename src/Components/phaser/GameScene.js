@@ -30,9 +30,7 @@ const PATH_TEXT = PATH_UI + "textAffichage/";
 
 const SCALE_DEBUG = 0.75;
 
-const PLAYER_SPEED = 80;
 const MAP_RESIZING_FACTOR = 0.5;
-const PLAYER_RESIZING_FACTOR = 0.1;
 
 let isDebugingGraphicsAllowed = false;
 let isDebugingKeyDown = false;
@@ -65,6 +63,11 @@ class GameScene extends Phaser.Scene {
     //controls
     this.keys = undefined;
     this.globals = undefined;
+    //Music Manage
+    this.music = undefined;
+    this.trackNumber = 0;
+    this.atq1Sound = undefined;
+    this.atq2Sound = undefined;
     this.guardianGroup = undefined;
     this.aoe = undefined;
     this.aoeX = 0;
@@ -81,11 +84,14 @@ class GameScene extends Phaser.Scene {
 
     // Maps
     this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
-    this.load.image("tilesExtruded", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
+    this.load.image("winterTileSheet", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
+    this.load.image("dungeonTileSheet", PATH_TILESHEETS_EXTRUDED + "dungeon_extruded.png");
+    this.load.image("caveTileSheet", PATH_TILESHEETS_EXTRUDED + "cave_extruded.png");
     
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
     this.load.tilemapTiledJSON("winterMap", PATH_MAPS + "WinterMap.json");
+    this.load.tilemapTiledJSON("dungeonMap", PATH_MAPS + "DungeonMap.json");
 
     this.load.image("red_healbar", PATH_HEALBAR + "red_healbar_background.png");
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
@@ -99,6 +105,8 @@ class GameScene extends Phaser.Scene {
     //this.load.audio("explosionSound","explosion.ogg");
     this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
     this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
+    this.load.audio("atq1Sound", PATH_SOUNDS+"atq1.mp3");
+    this.load.audio("atq2Sound", PATH_SOUNDS+"atq2.mp3");
 
     // Button
     this.load.image(BUTTON_KEY, PATH_BUTTON + "settingButton.png");
@@ -175,6 +183,8 @@ class GameScene extends Phaser.Scene {
   }
   
   update(time, delta) {
+    let jeu = this;
+
     if (this.gameOver) {
       return;
     }
@@ -190,6 +200,8 @@ class GameScene extends Phaser.Scene {
     this.player.manageMovements();
 
     this.callMenu();
+
+    this.manageAudio(jeu);
     
     this.guardianGroup.getChildren().forEach(element => {
       this.guardianSpawner.manageMovements(element);
@@ -224,9 +236,7 @@ class GameScene extends Phaser.Scene {
     });
 
     this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
-      jeu.globals.bgm = jeu.sound.add("loadingBGM", { loop: true });
-      jeu.globals.bgm.play();
-      jeu.globals.bgm.volume = 0.03;
+      jeu.music = jeu.globals.bgm;
     });
 
 
@@ -275,7 +285,6 @@ class GameScene extends Phaser.Scene {
     doneText.setOrigin(0.5, 0.5);
 
     this.load.on('progress', function (value) {
-      //console.log(value);
       percentText.setText(parseInt((value * 100) - 0.01) + '%').setDepth(10);
       if(progressBar) {
         progressBar.displayWidth = progressBarFullWidth * value * 1.7; // *1.8 if progressBar 1, if ProgressBar 3 => 1.28 si 2 bar et 1.7 si seul
@@ -283,23 +292,19 @@ class GameScene extends Phaser.Scene {
     });
     
     this.load.on('fileprogress', function (file) {
-      //console.log(file.src);
       assetText.setText('Loading asset: ' + file.key);
     });
 
     this.load.on('filecomplete', function (key, type, data) {
-      //console.log("Done : "+key, type, data);
       doneText.setText('Done: ' + key);
     });
    
     this.load.on('complete', function () {
-      //console.log('complete');
       progressBar.destroy();
       progressBox.destroy();
       loadingText.destroy();
       percentText.destroy();
       assetText.destroy();
-      jeu.globals.bgm.stop();
     });
     
   }
@@ -315,7 +320,7 @@ class GameScene extends Phaser.Scene {
       case "map":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("Winter","tilesExtruded");
+        this.tileset = this.tilemap.addTilesetImage("Winter","winterTileSheet");
 
         this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -339,28 +344,44 @@ class GameScene extends Phaser.Scene {
         case "winterMap":
           // Images of Maps
           this.tilemap = this.make.tilemap({key: "winterMap"});
-          this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
+          this.tileset = this.tilemap.addTilesetImage("winter","winterTileSheet");
 
           this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides9Layer = this.tilemap.createStaticLayer("worldCollides9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop9Layer = this.tilemap.createStaticLayer("worldTop9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldSpecialLayer = this.tilemap.createStaticLayer("worldSpecial",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides8Layer = this.tilemap.createStaticLayer("worldCollides8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop8Layer = this.tilemap.createStaticLayer("worldTop8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides7Layer = this.tilemap.createStaticLayer("worldCollides7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop7Layer = this.tilemap.createStaticLayer("worldTop7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides6Layer = this.tilemap.createStaticLayer("worldCollides6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop6Layer = this.tilemap.createStaticLayer("worldTop6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides5Layer = this.tilemap.createStaticLayer("worldCollides5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop5Layer = this.tilemap.createStaticLayer("worldTop5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides4Layer = this.tilemap.createStaticLayer("worldCollides4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop4Layer = this.tilemap.createStaticLayer("worldTop4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides3Layer = this.tilemap.createStaticLayer("worldCollides3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop3Layer = this.tilemap.createStaticLayer("worldTop3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
+          this.worldTop9Layer.setDepth(10);
+          this.worldTop8Layer.setDepth(10);
+          this.worldTop7Layer.setDepth(10);
+          this.worldTop6Layer.setDepth(10);
+          this.worldTop5Layer.setDepth(10);
+          this.worldTop4Layer.setDepth(10);
+          this.worldTop3Layer.setDepth(10);
+          this.worldTop2Layer.setDepth(10);
           this.worldTop1Layer.setDepth(10);
 
           break;
       case "mapDodo":
         // Images of Maps
         this.tilemap = this.make.tilemap({key: "mapDodo"});
-        this.tileset = this.tilemap.addTilesetImage("winter","tilesExtruded");
+        this.tileset = this.tilemap.addTilesetImage("winter","winterTileSheet");
 
         // Layers of Dorian's Map
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
@@ -374,6 +395,27 @@ class GameScene extends Phaser.Scene {
         this.topLayer.setDepth(10);
 
         break;
+
+        case "dungeonMap":
+          // Images of Maps
+          this.tilemap = this.make.tilemap({key: "dungeonMap"});
+          this.tileset = this.tilemap.addTilesetImage("dungeon","dungeonTileSheet");
+          this.tileset = this.tilemap.addTilesetImage("cave","caveTileSheet");
+
+          this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldNoCollidesLayer = this.tilemap.createStaticLayer("worldNoCollides",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+          this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+            
+
+          // Set depths of the layers
+          this.worldTop2Layer.setDepth(10);
+          this.worldTop1Layer.setDepth(10);
+  
+          break;
       default:
         this.currentMap = "winterMap"
         this.setLayer();
@@ -431,7 +473,7 @@ class GameScene extends Phaser.Scene {
       spawnX = this.spawnPlayer.x;
       spawnY = this.spawnPlayer.y;
     }
-    return new PlayerSpawn(this, PLAYER_RESIZING_FACTOR, null, spawnX, spawnY);
+    return new PlayerSpawn(this, null, spawnX, spawnY);
   }
 
   createHpBar(){
@@ -450,13 +492,27 @@ class GameScene extends Phaser.Scene {
       this.zombieSpawner.spawn(element.x,element.y);
     });
 
-    this.guardianSpawner = new GuardianSpawn(this, PLAYER_RESIZING_FACTOR, GUARDIAN_KEY);
+    this.guardianSpawner = new GuardianSpawn(this, GUARDIAN_KEY);
     this.guardianSpawner.spawn(4900, 500);
     this.guardianGroup = this.guardianSpawner.group;
   }
 
   manageColliders(objectToCollideToTheWorld){
     switch(this.currentMap){
+      case "map":
+
+        this.worldLayer.setCollisionByProperty({ collides: true });
+
+        this.worldCollides1Layer.setCollisionByProperty({ collides: true });
+
+        this.worldCollides2Layer.setCollisionByProperty({ collides: true });
+
+        // Colliders
+        this.physics.add.collider(this.player.himSelf, this.worldLayer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides2Layer);
+
+        break;
       case "map":
         this.worldLayer.setCollisionByProperty({ collides: true });
         this.cityLayer.setCollisionByProperty({ collides: true });
@@ -628,7 +684,6 @@ class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.debugingKey = this.input.keyboard.addKey('C');
 
-    console.log(this.keys);
     this.globals.modifSetting = false;
   }
 
@@ -658,7 +713,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setAudio(){
-    this.clearAudio();
+    this.atq1Sound = this.sound.add("atq1Sound", { loop: false});
+    this.atq2Sound = this.sound.add("atq2Sound", { loop: false});
+
+    // this.clearAudio();
     
     // Set BGM
     this.manageBGM();
@@ -681,27 +739,56 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  // manageBGM(){
+  //   switch (this.currentMap) {
+  //     case "map":
+
+  //       break;
+  //     case "winterMap":
+  //       this.globals.bgm = this.sound.add("musicTest", { loop: false});
+  //       this.music = this.globals.bgm;
+  //       this.globals.bgm.play();
+  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
+
+  //       break;
+  //     case "mapDodo":
+  //       this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
+  //       this.globals.bgm.play();
+  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
+
+  //       break;
+  //     default:
+  //       this.currentMap = "winterMap"
+  //       this.manageBGM();
+  //       break;
+  //   }
+  // }
+
   manageBGM(){
-    switch (this.currentMap) {
-      case "map":
+    switch (this.trackNumber) {
+      case 0:
+        // this.globals.bgm = this.sound.add("musicTest", { loop: false});
+        // this.music = this.globals.bgm;
+        // this.globals.bgm.play();
+        // this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
-      case "winterMap":
-        this.globals.bgm = this.sound.add("musicTest", { loop: true });
-        this.globals.bgm.play();
-        this.globals.bgm.volume = this.globals.musicVolume; //0.1
-
-        break;
-      case "mapDodo":
+      case 1:
         this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
         this.globals.bgm.play();
         this.globals.bgm.volume = this.globals.musicVolume; //0.1
 
         break;
-      default:
-        this.currentMap = "winterMap"
-        this.manageBGM();
-        break;
+    }
+  }
+
+  manageAudio(jeu){
+    this.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
+    this.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
+
+    if(!this.music.isPlaying){
+      this.trackNumber++;
+      this.manageBGM();
     }
   }
 
@@ -874,6 +961,8 @@ class GameScene extends Phaser.Scene {
         jeu.minButton.setVisible(false);
         jeu.settingFullButton.setVisible(false);
 
+        jeu.globals.bgm.pause();
+
         jeu.scene.launch('menu_scene');
         jeu.scene.pause();
       });
@@ -882,6 +971,8 @@ class GameScene extends Phaser.Scene {
 
         jeu.fullButton.setVisible(false);
         jeu.settingMinButton.setVisible(false);
+
+        jeu.globals.bgm.pause();
 
         jeu.scene.launch('menu_scene');
         jeu.scene.pause();
