@@ -27,6 +27,7 @@ const PATH_BUTTON = PATH_UI + "button/";
 const PATH_CURSORS = PATH_UI + "cursors/";
 const PATH_MENU = PATH_UI + "menu/";
 const PATH_TEXT = PATH_UI + "textAffichage/";
+const PATH_MUSIC = PATH_SOUNDS + "musics/";
 
 const SCALE_DEBUG = 0.75;
 
@@ -63,11 +64,6 @@ class GameScene extends Phaser.Scene {
     //controls
     this.keys = undefined;
     this.globals = undefined;
-    //Music Manage
-    this.music = undefined;
-    this.trackNumber = 0;
-    this.atq1Sound = undefined;
-    this.atq2Sound = undefined;
     this.guardianGroup = undefined;
     this.aoe = undefined;
     this.aoeX = 0;
@@ -102,11 +98,10 @@ class GameScene extends Phaser.Scene {
     GuardianSpawn.loadAssets(this);
 
     // Audios
-    //this.load.audio("explosionSound","explosion.ogg");
-    this.load.audio("bgm_cimetronelle", PATH_SOUNDS+"Pokemon Em Cimetronelle.ogg");
-    this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
-    this.load.audio("atq1Sound", PATH_SOUNDS+"atq1.mp3");
-    this.load.audio("atq2Sound", PATH_SOUNDS+"atq2.mp3");
+    //musics
+    this.load.audio("debut", PATH_MUSIC +"debut.mp3");
+    this.load.audio("mix", PATH_MUSIC+"mix.mp3");
+    this.load.audio("fin", PATH_MUSIC+"fin.mp3");
 
     // Button
     this.load.image(BUTTON_KEY, PATH_BUTTON + "settingButton.png");
@@ -160,7 +155,7 @@ class GameScene extends Phaser.Scene {
     this.createHpBar();
 
     // Enemies
-    this.createEnemies();
+    this.createEnemies(this);
     
     this.manageColliders();
 
@@ -204,7 +199,7 @@ class GameScene extends Phaser.Scene {
     this.manageAudio(jeu);
     
     this.guardianGroup.getChildren().forEach(element => {
-      this.guardianSpawner.manageMovements(element);
+      this.guardianSpawner.manageMovements(element, jeu);
     });
 
     this.player.updateZoneAtk();
@@ -216,7 +211,6 @@ class GameScene extends Phaser.Scene {
   setProgressBar(){
     this.load.image("loadingBox", PATH_PROGRESSBAR + "LoadingBar_3_Background.png");
     this.load.image("loadingBar", PATH_PROGRESSBAR + "LoadingBar_3_Fill_Red.png");
-    this.load.audio("loadingBGM", PATH_SOUNDS+"Labyrinth-Of-Time_loop.ogg");
 
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
@@ -235,9 +229,9 @@ class GameScene extends Phaser.Scene {
       progressBar.displayWidth = progressBarFullWidth * 0.1;
     });
 
-    this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
-      jeu.music = jeu.globals.bgm;
-    });
+    // this.load.on('filecomplete-audio-loadingBGM', function (key, type, data) {
+    //   this.music = jeu.globals.bgm;
+    // });
 
 
     var loadingText = this.make.text({
@@ -368,14 +362,14 @@ class GameScene extends Phaser.Scene {
           this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
           this.worldTop9Layer.setDepth(10);
-          this.worldTop8Layer.setDepth(10);
-          this.worldTop7Layer.setDepth(10);
-          this.worldTop6Layer.setDepth(10);
-          this.worldTop5Layer.setDepth(10);
-          this.worldTop4Layer.setDepth(10);
-          this.worldTop3Layer.setDepth(10);
-          this.worldTop2Layer.setDepth(10);
-          this.worldTop1Layer.setDepth(10);
+          this.worldTop8Layer.setDepth(11);
+          this.worldTop7Layer.setDepth(12);
+          this.worldTop6Layer.setDepth(13);
+          this.worldTop5Layer.setDepth(14);
+          this.worldTop4Layer.setDepth(15);
+          this.worldTop3Layer.setDepth(16);
+          this.worldTop2Layer.setDepth(17);
+          this.worldTop1Layer.setDepth(18);
 
           break;
       case "mapDodo":
@@ -481,7 +475,7 @@ class GameScene extends Phaser.Scene {
     this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(16);
   }
 
-  createEnemies(){
+  createEnemies(jeu){
     this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
     this.ladyBugSpawner.spawn(this.player.himSelf.x, 480);
@@ -493,13 +487,13 @@ class GameScene extends Phaser.Scene {
     });
 
     this.guardianSpawner = new GuardianSpawn(this, GUARDIAN_KEY);
-    this.guardianSpawner.spawn(4900, 500);
+    this.guardianSpawner.spawn(4900, 500, jeu);
     this.guardianGroup = this.guardianSpawner.group;
   }
 
   manageColliders(objectToCollideToTheWorld){
     switch(this.currentMap){
-      case "map":
+      case "dungeonMap":
 
         this.worldLayer.setCollisionByProperty({ collides: true });
 
@@ -533,8 +527,6 @@ class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player.himSelf, this.cityBuild5Layer);
         this.physics.add.collider(this.player.himSelf, this.cityBuild6Layer);
 
-
-        // OverLaps
 
 
         break;
@@ -703,7 +695,7 @@ class GameScene extends Phaser.Scene {
 
         console.log('Konami Code entered!');
 
-        jeu.currentMap = "mapDodo";
+        jeu.currentMap = "dungeonMap";
         jeu.scene.restart();
     });
   }
@@ -713,20 +705,20 @@ class GameScene extends Phaser.Scene {
   }
 
   setAudio(){
-    this.atq1Sound = this.sound.add("atq1Sound", { loop: false});
-    this.atq2Sound = this.sound.add("atq2Sound", { loop: false});
 
-    // this.clearAudio();
-    
-    // Set BGM
-    this.manageBGM();
+    if(this.currentMap = "winterMap"){
+      this.clearAudio();
+      this.globals.bgm = this.sound.add("mix", { loop: true });
+      this.globals.bgm.play();
+    }else if(this.currentMap = "dungeonMap"){
+      this.clearAudio();
+      this.globals.bgm = this.sound.add("fin", { loop: true });
+      this.globals.bgm.play();
+    }  
   }
 
   clearAudio(){
-    // Clear Possible BGM
-    //if(this.globals.bgm) this.globals.bgm.stop();
 
-    // Permet un fondu de la musique
     if(this.globals.bgm){
       let jeu = this;
 
@@ -739,57 +731,15 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  // manageBGM(){
-  //   switch (this.currentMap) {
-  //     case "map":
-
-  //       break;
-  //     case "winterMap":
-  //       this.globals.bgm = this.sound.add("musicTest", { loop: false});
-  //       this.music = this.globals.bgm;
-  //       this.globals.bgm.play();
-  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
-
-  //       break;
-  //     case "mapDodo":
-  //       this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
-  //       this.globals.bgm.play();
-  //       this.globals.bgm.volume = this.globals.musicVolume; //0.1
-
-  //       break;
-  //     default:
-  //       this.currentMap = "winterMap"
-  //       this.manageBGM();
-  //       break;
-  //   }
-  // }
-
-  manageBGM(){
-    switch (this.trackNumber) {
-      case 0:
-        // this.globals.bgm = this.sound.add("musicTest", { loop: false});
-        // this.music = this.globals.bgm;
-        // this.globals.bgm.play();
-        // this.globals.bgm.volume = this.globals.musicVolume; //0.1
-
-        break;
-      case 1:
-        this.globals.bgm = this.sound.add("bgm_cimetronelle", { loop: true });
-        this.globals.bgm.play();
-        this.globals.bgm.volume = this.globals.musicVolume; //0.1
-
-        break;
-    }
-  }
-
   manageAudio(jeu){
-    this.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
-    this.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
+    this.globals.bgm.volume = this.globals.musicVolume;
 
-    if(!this.music.isPlaying){
-      this.trackNumber++;
-      this.manageBGM();
-    }
+    this.player.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
+    this.player.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
+    this.player.hurtSound.volume = (jeu.globals.musicVolume * 10) + 1;
+    this.player.deathSound.volume = (jeu.globals.musicVolume * 5) + 1;
+    this.guardianSpawner.atqSound.volume = (jeu.globals.musicVolume * 10) + 3;
+    this.guardianSpawner.deathSound.volume = (jeu.globals.musicVolume * 10) + 1;
   }
 
   setInvisibleCollideZones(){
@@ -977,10 +927,7 @@ class GameScene extends Phaser.Scene {
         jeu.scene.launch('menu_scene');
         jeu.scene.pause();
       });
-    }
-    //Peut éventuellement être optimisé, ici je dois mettre un if aussi non j'ai une erreur 
-    // car le setting button est undefined
-    //Pas moyen de retirer les buttons fullscreen car il ne reconnait pas this 
+    } 
   }
 
 }
