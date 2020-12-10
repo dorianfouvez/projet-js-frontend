@@ -264,7 +264,7 @@ export default class  GuardianSpawner{
   }
 
   takeDamage(guardian, typeOfAtk){
-    if(guardian.isInvulnerability) return;
+    if(guardian.isInvulnerability || guardian.isDead) return;
 
     guardian.setVelocity(0);
     guardian.hurt = true;
@@ -293,7 +293,7 @@ export default class  GuardianSpawner{
   }
 
   swingSword(guardian){
-    if(guardian.isAttacking) return;
+    if(guardian.isAttacking || guardian.isDead) return;
 
     guardian.setVelocity(0);
     guardian.isAttacking = true;
