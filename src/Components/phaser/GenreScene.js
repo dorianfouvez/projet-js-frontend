@@ -6,6 +6,7 @@ const PATH_TEXT = PATH_UI + "textAffichage/";
 const PATH_GENREMENU = PATH_UI + "genreMenu/";
 const PATH_CURSORS = PATH_UI + "cursors/";
 const PATH_SOUNDS = PATH_ASSETS + "sounds/";
+const PATH_MUSIC = PATH_SOUNDS + "musics/";
 
 class GenreScene extends Phaser.Scene {
     constructor() {
@@ -33,7 +34,7 @@ class GenreScene extends Phaser.Scene {
         this.load.image("choisissezVotreCorrompu", PATH_TEXT + "choisissezVotreCorrompu.png");
 
         //music
-        this.load.audio("musicTest", PATH_SOUNDS+"musicTest.mp3");
+        this.load.audio("debut", PATH_MUSIC +"debut.mp3");
 
         // Mouse
         this.input.setDefaultCursor('url(' + PATH_CURSORS + 'Cursor_Normal.png), pointer');
@@ -58,7 +59,7 @@ class GenreScene extends Phaser.Scene {
         this.shadowF = this.add.sprite(width / 2 + 85, height / 2, "shadow").setFlipY(true).setVisible(false);
         this.shadowF.alpha = 0.4;
 
-        jeu.globals.bgm = jeu.sound.add("musicTest");
+        jeu.globals.bgm = jeu.sound.add("debut");
         jeu.globals.bgm.play();
         jeu.globals.bgm.volume = 0.2;
     }

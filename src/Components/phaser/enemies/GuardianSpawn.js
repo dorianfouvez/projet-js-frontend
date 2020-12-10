@@ -3,6 +3,7 @@ import Phaser from "phaser";
 const PATH_ASSETS = "../../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
+const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 
 export default class  GuardianSpawner{
     /**
@@ -13,8 +14,11 @@ export default class  GuardianSpawner{
     this.key = guardianKey;
     this.range = range;
     this.tween = undefined;
+    this.atqSound = undefined;
+    this.deathSound = undefined;
 
     this._group = this.scene.physics.add.group();
+    this.createSound();
   }
 
   get group() {
@@ -22,15 +26,41 @@ export default class  GuardianSpawner{
   }
 
   static loadAssets(jeu){
+    //sounds
+    jeu.load.audio("atqEnnemie", PATH_SOUNDS+"atqEnnemie.mp3");
+    jeu.load.audio("deathEnnemie", PATH_SOUNDS+"deathEnnemie.mp3");
+    jeu.load.audio("aggro1", PATH_SOUNDS+"aggro1.mp3");
+    jeu.load.audio("aggro2", PATH_SOUNDS+"aggro2.mp3");
+    jeu.load.audio("aggro3", PATH_SOUNDS+"aggro3.mp3");
+    jeu.load.audio("aggro4", PATH_SOUNDS+"aggro4.mp3");
+    jeu.load.audio("aggro5", PATH_SOUNDS+"aggro5.mp3");
+    jeu.load.audio("aggro6", PATH_SOUNDS+"aggro6.mp3");
+    jeu.load.audio("aggro7", PATH_SOUNDS+"aggro7.mp3");
+    jeu.load.audio("aggro8", PATH_SOUNDS+"aggro8.mp3");
+
     jeu.load.atlas("back", PATH_GUARDIAN+"guardian_back_atlas.png", PATH_GUARDIAN+"guardian_back_atlas.json");
     jeu.load.atlas("right", PATH_GUARDIAN+"guardian_right_atlas.png", PATH_GUARDIAN+"guardian_right_atlas.json");
     jeu.load.atlas("left", PATH_GUARDIAN+"guardian_left_atlas.png", PATH_GUARDIAN+"guardian_left_atlas.json");
     jeu.load.atlas("front", PATH_GUARDIAN+"guardian_front_atlas (1).png", PATH_GUARDIAN+"guardian_front_atlas (1).json");
   }
 
-  spawn(spawnX, spawnY) {
+  createSound(){
+    this.atqSound = this.scene.sound.add("atqEnnemie", {loop: false });
+    this.deathSound = this.scene.sound.add("deathEnnemie", {loop: false });   
+  }
+
+  setAggroSound(guardian, jeu){
+    let alea = Math.floor(Math.random() * Math.floor(8)) + 1;
+    guardian.aggroSound = this.scene.sound.add("aggro" + alea, {loop: false });
+    guardian.aggroSound.volume = (jeu.globals.musicVolume * 10) + 3;
+  }
+
+  spawn(spawnX, spawnY, jeu) {
     const guardian = this.group.create(spawnX, spawnY, this.key).setSize(18, 16).setOffset(46,68);
 
+    this.setAggroSound(guardian, jeu);
+
+    guardian.aggro = false;
     guardian.hp = 10;
     guardian.isInvulnerability = false;
     guardian.isAttacking = false;
@@ -44,7 +74,7 @@ export default class  GuardianSpawner{
 
     this.manageCollides(guardian);
     this.createAnims();
-    this.manageMovements(guardian);
+    this.manageMovements(guardian, jeu);
     return guardian;
     
   }
@@ -198,9 +228,12 @@ export default class  GuardianSpawner{
 
   }
 
-  manageMovements(guardian){
+  manageMovements(guardian, jeu){
     if(guardian.isDead) return;
     if(Math.abs(guardian.x - this.scene.player.himSelf.x) < this.range && Math.abs(guardian.y - this.scene.player.himSelf.y) < this.range){
+        if(!guardian.aggro)
+          guardian.aggroSound.play();
+        guardian.aggro = true;
         console.log("In the range");
 
         if(guardian.anims.currentAnim == null || !guardian.anims.isPlaying || (guardian.anims.currentAnim.key != "frontHurt"
@@ -221,7 +254,7 @@ export default class  GuardianSpawner{
                 guardian.lastDirection = "F";
                 guardian.anims.play("frontWalk", true);
             }else
-                this.idling(guardian);
+                this.idling(guardian, jeu);
     
             if(guardian.x < this.scene.player.himSelf.x - 15 || guardian.y < this.scene.player.himSelf.y - 15 || guardian.x > this.scene.player.himSelf.x + 15 || guardian.y > this.scene.player.himSelf.y + 15)
                 this.scene.physics.moveTo(guardian, this.scene.player.himSelf.x, this.scene.player.himSelf.y,100);
@@ -242,11 +275,14 @@ export default class  GuardianSpawner{
             guardian.greenBar.y = guardian.y - 45;
         }
 
-        this.idling(guardian);
+        this.idling(guardian, jeu);
     }
   }
 
-  idling(guardian){
+  idling(guardian, jeu){
+    if(guardian.aggro)
+      this.setAggroSound(guardian, jeu);
+    guardian.aggro = false;
     if(guardian.lastDirection == "B"){
         if(guardian.anims.currentAnim == null || guardian.anims.currentAnim.key != "backIdle" || !guardian.anims.isPlaying) 
             guardian.anims.play("backIdle", true);
@@ -299,15 +335,19 @@ export default class  GuardianSpawner{
 
     switch(guardian.lastDirection){
         case "B":
+            this.atqSound.play();
             guardian.anims.play("backAtq1", true);
           break;
         case "F":
+            this.atqSound.play();
             guardian.anims.play("frontAtq1", true);
           break;
         case "L":
+            this.atqSound.play();
             guardian.anims.play("leftAtq1", true);
           break;
         case "R":
+            this.atqSound.play();
             guardian.anims.play("rightAtq1", true);
           break;
     }
@@ -319,6 +359,7 @@ export default class  GuardianSpawner{
   }
 
   die(guardian){
+    this.deathSound.play();
     guardian.isDead = true;
     guardian.redBar.destroy();
     guardian.greenBar.destroy();

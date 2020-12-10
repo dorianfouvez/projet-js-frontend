@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 const PATH_ASSETS = "../../assets/";
 const PATH_PLAYERS = PATH_ASSETS + "players/";
+const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 
 const PLAYER_SPEED = 80;
 
@@ -12,8 +13,13 @@ export default class PlayerSpawner{
   constructor(scene, playerKey = "player", spawnX = 900, spawnY = 450) {
     this.scene = scene;
     this.key = playerKey;
+    this.atq1Sound = undefined;
+    this.atq2Sound = undefined;
+    this.hurtSound = undefined;
+    this.deathSound = undefined;
     //this.globals = this.scene.sys.game.globals;
-    this.createAnims(this);
+    this.createAnims();
+    this.createSounds();
     this.himSelf = this.scene.physics.add.sprite(spawnX, spawnY, "playerFront", "0_Warrior_Idle Blinking_00").setSize(16, 16).setOffset(47,68);
     this.hp = 10;
     this.lastDirection = "F";
@@ -32,17 +38,30 @@ export default class PlayerSpawner{
   }
 
     static loadAssets(jeu, globals){
-        if(globals.gender == "F"){
-            jeu.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
-            jeu.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
-            jeu.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
-            jeu.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
-        }else{
-            jeu.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
-            jeu.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
-            jeu.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
-            jeu.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
-        }
+      jeu.load.audio("atq1Sound", PATH_SOUNDS+"atq1.mp3");
+      jeu.load.audio("atq2Sound", PATH_SOUNDS+"atq2.mp3");
+      jeu.load.audio("deathHero", PATH_SOUNDS+"deathHero.mp3");
+
+      if(globals.gender == "F"){
+          jeu.load.atlas("playerBack", PATH_PLAYERS+"WarriorFemaleBackAtlas.png", PATH_PLAYERS+"WarriorFemaleBackAtlas.json");
+          jeu.load.atlas("playerRight", PATH_PLAYERS+"WarriorFemaleRightAtlas.png", PATH_PLAYERS+"WarriorFemaleRightAtlas.json");
+          jeu.load.atlas("playerLeft", PATH_PLAYERS+"WarriorFemaleLeftAtlas.png", PATH_PLAYERS+"WarriorFemaleLeftAtlas.json");
+          jeu.load.atlas("playerFront", PATH_PLAYERS+"WarriorFemaleFrontAtlas.png", PATH_PLAYERS+"WarriorFemaleFrontAtlas.json");
+          jeu.load.audio("hurt", PATH_SOUNDS+"hurtF.mp3");
+      }else{
+          jeu.load.atlas("playerBack", PATH_PLAYERS+"WarriorMaleBackAtlas.png", PATH_PLAYERS+"WarriorMaleBackAtlas.json");
+          jeu.load.atlas("playerRight", PATH_PLAYERS+"WarriorMaleRightAtlas.png", PATH_PLAYERS+"WarriorMaleRightAtlas.json");
+          jeu.load.atlas("playerLeft", PATH_PLAYERS+"WarriorMaleLeftAtlas.png", PATH_PLAYERS+"WarriorMaleLeftAtlas.json");
+          jeu.load.atlas("playerFront", PATH_PLAYERS+"WarriorMaleFrontAtlas.png", PATH_PLAYERS+"WarriorMaleFrontAtlas.json");
+          jeu.load.audio("hurt", PATH_SOUNDS+"hurtM.mp3");
+      }
+    }
+
+    createSounds(){
+      this.atq1Sound = this.scene.sound.add("atq1Sound", { loop: false});
+      this.atq2Sound = this.scene.sound.add("atq2Sound", { loop: false});
+      this.hurtSound = this.scene.sound.add("hurt", { loop: false});
+      this.deathSound = this.scene.sound.add("deathHero", { loop: false});
     }
 
     createAnims() {
@@ -262,6 +281,8 @@ export default class PlayerSpawner{
             if(this.scene.keys.left.isUp && this.scene.keys.right.isUp){
               this.lastDirection = "B";
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerBackHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
@@ -271,8 +292,14 @@ export default class PlayerSpawner{
                   this.himSelf.anims.play("playerBackRun", true);
                   this.destroyZoneAtk();
                 } else {
-                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(1); }; });
+                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                    this.atq1Sound.play();
+                    this.himSelf.anims.play("playerBackAtq1", true); 
+                    this.setZoneAtk(1); }; 
+                  });
                   if(this.scene.keys.atq2.isDown){
+                    if(!this.atq2Sound.isPlaying)
+                      this.atq2Sound.play();
                     this.himSelf.anims.play("playerBackAtq2", true);
                     this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                   }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerBackAtq1" || !this.himSelf.anims.isPlaying){
@@ -287,6 +314,8 @@ export default class PlayerSpawner{
             if(this.scene.keys.left.isUp && this.scene.keys.right.isUp){
               this.lastDirection = "F";
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerFrontHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
@@ -296,8 +325,14 @@ export default class PlayerSpawner{
                   this.himSelf.anims.play("playerFrontRun", true);
                   this.destroyZoneAtk();
                 } else {
-                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(1); }; });
+                  this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                    this.atq1Sound.play();
+                    this.himSelf.anims.play("playerFrontAtq1", true); 
+                    this.setZoneAtk(1); }; 
+                  });
                   if(this.scene.keys.atq2.isDown){
+                    if(!this.atq2Sound.isPlaying)
+                      this.atq2Sound.play();
                     this.himSelf.anims.play("playerFrontAtq2", true);
                     this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                   }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerFrontAtq1" || !this.himSelf.anims.isPlaying){
@@ -315,6 +350,8 @@ export default class PlayerSpawner{
             this.himSelf.setVelocityX(-(PLAYER_SPEED + runSpeed));
             this.lastDirection = "L";
             if(this.hurt && !this.isInvulnerability){
+              if(!this.hurtSound.isPlaying)
+                this.hurtSound.play();
               this.himSelf.setVelocity(0);
               this.himSelf.anims.play("playerLeftHurt", true);
               this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
@@ -324,8 +361,14 @@ export default class PlayerSpawner{
                 this.himSelf.anims.play("playerLeftRun", true);
                 this.destroyZoneAtk();
               } else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerLeftAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerLeftAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerLeftAtq1" || !this.himSelf.anims.isPlaying){
@@ -338,6 +381,8 @@ export default class PlayerSpawner{
             this.himSelf.setVelocityX(PLAYER_SPEED + runSpeed);
             this.lastDirection = "R";
             if(this.hurt && !this.isInvulnerability){
+              if(!this.hurtSound.isPlaying)
+                this.hurtSound.play();
               this.himSelf.setVelocity(0);
               this.himSelf.anims.play("playerRightHurt", true);
               this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
@@ -347,8 +392,14 @@ export default class PlayerSpawner{
                 this.himSelf.anims.play("playerRightRun", true);
                 this.destroyZoneAtk();
               } else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerRightAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerRightAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerRightAtq1" || !this.himSelf.anims.isPlaying){
@@ -365,13 +416,21 @@ export default class PlayerSpawner{
     
             if(this.lastDirection == "B"){
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerBackHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerBackAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerBackAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerBackAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerBackAtq1" || !this.himSelf.anims.isPlaying){
@@ -381,13 +440,21 @@ export default class PlayerSpawner{
               } 
             }else if(this.lastDirection == "F"){
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerFrontHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerFrontAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerFrontAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerFrontAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerFrontAtq1" || !this.himSelf.anims.isPlaying){
@@ -397,13 +464,21 @@ export default class PlayerSpawner{
               }
             }else if(this.lastDirection == "L"){
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerLeftHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerLeftAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerLeftAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerLeftAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerLeftAtq1" || !this.himSelf.anims.isPlaying){
@@ -413,13 +488,21 @@ export default class PlayerSpawner{
               }
             }else if(this.lastDirection == "R"){
               if(this.hurt && !this.isInvulnerability){
+                if(!this.hurtSound.isPlaying)
+                  this.hurtSound.play();
                 this.himSelf.setVelocity(0);
                 this.himSelf.anims.play("playerRightHurt", true);
                 this.scene.time.delayedCall(200, () => { player.hurt = false; player.isInvulnerability = true; });
                 this.scene.time.delayedCall(600, () => { player.isInvulnerability = false; });
               }else {
-                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ this.himSelf.anims.play("playerRightAtq1", true); this.setZoneAtk(1); }; });
+                this.scene.keys.atq1.once("down", ()=> { if(!player.hurt){ 
+                  this.atq1Sound.play();
+                  this.himSelf.anims.play("playerRightAtq1", true); 
+                  this.setZoneAtk(1); }; 
+                });
                 if(this.scene.keys.atq2.isDown){
+                  if(!this.atq2Sound.isPlaying)
+                    this.atq2Sound.play();
                   this.himSelf.anims.play("playerRightAtq2", true);
                   this.scene.time.delayedCall(400, () => { if(player.scene.keys.atq2.isDown) this.setZoneAtk(2); });
                 }else if(this.himSelf.anims.currentAnim == null || this.himSelf.anims.currentAnim.key != "playerRightAtq1" || !this.himSelf.anims.isPlaying){
@@ -502,8 +585,13 @@ export default class PlayerSpawner{
     }
   
     gameOver(){
+      // let sonMort = true;
       console.log("Game Over");
       this.himSelf.body.stop();
+      // if(sonMort){
+        this.deathSound.play();
+      //   sonMort = false;
+      // } 
       this.ableToMove = false;
       switch(this.lastDirection){
         case "B":
