@@ -43,7 +43,7 @@ const PhaserGamePage = () => {
   //KillGame();
   game = new Phaser.Game(config);
   return game.globals = { 
-    musicVolume: 0.1, 
+    musicVolume: undefined, 
     bgm: undefined,
     gender: "M", 
     playerName: "Jojo",

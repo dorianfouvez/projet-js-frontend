@@ -736,7 +736,7 @@ class GameScene extends Phaser.Scene {
 
     this.player.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
     this.player.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
-    this.player.hurtSound.volume = (jeu.globals.musicVolume * 10) + 1;
+    this.player.hurtSound.volume = (jeu.globals.musicVolume * 8) + 1;
     this.player.deathSound.volume = (jeu.globals.musicVolume * 5) + 1;
     this.guardianSpawner.atqSound.volume = (jeu.globals.musicVolume * 10) + 3;
     this.guardianSpawner.deathSound.volume = (jeu.globals.musicVolume * 10) + 1;
