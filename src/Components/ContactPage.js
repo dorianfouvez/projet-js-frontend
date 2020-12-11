@@ -27,7 +27,7 @@ let contactPage = `
 </form>`;
 
 const ContactPage = () => {
-    setTitle("Contactez-nous");
+    setTitle("");
     let page = document.querySelector("#page");
     page.innerHTML = contactPage;
     let registerForm = document.querySelector("form");
