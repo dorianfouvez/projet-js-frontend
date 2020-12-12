@@ -7,6 +7,7 @@ import ErrorPage from "./ErrorPage.js";
 import PhaserGamePage from "./phaser/PhaserGamePage.js";
 import SynopsisPage from "./SynopsisPage";
 import ContactPage from "./ContactPage";
+import ProfilePage from "./ProfilePage"
 
 const routes = {
   "/": SynopsisPage,
@@ -17,6 +18,7 @@ const routes = {
   "/error": ErrorPage,
   "/game": PhaserGamePage,
   "/contact": ContactPage,
+  "/profile": ProfilePage,
 };
 
 let navBar = document.querySelector("#navBar");
