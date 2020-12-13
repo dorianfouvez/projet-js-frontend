@@ -30,7 +30,7 @@ const PhaserGamePage = () => {
       default: "arcade",
       arcade: {
         gravity: { y: 0 },
-        debug: true,
+        debug: false,
       },
     },
     scene: [ GenreScene, GameScene, MenuScene ],
@@ -43,8 +43,9 @@ const PhaserGamePage = () => {
   //KillGame();
   game = new Phaser.Game(config);
   return game.globals = { 
-    musicVolume: undefined, 
+    musicVolume: 0.3, 
     bgm: undefined,
+    musicSeek :  undefined,
     gender: "M", 
     playerName: "Jojo",
     modifSetting: false,

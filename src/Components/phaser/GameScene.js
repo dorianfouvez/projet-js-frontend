@@ -11,13 +11,11 @@ const GUARDIAN_KEY = "guardian";
 const BUTTON_KEY="settingButton";
 
 const PATH_ASSETS = "../assets/";
-const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_HEALBAR = PATH_ASSETS + "healBar/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
 const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
-const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 const PATH_UI = PATH_ASSETS + "ui/";
 const PATH_BUTTON = PATH_UI + "button/";
@@ -76,7 +74,6 @@ class GameScene extends Phaser.Scene {
     this.setProgressBar();
 
     // Maps
-    this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
     this.load.image("winterTileSheet", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
     this.load.image("dungeonTileSheet", PATH_TILESHEETS_EXTRUDED + "dungeon_extruded.png");
     this.load.image("caveTileSheet", PATH_TILESHEETS_EXTRUDED + "cave_extruded.png");
@@ -90,7 +87,6 @@ class GameScene extends Phaser.Scene {
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
 
     // Enemies
-    this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
     GuardianSpawn.loadAssets(this);
 
     // Audios
@@ -307,30 +303,30 @@ class GameScene extends Phaser.Scene {
   setLayer() {
     //if(!this.currentMap) this.currentMap = "map";
     switch(this.currentMap){
-      case "map":
-        // Images of Maps
-        this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("Winter","winterTileSheet");
+      // case "map":
+      //   // Images of Maps
+      //   this.tilemap = this.make.tilemap({key: "map"});
+      //   this.tileset = this.tilemap.addTilesetImage("Winter","winterTileSheet");
 
-        this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild1Layer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild2Layer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild3Layer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild4Layer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild5Layer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.cityBuild6Layer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.abovePlayerLayer = this.tilemap.createStaticLayer("AbovePlayer",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
+      //   this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild1Layer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild2Layer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild3Layer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild4Layer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild5Layer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.cityBuild6Layer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   this.abovePlayerLayer = this.tilemap.createStaticLayer("AbovePlayer",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+      //   //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
 
-        // By default, everything gets depth sorted on the screen in the order we created things. Here, we
-        // want the "Above Player" layer to sit on top of the player, so we explicitly give it a depth.
-        // Higher depths will sit on top of lower depth objects
-        this.abovePlayerLayer.setDepth(10);
+      //   // By default, everything gets depth sorted on the screen in the order we created things. Here, we
+      //   // want the "Above Player" layer to sit on top of the player, so we explicitly give it a depth.
+      //   // Higher depths will sit on top of lower depth objects
+      //   this.abovePlayerLayer.setDepth(10);
 
-        break;
+      //   break;
         case "winterMap":
           // Images of Maps
           this.tilemap = this.make.tilemap({key: "winterMap"});
@@ -699,10 +695,16 @@ class GameScene extends Phaser.Scene {
 
   setAudio(){
 
-    if(this.currentMap = "winterMap"){
-      this.clearAudio();
-      this.globals.bgm = this.sound.add("mix", { loop: true });
-      this.globals.bgm.play();
+    if(this.currentMap == "winterMap"){
+      if(this.globals.musicSeek == undefined){
+        this.clearAudio();
+        this.globals.bgm = this.sound.add("mix", { loop: true });
+        this.globals.bgm.play();
+      }else{
+        this.globals.bgm.setSeek(this.globals.musicSeek);
+        this.globals.bgm.resume();
+        this.globals.musicSeek = undefined;
+      }
     }else if(this.currentMap = "dungeonMap"){
       this.clearAudio();
       this.globals.bgm = this.sound.add("fin", { loop: true });
@@ -729,7 +731,7 @@ class GameScene extends Phaser.Scene {
 
     this.player.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
     this.player.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
-    this.player.hurtSound.volume = (jeu.globals.musicVolume * 8) + 1;
+    this.player.hurtSound.volume = (jeu.globals.musicVolume * 6) + 1;
     this.player.deathSound.volume = (jeu.globals.musicVolume * 5) + 1;
     this.guardianSpawner.atqSound.volume = (jeu.globals.musicVolume * 10) + 3;
     this.guardianSpawner.deathSound.volume = (jeu.globals.musicVolume * 10) + 1;
