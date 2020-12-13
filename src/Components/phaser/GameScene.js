@@ -53,12 +53,13 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.zombieSpawner = undefined;
-    this.settingFullButton = undefined ;
+    this.settingFullButton = undefined;
     this.settingMinButton = undefined;
     this.fullButton = undefined;
     this.minButton = undefined;
     this.spawnPlayer = undefined;
     this.spawnEnnemi = undefined;
+    this.nbrEnemiesRemaining = 0;
     //Idle and action attribut
     this.lastDirection = "F";
     //controls
@@ -153,6 +154,8 @@ class GameScene extends Phaser.Scene {
     // Player
     this.player = this.createPlayer();
     this.createHpBar();
+
+    if(this.currentMap && this.currentMap == "dungeonMap") this.player.lastDirection = "B";
 
     // Enemies
     this.createEnemies(this);
@@ -361,6 +364,9 @@ class GameScene extends Phaser.Scene {
           this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
           this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
+          // Dynamic Layer
+          this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+
           this.worldTop9Layer.setDepth(10);
           this.worldTop8Layer.setDepth(11);
           this.worldTop7Layer.setDepth(12);
@@ -390,26 +396,32 @@ class GameScene extends Phaser.Scene {
 
         break;
 
-        case "dungeonMap":
-          // Images of Maps
-          this.tilemap = this.make.tilemap({key: "dungeonMap"});
-          this.tileset = this.tilemap.addTilesetImage("dungeon","dungeonTileSheet");
-          this.tileset = this.tilemap.addTilesetImage("cave","caveTileSheet");
+      case "dungeonMap":
+        // Images of Maps
+        this.tilemap = this.make.tilemap({key: "dungeonMap"});
+        this.tileset = this.tilemap.addTilesetImage("dungeon","dungeonTileSheet");
+        this.tilesetCave = this.tilemap.addTilesetImage("cave","caveTileSheet");
 
-          this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldNoCollidesLayer = this.tilemap.createStaticLayer("worldNoCollides",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldNoCollidesLayer = this.tilemap.createStaticLayer("worldNoCollides",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1CaveLayer = this.tilemap.createStaticLayer("worldCollides1Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1CaveLayer = this.tilemap.createStaticLayer("worldTop1Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides2CaveLayer = this.tilemap.createStaticLayer("worldCollides2Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop2CaveLayer = this.tilemap.createStaticLayer("worldTop2Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
             
 
-          // Set depths of the layers
-          this.worldTop2Layer.setDepth(10);
-          this.worldTop1Layer.setDepth(10);
+        // Set depths of the layers
+        this.worldTop2Layer.setDepth(10);
+        this.worldTop1Layer.setDepth(10);
+        this.worldTop2CaveLayer.setDepth(10);
+        this.worldTop1CaveLayer.setDepth(10);
   
-          break;
+        break;
       default:
         this.currentMap = "winterMap"
         this.setLayer();
@@ -423,6 +435,40 @@ class GameScene extends Phaser.Scene {
         //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
         break;
       case "winterMap":
+        // Spawn Player
+        this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
+        this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
+        this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
+
+        // Spawn Guardian
+        for(let i =1 ;i<=40;i++){
+          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "guardianSpawn"+i);
+          this.spawnEnnemi.push(spawnEnemie);
+        }
+        
+        this.spawnEnnemi.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+
+        // Changing Map Objects
+        let accessToTheDungeon = this.tilemap.findObject("Objects", obj => obj.name === "accessToTheDungeon");
+        this.warpObjects.push(accessToTheDungeon);
+        let accessToTheDungeonPoint = this.tilemap.findObject("Objects", obj => obj.name === "toTheDungeon");
+        this.warpObjects.push(accessToTheDungeonPoint);
+
+        this.warpObjects.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+          // Set an image On each element For Debuging
+          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+        });
+
+        break;
+      case "dungeonMap":
+        // Spawn Player
         this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
         this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
         this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
@@ -476,35 +522,38 @@ class GameScene extends Phaser.Scene {
   }
 
   createEnemies(jeu){
-    this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
+    /*this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
     const ladyBugsGroup = this.ladyBugSpawner.group;
     this.ladyBugSpawner.spawn(this.player.himSelf.x, 480);
     this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
-    const zombieGroup = this.zombieSpawner.group;
+    const zombieGroup = this.zombieSpawner.group;*/
     //  this.zombieSpawner.spawn(this.player.x, 480);
-    this.spawnEnnemi.forEach(element => {
+    /*this.spawnEnnemi.forEach(element => {
       this.zombieSpawner.spawn(element.x,element.y);
-    });
+    });*/
 
     this.guardianSpawner = new GuardianSpawn(this, GUARDIAN_KEY);
-    this.guardianSpawner.spawn(4900, 500, jeu);
+    this.spawnEnnemi.forEach(element => {
+      this.guardianSpawner.spawn(element.x,element.y, jeu);
+    });
     this.guardianGroup = this.guardianSpawner.group;
   }
 
   manageColliders(objectToCollideToTheWorld){
     switch(this.currentMap){
       case "dungeonMap":
-
         this.worldLayer.setCollisionByProperty({ collides: true });
-
         this.worldCollides1Layer.setCollisionByProperty({ collides: true });
-
+        this.worldCollides1CaveLayer.setCollisionByProperty({ collides: true });
         this.worldCollides2Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides2CaveLayer.setCollisionByProperty({ collides: true });
 
         // Colliders
         this.physics.add.collider(this.player.himSelf, this.worldLayer);
         this.physics.add.collider(this.player.himSelf, this.worldCollides1Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1CaveLayer);
         this.physics.add.collider(this.player.himSelf, this.worldCollides2Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides2CaveLayer);
 
         break;
       case "map":
@@ -565,6 +614,11 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(element, this.worldCollides1Layer);
         });
 
+        // OverLaps
+        this.physics.add.overlap(this.player.himSelf, this.overlapLayer);
+        this.overlapLayer.setTileIndexCallback((2893+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((2896+1), this.changeMap, this);
+
         break;
       case "mapDodo":
         this.worldLayer.setCollisionByProperty({ Collides: true });
@@ -586,17 +640,22 @@ class GameScene extends Phaser.Scene {
 
   changeMap(player, tile){
     this.player.ableToMove = false;
+    let i = tile.properties.warpObjectsPlace;
     if(!this.isReadyToTP){
-      this.physics.moveTo(this.player.himSelf,this.warpObjects[0].x+5,this.warpObjects[0].y,100);
+      this.physics.moveTo(this.player.himSelf,this.warpObjects[i].x + 5,this.warpObjects[i].y,100);
       //console.log(player, tile);
-      //console.log(tile.index, tile.properties.TP);
+      console.log(tile.index, tile.properties.TP, this.player.himSelf.x, this.warpObjects[i].x, this.player.himSelf.y, this.warpObjects[i].y);
     }
 
-    if(this.player.himSelf.x > (this.warpObjects[0].x - 1) && this.player.himSelf.x < (this.warpObjects[0].x + 5) && 
-    this.player.himSelf.y > (this.warpObjects[0].y - 1) && this.player.himSelf.y < (this.warpObjects[0].y + 2)){
+    console.log(this.player.himSelf.y, (this.warpObjects[i].y));
+    console.log(this.player.himSelf.x > (this.warpObjects[i].x - 7), this.player.himSelf.x < (this.warpObjects[i].x + 7),
+      this.player.himSelf.y > (this.warpObjects[i].y - 10), this.player.himSelf.y < (this.warpObjects[i].y + 7));
+    if(this.player.himSelf.x > (this.warpObjects[i].x - 7) && this.player.himSelf.x < (this.warpObjects[i].x + 7) && 
+    this.player.himSelf.y > (this.warpObjects[i].y - 10) && this.player.himSelf.y < (this.warpObjects[i].y + 7)){
       this.player.himSelf.body.stop();
       this.isReadyToTP = true;
       this.currentMap = tile.properties.TP;
+      console.log(this.currentMap);
       this.scene.restart();
       //this.changeMap(tile.properties.TP);
       //this.player.ableToMove = true;
@@ -706,11 +765,11 @@ class GameScene extends Phaser.Scene {
 
   setAudio(){
 
-    if(this.currentMap = "winterMap"){
+    if(this.currentMap == "winterMap"){
       this.clearAudio();
       this.globals.bgm = this.sound.add("mix", { loop: true });
       this.globals.bgm.play();
-    }else if(this.currentMap = "dungeonMap"){
+    }else if(this.currentMap == "dungeonMap"){
       this.clearAudio();
       this.globals.bgm = this.sound.add("fin", { loop: true });
       this.globals.bgm.play();
