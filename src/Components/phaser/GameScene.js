@@ -90,7 +90,6 @@ class GameScene extends Phaser.Scene {
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
 
     // Enemies
-    this.load.image(LADYBUG_KEY, PATH_ENEMIES + "ladyBug.png");
     this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
     GuardianSpawn.loadAssets(this);
 
@@ -473,9 +472,6 @@ class GameScene extends Phaser.Scene {
   }
 
   createEnemies(jeu){
-    this.ladyBugSpawner = new LadyBugSpawner(this, LADYBUG_KEY);
-    const ladyBugsGroup = this.ladyBugSpawner.group;
-    this.ladyBugSpawner.spawn(this.player.himSelf.x, 480);
     this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
     const zombieGroup = this.zombieSpawner.group;
     //  this.zombieSpawner.spawn(this.player.x, 480);
