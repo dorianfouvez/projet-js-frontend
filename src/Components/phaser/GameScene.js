@@ -132,7 +132,7 @@ class GameScene extends Phaser.Scene {
 
   create() {
     //console.log(this.globals);
-    if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
+    //if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
     /*this.globals.musicVolume = 0.3;
     console.log(this.globals);*/
     this.isReadyToTP = false;
@@ -590,12 +590,12 @@ class GameScene extends Phaser.Scene {
     if(!this.isReadyToTP){
       this.physics.moveTo(this.player.himSelf,this.warpObjects[i].x + 5,this.warpObjects[i].y,100);
       //console.log(player, tile);
-      console.log(tile.index, tile.properties.TP, this.player.himSelf.x, this.warpObjects[i].x, this.player.himSelf.y, this.warpObjects[i].y);
+      //console.log(tile.index, tile.properties.TP, this.player.himSelf.x, this.warpObjects[i].x, this.player.himSelf.y, this.warpObjects[i].y);
     }
 
-    console.log(this.player.himSelf.y, (this.warpObjects[i].y));
-    console.log(this.player.himSelf.x > (this.warpObjects[i].x - 7), this.player.himSelf.x < (this.warpObjects[i].x + 7),
-      this.player.himSelf.y > (this.warpObjects[i].y - 20), this.player.himSelf.y < (this.warpObjects[i].y + 7));
+    //console.log(this.player.himSelf.y, (this.warpObjects[i].y));
+    //console.log(this.player.himSelf.x > (this.warpObjects[i].x - 7), this.player.himSelf.x < (this.warpObjects[i].x + 7),
+      //this.player.himSelf.y > (this.warpObjects[i].y - 20), this.player.himSelf.y < (this.warpObjects[i].y + 7));
     if(this.player.himSelf.x > (this.warpObjects[i].x - 7) && this.player.himSelf.x < (this.warpObjects[i].x + 7) && 
     this.player.himSelf.y > (this.warpObjects[i].y - 20) && this.player.himSelf.y < (this.warpObjects[i].y + 7)){
       this.player.himSelf.body.stop();
@@ -665,7 +665,6 @@ class GameScene extends Phaser.Scene {
   }
 
   setControls(){
-    console.log("setControls");
     if(this.keys) this.keys.atq1.removeAllListeners();
     this.keys = this.input.keyboard.addKeys({
       up: this.input.keyboard.addKey(this.globals.up),
@@ -775,7 +774,7 @@ class GameScene extends Phaser.Scene {
 
   checkDebugingKey(){
     if(this.debugingKey.isDown && !isDebugingKeyDown){
-      console.log("Run debbug color");
+      //console.log("Run debbug color");
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
       isDebugingKeyDown = !isDebugingKeyDown;

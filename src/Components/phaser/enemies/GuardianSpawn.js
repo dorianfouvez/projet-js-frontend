@@ -417,7 +417,7 @@ export default class  GuardianSpawner{
         if(!guardian.aggro)
           guardian.aggroSound.play();
         guardian.aggro = true;
-        console.log("In the range");
+        //console.log("In the range");
 
         if(guardian.gender == "M"){
           ;
@@ -524,7 +524,7 @@ export default class  GuardianSpawner{
     }
     if(typeOfAtk == 1) guardian.hp -= 1;
     else guardian.hp -= 2;
-    console.log("Guardian lose HP ! ("+guardian.hp+"/10)");
+    //console.log("Guardian lose HP ! ("+guardian.hp+"/10)");
     guardian.greenBar.setScale((guardian.hp/10)*0.3, 0.3);
     guardian.isInvulnerability = true;
     if(guardian.hp <= 0){
