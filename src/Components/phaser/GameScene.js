@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import ScoreLabel from "./ScoreLabel.js";
 import PlayerSpawn from "./player/PlayerSpawn.js";
 import LadyBugSpawner from "./enemies/LadyBugSpawner.js";
 import ZombieSpawner from "./enemies/ZombieSpawner.js";
@@ -13,10 +12,8 @@ const BUTTON_KEY="settingButton";
 
 const PATH_ASSETS = "../assets/";
 const PATH_ENEMIES = PATH_ASSETS + "enemies/";
-const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
 const PATH_HEALBAR = PATH_ASSETS + "healBar/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
-const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
 const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
