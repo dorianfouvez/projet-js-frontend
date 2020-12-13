@@ -8,7 +8,7 @@ let page = document.querySelector("#page");
 const UserListPage = () => {
   setTitle("UserList");
   const user = getUserSessionData();
-  if (!user) RedirectUrl("/error", "Resource not authorized. Please login.");
+  if (!user || user.isAdmin == false) return RedirectUrl("/error", "Resource not authorized. Please login.");
 
   fetch(API_URL + "users", {
     method: "GET",
