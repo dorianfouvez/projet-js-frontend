@@ -11,6 +11,7 @@ const GUARDIAN_KEY = "guardian";
 const BUTTON_KEY="settingButton";
 
 const PATH_ASSETS = "../assets/";
+const PATH_ENEMIES = PATH_ASSETS + "enemies/";
 const PATH_HEALBAR = PATH_ASSETS + "healBar/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
@@ -91,6 +92,8 @@ class GameScene extends Phaser.Scene {
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
 
     // Enemies
+    this.load.atlas("assemblee", PATH_ENEMIES + "assemblee.png", PATH_ENEMIES + "assemblee.json");
+    this.load.image("textFin", PATH_ENEMIES + "textFin.png");
     GuardianSpawn.loadAssets(this);
 
     // Audios
@@ -391,7 +394,61 @@ class GameScene extends Phaser.Scene {
         this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldTop2CaveLayer = this.tilemap.createStaticLayer("worldTop2Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-            
+
+        //hardcodage pour avoir un comité de fin pour le joueur
+
+        this.mouchnir = this.physics.add.sprite(900, 150, "mouchnir", "0_Reaper_Man_Idle Blinking_00");
+        this.angeDechu = this.physics.add.sprite(850, 200, "angeDechu", "0_Fallen_Angels_Idle Blinking_00");
+        this.golem0 = this.physics.add.sprite(800, 250, "golem0", "0_Golem_Idle Blinking_00");
+        this.golem1 = this.physics.add.sprite(950, 200, "golem1", "10_Golem_Idle Blinking_00").setFlipX(true);
+        this.golem2 = this.physics.add.sprite(1000, 250, "golem2", "20_Golem_Idle Blinking_00").setFlipX(true);
+        this.add.image(835, 10, "textFin").setScale(0.75).setDepth(20);
+
+        this.anims.create({
+          key: "mouchnir",
+          frames: this.anims.generateFrameNames("assemblee", {prefix: "0_Reaper_Man_Idle Blinking_0", start: 0, end: 17}),
+          frameRate: 8,
+          repeat: -1
+        });
+
+        this.mouchnir.anims.play("mouchnir", true);
+
+        this.anims.create({
+          key: "angeDechu",
+          frames: this.anims.generateFrameNames("assemblee", {prefix: "0_Fallen_Angels_Idle Blinking_0", start: 0, end: 17}),
+          frameRate: 14,
+          repeat: -1
+        });
+
+        this.angeDechu.anims.play("angeDechu", true);
+
+        this.anims.create({
+          key: "golem0",
+          frames: this.anims.generateFrameNames("assemblee", {prefix: "0_Golem_Idle Blinking_0", start: 0, end: 17}),
+          frameRate: 6,
+          repeat: -1
+        });
+
+        this.golem0.anims.play("golem0", true);
+
+        this.anims.create({
+          key: "golem1",
+          frames: this.anims.generateFrameNames("assemblee", {prefix: "10_Golem_Idle Blinking_0", start: 0, end: 17}),
+          frameRate: 6,
+          repeat: -1
+        });
+
+        this.golem1.anims.play("golem1", true);
+
+        this.anims.create({
+          key: "golem2",
+          frames: this.anims.generateFrameNames("assemblee", {prefix: "20_Golem_Idle Blinking_0", start: 0, end: 17}),
+          frameRate: 6,
+          repeat: -1
+        });
+
+        this.golem2.anims.play("golem2", true);
+          
 
         // Set depths of the layers
         this.worldTop2Layer.setDepth(10);
@@ -461,9 +518,9 @@ class GameScene extends Phaser.Scene {
         this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
         this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
 
-        this.spawnSatan = this.tilemap.findObject("Objects", obj => obj.name === "satanSpawn");
-        this.spawnSatan.x *= MAP_RESIZING_FACTOR;
-        this.spawnSatan.y *= MAP_RESIZING_FACTOR;
+        // this.spawnSatan = this.tilemap.findObject("Objects", obj => obj.name === "satanSpawn");
+        // this.spawnSatan.x *= MAP_RESIZING_FACTOR;
+        // this.spawnSatan.y *= MAP_RESIZING_FACTOR;
 
         break;
       default:
@@ -497,7 +554,7 @@ class GameScene extends Phaser.Scene {
     this.guardianGroup = this.guardianSpawner.group;
 
     // Satan
-    if(this.spawnSatan) this.guardianSpawner.spawn(this.spawnSatan.x,this.spawnSatan.y, jeu);
+    // if(this.spawnSatan) this.guardianSpawner.spawn(this.spawnSatan.x,this.spawnSatan.y, jeu);
   }
 
   manageColliders(){
@@ -725,7 +782,7 @@ class GameScene extends Phaser.Scene {
         this.clearAudio();
         this.globals.bgm = this.sound.add("mix", { loop: true });
         this.globals.bgm.play();
-      }else{
+      }else{ 
         this.globals.bgm.setSeek(this.globals.musicSeek);
         this.globals.bgm.resume();
         this.globals.musicSeek = undefined;
@@ -734,8 +791,6 @@ class GameScene extends Phaser.Scene {
       this.clearAudio();
       this.globals.bgm = this.sound.add("fin", { loop: true });
       this.globals.bgm.play();
-    }else if(this.currentMap == "houseMap"){
-      this.clearAudio();
     }
   }
 
@@ -750,6 +805,8 @@ class GameScene extends Phaser.Scene {
         ease: 'Linear',
         duration: 500
       });
+
+      jeu.globals.bgm.stop();
     }
   }
 
