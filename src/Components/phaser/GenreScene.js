@@ -61,7 +61,7 @@ class GenreScene extends Phaser.Scene {
 
         jeu.globals.bgm = jeu.sound.add("debut");
         jeu.globals.bgm.play();
-        jeu.globals.bgm.volume = 0.2;
+        jeu.globals.bgm.volume = 0.3;
     }
 
     update() {

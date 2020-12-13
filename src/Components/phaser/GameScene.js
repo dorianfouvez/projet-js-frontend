@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import ScoreLabel from "./ScoreLabel.js";
 import PlayerSpawn from "./player/PlayerSpawn.js";
 import LadyBugSpawner from "./enemies/LadyBugSpawner.js";
 import ZombieSpawner from "./enemies/ZombieSpawner.js";
@@ -12,15 +11,11 @@ const GUARDIAN_KEY = "guardian";
 const BUTTON_KEY="settingButton";
 
 const PATH_ASSETS = "../assets/";
-const PATH_ENEMIES = PATH_ASSETS + "enemies/";
-const PATH_GUARDIAN = PATH_ENEMIES + "guardian/";
 const PATH_HEALBAR = PATH_ASSETS + "healBar/";
 const PATH_MAPS = PATH_ASSETS + "maps/";
-const PATH_PLAYERS = PATH_ASSETS + "players/";
 const PATH_PROGRESSBAR = PATH_ASSETS + "progressBar/";
 const PATH_SOUNDS = PATH_ASSETS + "sounds/";
 const PATH_TILESHEETS = PATH_ASSETS + "tilesheets/";
-const PATH_TILESHEETS_NORMAL = PATH_TILESHEETS + "normal/";
 const PATH_TILESHEETS_EXTRUDED = PATH_TILESHEETS + "extruded/";
 const PATH_UI = PATH_ASSETS + "ui/";
 const PATH_BUTTON = PATH_UI + "button/";
@@ -80,7 +75,6 @@ class GameScene extends Phaser.Scene {
     this.setProgressBar();
 
     // Maps
-    this.load.image("tiles", PATH_TILESHEETS_NORMAL + "winter.png");
     this.load.image("winterTileSheet", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
     this.load.image("dungeonTileSheet", PATH_TILESHEETS_EXTRUDED + "dungeon_extruded.png");
     this.load.image("caveTileSheet", PATH_TILESHEETS_EXTRUDED + "cave_extruded.png");
@@ -97,7 +91,6 @@ class GameScene extends Phaser.Scene {
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
 
     // Enemies
-    this.load.atlas(ZOMBIE_KEY,PATH_ENEMIES+"zombie.png",PATH_ENEMIES+"zombieAtlas.json");
     GuardianSpawn.loadAssets(this);
 
     // Audios
@@ -715,9 +708,15 @@ class GameScene extends Phaser.Scene {
   setAudio(){
 
     if(this.currentMap == "winterMap"){
-      this.clearAudio();
-      this.globals.bgm = this.sound.add("mix", { loop: true });
-      this.globals.bgm.play();
+      if(this.globals.musicSeek == undefined){
+        this.clearAudio();
+        this.globals.bgm = this.sound.add("mix", { loop: true });
+        this.globals.bgm.play();
+      }else{
+        this.globals.bgm.setSeek(this.globals.musicSeek);
+        this.globals.bgm.resume();
+        this.globals.musicSeek = undefined;
+      }
     }else if(this.currentMap == "dungeonMap"){
       this.clearAudio();
       this.globals.bgm = this.sound.add("fin", { loop: true });
@@ -746,7 +745,7 @@ class GameScene extends Phaser.Scene {
 
     this.player.atq1Sound.volume = (jeu.globals.musicVolume * 10) + 1; 
     this.player.atq2Sound.volume = (jeu.globals.musicVolume * 10) + 1;
-    this.player.hurtSound.volume = (jeu.globals.musicVolume * 10) + 1;
+    this.player.hurtSound.volume = (jeu.globals.musicVolume * 6) + 1;
     this.player.deathSound.volume = (jeu.globals.musicVolume * 5) + 1;
     this.guardianSpawner.atqSound.volume = (jeu.globals.musicVolume * 10) + 3;
     this.guardianSpawner.deathSound.volume = (jeu.globals.musicVolume * 10) + 1;
