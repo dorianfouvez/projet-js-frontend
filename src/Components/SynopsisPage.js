@@ -60,7 +60,7 @@ La situation étant encore plus désespérée, Léoric et Misty, en découvrant 
 <br>
 Ni humain, ni bête, ni même autre appellation que "chose", <span class="redcolor">Mouchnir</span> était une créature à moitié morte et à moitié vivante. 
 Celui-ci faisait l'objet de beaucoup de légendes urbaines, dont certaines racontaient que son sang même était composé du mal le plus pur et le plus concentré depuis la création du monde. Banni du royaume à cause de ses relations particulières avec la mort, il habitait désormais enfoncé dans les plus lointaines montagnes, là où rien ne poussait ou ne vivait.
-Lorsqu’il vint chez les Foupronfile, les jumeaux durent éteindre toutes les lumières et se bander les yeux. La chose, après s’être faufilée dans la chambre de leur mère à pas de loup, leur susurra à chacun la même phrase d’un ton sec et sadique : « Si <span class="redcolor">Mouchnir</span>git retient la barque d’une âme avant son grand voyage, une âme corrompue devra faire saigner le royaume de Doqoul ».
+Lorsqu’il vint chez les Foupronfile, les jumeaux durent éteindre toutes les lumières et se bander les yeux. La chose, après s’être faufilée dans la chambre de leur mère à pas de loup, leur susurra à chacun la même phrase d’un ton sec et sadique : « Si <span class="redcolor">Mouchnir</span> retient la barque d’une âme avant son grand voyage, une âme corrompue devra faire saigner le royaume de Doqoul ».
 
 </p>
 </div>
