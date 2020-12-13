@@ -48,12 +48,13 @@ class GameScene extends Phaser.Scene {
     this.isReadyToTP = undefined;
     this.gameOver = false;
     this.zombieSpawner = undefined;
-    this.settingFullButton = undefined ;
+    this.settingFullButton = undefined;
     this.settingMinButton = undefined;
     this.fullButton = undefined;
     this.minButton = undefined;
     this.spawnPlayer = undefined;
     this.spawnEnnemi = undefined;
+    this.nbrEnemiesRemaining = 0;
     //Idle and action attribut
     this.lastDirection = "F";
     //controls
@@ -77,11 +78,14 @@ class GameScene extends Phaser.Scene {
     this.load.image("winterTileSheet", PATH_TILESHEETS_EXTRUDED + "winter-extruded.png");
     this.load.image("dungeonTileSheet", PATH_TILESHEETS_EXTRUDED + "dungeon_extruded.png");
     this.load.image("caveTileSheet", PATH_TILESHEETS_EXTRUDED + "cave_extruded.png");
+    this.load.image("tropicalTileSheet", PATH_TILESHEETS_EXTRUDED + "tropical_extruded.png");
+    this.load.image("summerTileSheet", PATH_TILESHEETS_EXTRUDED + "summer_extruded.png");
     
     this.load.tilemapTiledJSON("map", PATH_MAPS + "mapTest.json");
     this.load.tilemapTiledJSON("mapDodo", PATH_MAPS + "mapTestDorian.json");
     this.load.tilemapTiledJSON("winterMap", PATH_MAPS + "WinterMap.json");
     this.load.tilemapTiledJSON("dungeonMap", PATH_MAPS + "DungeonMap.json");
+    this.load.tilemapTiledJSON("houseMap", PATH_MAPS + "house.json");
 
     this.load.image("red_healbar", PATH_HEALBAR + "red_healbar_background.png");
     this.load.image("green_healbar", PATH_HEALBAR + "green_healbar.png");
@@ -128,7 +132,7 @@ class GameScene extends Phaser.Scene {
 
   create() {
     //console.log(this.globals);
-    if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
+    //if(this.globals.bgm) console.log("BGM Key : " + this.globals.bgm.key);
     /*this.globals.musicVolume = 0.3;
     console.log(this.globals);*/
     this.isReadyToTP = false;
@@ -145,6 +149,8 @@ class GameScene extends Phaser.Scene {
     // Player
     this.player = this.createPlayer();
     this.createHpBar();
+
+    if(this.currentMap && this.currentMap == "dungeonMap") this.player.lastDirection = "B";
 
     // Enemies
     this.createEnemies(this);
@@ -301,109 +307,101 @@ class GameScene extends Phaser.Scene {
   }
 
   setLayer() {
-    //if(!this.currentMap) this.currentMap = "map";
     switch(this.currentMap){
-      // case "map":
-      //   // Images of Maps
-      //   this.tilemap = this.make.tilemap({key: "map"});
-      //   this.tileset = this.tilemap.addTilesetImage("Winter","winterTileSheet");
-
-      //   this.landLayer = this.tilemap.createStaticLayer("land",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.topLayer = this.tilemap.createStaticLayer("cityRoad",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityLayer = this.tilemap.createStaticLayer("City",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild1Layer = this.tilemap.createStaticLayer("CityBuild1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild2Layer = this.tilemap.createStaticLayer("CityBuild2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild3Layer = this.tilemap.createStaticLayer("CityBuild3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild4Layer = this.tilemap.createStaticLayer("CityBuild4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild5Layer = this.tilemap.createStaticLayer("CityBuild5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.cityBuild6Layer = this.tilemap.createStaticLayer("Citybuild6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   this.abovePlayerLayer = this.tilemap.createStaticLayer("AbovePlayer",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-      //   //this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0); // pour claques avec objets récoltable ou pique qui font mal
-
-      //   // By default, everything gets depth sorted on the screen in the order we created things. Here, we
-      //   // want the "Above Player" layer to sit on top of the player, so we explicitly give it a depth.
-      //   // Higher depths will sit on top of lower depth objects
-      //   this.abovePlayerLayer.setDepth(10);
-
-      //   break;
-        case "winterMap":
-          // Images of Maps
-          this.tilemap = this.make.tilemap({key: "winterMap"});
-          this.tileset = this.tilemap.addTilesetImage("winter","winterTileSheet");
-
-          this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides9Layer = this.tilemap.createStaticLayer("worldCollides9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop9Layer = this.tilemap.createStaticLayer("worldTop9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldSpecialLayer = this.tilemap.createStaticLayer("worldSpecial",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides8Layer = this.tilemap.createStaticLayer("worldCollides8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop8Layer = this.tilemap.createStaticLayer("worldTop8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides7Layer = this.tilemap.createStaticLayer("worldCollides7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop7Layer = this.tilemap.createStaticLayer("worldTop7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides6Layer = this.tilemap.createStaticLayer("worldCollides6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop6Layer = this.tilemap.createStaticLayer("worldTop6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides5Layer = this.tilemap.createStaticLayer("worldCollides5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop5Layer = this.tilemap.createStaticLayer("worldTop5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides4Layer = this.tilemap.createStaticLayer("worldCollides4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop4Layer = this.tilemap.createStaticLayer("worldTop4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides3Layer = this.tilemap.createStaticLayer("worldCollides3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop3Layer = this.tilemap.createStaticLayer("worldTop3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-
-          this.worldTop9Layer.setDepth(10);
-          this.worldTop8Layer.setDepth(11);
-          this.worldTop7Layer.setDepth(12);
-          this.worldTop6Layer.setDepth(13);
-          this.worldTop5Layer.setDepth(14);
-          this.worldTop4Layer.setDepth(15);
-          this.worldTop3Layer.setDepth(16);
-          this.worldTop2Layer.setDepth(17);
-          this.worldTop1Layer.setDepth(18);
-
-          break;
-      case "mapDodo":
+      case "houseMap":
         // Images of Maps
-        this.tilemap = this.make.tilemap({key: "mapDodo"});
+        this.tilemap = this.make.tilemap({key: "houseMap"});
+        this.tileset = this.tilemap.addTilesetImage("tropical_extruded","tropicalTileSheet");
+        this.tilesetSummer = this.tilemap.addTilesetImage("summer_extruded","summerTileSheet");
+
+        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldNoCollidesTropicalLayer = this.tilemap.createStaticLayer("worldNoCollidesTropical",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldNoCollidesSummerLayer = this.tilemap.createStaticLayer("worldNoCollidesSummer",this.tilesetSummer,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1TropicalLayer = this.tilemap.createStaticLayer("worldCollides1Tropical",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1SummerLayer = this.tilemap.createStaticLayer("worldCollides1Summer",this.tilesetSummer,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1TropicalLayer = this.tilemap.createStaticLayer("worldTop1Tropical",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1SummerLayer = this.tilemap.createStaticLayer("worldTop1Summer",this.tilesetSummer,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldWeaponsTopSummerLayer = this.tilemap.createStaticLayer("worldWeaponsTopSummer",this.tilesetSummer,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldWeaponsTopTropicalLayer = this.tilemap.createStaticLayer("worldWeaponsTopTropical",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+
+        // Dynamic Layer
+        this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tilesetSummer,0,0).setScale(MAP_RESIZING_FACTOR);
+
+        // Set depths of the layers
+        this.worldTop1SummerLayer.setDepth(10);
+        this.worldTop1TropicalLayer.setDepth(10);
+        this.overlapLayer.setDepth(10);
+
+        break;
+      case "winterMap":
+        // Images of Maps
+        this.tilemap = this.make.tilemap({key: "winterMap"});
         this.tileset = this.tilemap.addTilesetImage("winter","winterTileSheet");
 
-        // Layers of Dorian's Map
-        this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.worldSecondFloorLayer = this.tilemap.createStaticLayer("worldSecondFloor",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.worldThirdFloorLayer = this.tilemap.createStaticLayer("worldThirdFloor",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-        this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides9Layer = this.tilemap.createStaticLayer("worldCollides9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop9Layer = this.tilemap.createStaticLayer("worldTop9",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldSpecialLayer = this.tilemap.createStaticLayer("worldSpecial",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides8Layer = this.tilemap.createStaticLayer("worldCollides8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop8Layer = this.tilemap.createStaticLayer("worldTop8",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides7Layer = this.tilemap.createStaticLayer("worldCollides7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop7Layer = this.tilemap.createStaticLayer("worldTop7",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides6Layer = this.tilemap.createStaticLayer("worldCollides6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop6Layer = this.tilemap.createStaticLayer("worldTop6",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides5Layer = this.tilemap.createStaticLayer("worldCollides5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop5Layer = this.tilemap.createStaticLayer("worldTop5",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides4Layer = this.tilemap.createStaticLayer("worldCollides4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop4Layer = this.tilemap.createStaticLayer("worldTop4",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides3Layer = this.tilemap.createStaticLayer("worldCollides3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop3Layer = this.tilemap.createStaticLayer("worldTop3",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+
+        // Dynamic Layer
         this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
 
         // Set depths of the layers
-        this.topLayer.setDepth(10);
+        this.worldTop9Layer.setDepth(10);
+        this.worldTop8Layer.setDepth(11);
+        this.worldTop7Layer.setDepth(12);
+        this.worldTop6Layer.setDepth(13);
+        this.worldTop5Layer.setDepth(14);
+        this.worldTop4Layer.setDepth(15);
+        this.worldTop3Layer.setDepth(16);
+        this.worldTop2Layer.setDepth(17);
+        this.worldTop1Layer.setDepth(18);
 
         break;
+      case "dungeonMap":
+        // Images of Maps
+        this.tilemap = this.make.tilemap({key: "dungeonMap"});
+        this.tileset = this.tilemap.addTilesetImage("dungeon","dungeonTileSheet");
+        this.tilesetCave = this.tilemap.addTilesetImage("cave","caveTileSheet");
 
-        case "dungeonMap":
-          // Images of Maps
-          this.tilemap = this.make.tilemap({key: "dungeonMap"});
-          this.tileset = this.tilemap.addTilesetImage("dungeon","dungeonTileSheet");
-          this.tileset = this.tilemap.addTilesetImage("cave","caveTileSheet");
-
-          this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldNoCollidesLayer = this.tilemap.createStaticLayer("worldNoCollides",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
-          this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldNoCollidesLayer = this.tilemap.createStaticLayer("worldNoCollides",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1Layer = this.tilemap.createStaticLayer("worldCollides1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides1CaveLayer = this.tilemap.createStaticLayer("worldCollides1Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1Layer = this.tilemap.createStaticLayer("worldTop1",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop1CaveLayer = this.tilemap.createStaticLayer("worldTop1Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides2Layer = this.tilemap.createStaticLayer("worldCollides2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldCollides2CaveLayer = this.tilemap.createStaticLayer("worldCollides2Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop2Layer = this.tilemap.createStaticLayer("worldTop2",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTop2CaveLayer = this.tilemap.createStaticLayer("worldTop2Cave",this.tilesetCave,0,0).setScale(MAP_RESIZING_FACTOR);
+        this.worldTorchs = this.tilemap.createStaticLayer("worldTorchs",this.tileset,0,0).setScale(MAP_RESIZING_FACTOR);
             
 
-          // Set depths of the layers
-          this.worldTop2Layer.setDepth(10);
-          this.worldTop1Layer.setDepth(10);
+        // Set depths of the layers
+        this.worldTop2Layer.setDepth(10);
+        this.worldTop1Layer.setDepth(10);
+        this.worldTop2CaveLayer.setDepth(10);
+        this.worldTop1CaveLayer.setDepth(10);
   
-          break;
+        break;
       default:
-        this.currentMap = "winterMap"
+        this.currentMap = "houseMap"
         this.setLayer();
         break;
     }
@@ -411,42 +409,65 @@ class GameScene extends Phaser.Scene {
 
   manageObjects(){
     switch(this.currentMap){
-      case "map":
-        //let nextMap = this.tilemap.findObject("Objects", obj => obj.name === "nextMap").properties[0].value;
-        break;
-      case "winterMap":
+      case "houseMap":
+        // Spawn Player
         this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
         this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
         this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
 
+        let sortiePlayer = this.tilemap.findObject("Objects", obj => obj.name === "sortiePlayer");
+        this.warpObjects.push(sortiePlayer);
+
+        this.warpObjects.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+        });
+
         break;
-      case "mapDodo":
-        // Changing Map Objects
-        let entryHouse = this.tilemap.findObject("Objects", obj => obj.name === "entryHouse");
-        for(let i =1 ;i<=3;i++){
-          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "spawnEnemies"+i);
+      case "winterMap":
+        // Spawn Player
+        this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
+        this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
+        this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
+
+        // Spawn of Guardians
+        for(let i =1 ;i<=40;i++){
+          let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "guardianSpawn"+i);
           this.spawnEnnemi.push(spawnEnemie);
         }
+        
+        this.spawnEnnemi.forEach(element => {
+          element.x *= MAP_RESIZING_FACTOR;
+          element.y *= MAP_RESIZING_FACTOR;
+        });
 
-        //entryHouse.x *= MAP_RESIZING_FACTOR;
-        this.warpObjects.push(entryHouse);
+        // Changing Map Objects
+        let accessToTheDungeon = this.tilemap.findObject("Objects", obj => obj.name === "accessToTheDungeon");
+        this.warpObjects.push(accessToTheDungeon);
+        let accessToTheDungeonPoint = this.tilemap.findObject("Objects", obj => obj.name === "toTheDungeon");
+        this.warpObjects.push(accessToTheDungeonPoint);
 
         this.warpObjects.forEach(element => {
           element.x *= MAP_RESIZING_FACTOR;
           element.y *= MAP_RESIZING_FACTOR;
           // Set an image On each element For Debuging
-          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
+          //this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
         });
-        this.spawnEnnemi.forEach(element => {
-          element.x *= MAP_RESIZING_FACTOR;
-          element.y *= MAP_RESIZING_FACTOR;
-          // Set an image On each element For Debuging
-          this.add.sprite(element.x,element.y,"ladyBug").setScale(0.4);
-        });
-        
+
+        break;
+      case "dungeonMap":
+        // Spawn Player
+        this.spawnPlayer = this.tilemap.findObject("Objects", obj => obj.name === "spawnPlayer");
+        this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
+        this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
+
+        this.spawnSatan = this.tilemap.findObject("Objects", obj => obj.name === "satanSpawn");
+        this.spawnSatan.x *= MAP_RESIZING_FACTOR;
+        this.spawnSatan.y *= MAP_RESIZING_FACTOR;
+
         break;
       default:
-        this.currentMap = "winterMap"
+        this.currentMap = "houseMap"
         this.manageObjects();
         break;
     }
@@ -463,60 +484,41 @@ class GameScene extends Phaser.Scene {
   }
 
   createHpBar(){
-    this.redBar = this.physics.add.sprite(10, 10, "red_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(15);
-    this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(16);
+    this.redBar = this.physics.add.sprite(10, 10, "red_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(Number.MAX_VALUE);
+    this.greenBar = this.physics.add.sprite(10, 10, "green_healbar").setOrigin(0,0).setDisplaySize(200, 30).setScrollFactor(0).setDepth(Number.MAX_VALUE);
   }
 
   createEnemies(jeu){
-    this.zombieSpawner = new ZombieSpawner(this, ZOMBIE_KEY);
-    const zombieGroup = this.zombieSpawner.group;
-    //  this.zombieSpawner.spawn(this.player.x, 480);
-    this.spawnEnnemi.forEach(element => {
-      this.zombieSpawner.spawn(element.x,element.y);
-    });
-
     this.guardianSpawner = new GuardianSpawn(this, GUARDIAN_KEY);
-    this.guardianSpawner.spawn(4900, 500, jeu);
+    this.spawnEnnemi.forEach(element => {
+      this.guardianSpawner.spawn(element.x,element.y, jeu);
+    });
     this.guardianGroup = this.guardianSpawner.group;
+
+    // Satan
+    if(this.spawnSatan) this.guardianSpawner.spawn(this.spawnSatan.x,this.spawnSatan.y, jeu);
   }
 
-  manageColliders(objectToCollideToTheWorld){
+  manageColliders(){
     switch(this.currentMap){
-      case "dungeonMap":
-
+      case "houseMap":
         this.worldLayer.setCollisionByProperty({ collides: true });
-
-        this.worldCollides1Layer.setCollisionByProperty({ collides: true });
-
-        this.worldCollides2Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides1TropicalLayer.setCollisionByProperty({ collides: true });
+        this.worldCollides1SummerLayer.setCollisionByProperty({ collides: true });
 
         // Colliders
         this.physics.add.collider(this.player.himSelf, this.worldLayer);
-        this.physics.add.collider(this.player.himSelf, this.worldCollides1Layer);
-        this.physics.add.collider(this.player.himSelf, this.worldCollides2Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1TropicalLayer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1SummerLayer);
 
-        break;
-      case "map":
-        this.worldLayer.setCollisionByProperty({ collides: true });
-        this.cityLayer.setCollisionByProperty({ collides: true });
-        this.cityBuild1Layer.setCollisionByProperty({ collides: true });
-        this.cityBuild2Layer.setCollisionByProperty({ collides: true });
-        this.cityBuild3Layer.setCollisionByProperty({ collides: true });
-        this.cityBuild4Layer.setCollisionByProperty({ collides: true });
-        this.cityBuild5Layer.setCollisionByProperty({ collides: true });
-        this.cityBuild6Layer.setCollisionByProperty({ collides: true });
-
-        // Colliders
-        this.physics.add.collider(this.player.himSelf, this.worldLayer);
-        this.physics.add.collider(this.player.himSelf, this.cityLayer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild1Layer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild2Layer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild3Layer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild4Layer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild5Layer);
-        this.physics.add.collider(this.player.himSelf, this.cityBuild6Layer);
-
-
+        // OverLaps
+        this.physics.add.overlap(this.player.himSelf, this.overlapLayer);
+        this.overlapLayer.setTileIndexCallback((8720+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((8721+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((8722+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((8790+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((8791+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((8792+1), this.changeMap, this);
 
         break;
       case "winterMap":
@@ -554,20 +556,29 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(element, this.worldCollides1Layer);
         });
 
+        // OverLaps
+        this.physics.add.overlap(this.player.himSelf, this.overlapLayer);
+        this.overlapLayer.setTileIndexCallback((2893+1), this.changeMap, this);
+        this.overlapLayer.setTileIndexCallback((2896+1), this.changeMap, this);
+
         break;
-      case "mapDodo":
-        this.worldLayer.setCollisionByProperty({ Collides: true });
+      case "dungeonMap":
+        this.worldLayer.setCollisionByProperty({ collides: true });
+        this.worldCollides1Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides1CaveLayer.setCollisionByProperty({ collides: true });
+        this.worldCollides2Layer.setCollisionByProperty({ collides: true });
+        this.worldCollides2CaveLayer.setCollisionByProperty({ collides: true });
 
         // Colliders
         this.physics.add.collider(this.player.himSelf, this.worldLayer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides1CaveLayer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides2Layer);
+        this.physics.add.collider(this.player.himSelf, this.worldCollides2CaveLayer);
 
-        // OverLaps
-        this.physics.add.overlap(this.player.himSelf, this.overlapLayer);
-        this.overlapLayer.setTileIndexCallback((2249+1), this.changeMap, this);
-        
         break;
       default:
-        this.currentMap = "winterMap"
+        this.currentMap = "houseMap"
         this.manageColliders();
         break;
     }
@@ -575,31 +586,32 @@ class GameScene extends Phaser.Scene {
 
   changeMap(player, tile){
     this.player.ableToMove = false;
+    let i = tile.properties.warpObjectsPlace;
     if(!this.isReadyToTP){
-      this.physics.moveTo(this.player.himSelf,this.warpObjects[0].x+5,this.warpObjects[0].y,100);
+      this.physics.moveTo(this.player.himSelf,this.warpObjects[i].x + 5,this.warpObjects[i].y,100);
       //console.log(player, tile);
-      //console.log(tile.index, tile.properties.TP);
+      //console.log(tile.index, tile.properties.TP, this.player.himSelf.x, this.warpObjects[i].x, this.player.himSelf.y, this.warpObjects[i].y);
     }
 
-    if(this.player.himSelf.x > (this.warpObjects[0].x - 1) && this.player.himSelf.x < (this.warpObjects[0].x + 5) && 
-    this.player.himSelf.y > (this.warpObjects[0].y - 1) && this.player.himSelf.y < (this.warpObjects[0].y + 2)){
+    //console.log(this.player.himSelf.y, (this.warpObjects[i].y));
+    //console.log(this.player.himSelf.x > (this.warpObjects[i].x - 7), this.player.himSelf.x < (this.warpObjects[i].x + 7),
+      //this.player.himSelf.y > (this.warpObjects[i].y - 20), this.player.himSelf.y < (this.warpObjects[i].y + 7));
+    if(this.player.himSelf.x > (this.warpObjects[i].x - 7) && this.player.himSelf.x < (this.warpObjects[i].x + 7) && 
+    this.player.himSelf.y > (this.warpObjects[i].y - 20) && this.player.himSelf.y < (this.warpObjects[i].y + 7)){
       this.player.himSelf.body.stop();
       this.isReadyToTP = true;
       this.currentMap = tile.properties.TP;
       this.scene.restart();
-      //this.changeMap(tile.properties.TP);
-      //this.player.ableToMove = true;
     }
   }
 
   manageCamera() {
     this.cameras.main.startFollow(this.player.himSelf);
-    //console.log(this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels);
     this.cameras.main.setBounds(0,0,this.tilemap.widthInPixels*MAP_RESIZING_FACTOR,this.tilemap.heightInPixels*MAP_RESIZING_FACTOR);
   }
 
   setFullscreen(){
-    this.fullButton = this.add.image(770, 570, 'fullScreen', 0).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
+    this.fullButton = this.add.image(770, 570, 'fullScreen', 0).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0).setDepth(Number.MAX_VALUE);
   }
 
   manageFullscreen() {
@@ -653,6 +665,7 @@ class GameScene extends Phaser.Scene {
   }
 
   setControls(){
+    if(this.keys) this.keys.atq1.removeAllListeners();
     this.keys = this.input.keyboard.addKeys({
       up: this.input.keyboard.addKey(this.globals.up),
       down: this.input.keyboard.addKey(this.globals.down),
@@ -681,16 +694,14 @@ class GameScene extends Phaser.Scene {
     let jeu = this;
 
     this.input.keyboard.on('keycombomatch', function (event) {
-
-        console.log('Konami Code entered!');
-
-        jeu.currentMap = "dungeonMap";
-        jeu.scene.restart();
+      console.log('Konami Code entered!');
+      jeu.player.hp = 10;
+      jeu.greenBar.setScale(1, 1);
     });
   }
 
   setMenuButton(){
-    this.settingMinButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0);
+    this.settingMinButton = this.add.sprite(this.cameras.main.width-30,30,BUTTON_KEY).setInteractive({ cursor: 'url(' + PATH_CURSORS + 'Cursor_Click.png), pointer' }).setScrollFactor(0).setDepth(Number.MAX_VALUE);
   }
 
   setAudio(){
@@ -705,11 +716,13 @@ class GameScene extends Phaser.Scene {
         this.globals.bgm.resume();
         this.globals.musicSeek = undefined;
       }
-    }else if(this.currentMap = "dungeonMap"){
+    }else if(this.currentMap == "dungeonMap"){
       this.clearAudio();
       this.globals.bgm = this.sound.add("fin", { loop: true });
       this.globals.bgm.play();
-    }  
+    }else if(this.currentMap == "houseMap"){
+      this.clearAudio();
+    }
   }
 
   clearAudio(){
@@ -761,7 +774,7 @@ class GameScene extends Phaser.Scene {
 
   checkDebugingKey(){
     if(this.debugingKey.isDown && !isDebugingKeyDown){
-      console.log("Run debbug color");
+      //console.log("Run debbug color");
       isDebugingGraphicsAllowed = !isDebugingGraphicsAllowed;
       this.setDebugingGraphics();
       isDebugingKeyDown = !isDebugingKeyDown;
@@ -775,54 +788,25 @@ class GameScene extends Phaser.Scene {
       //this.debugGraphics = this.add.graphics().setAlpha(PLAYER_RESIZING_FACTOR).setDepth(20);
       this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
       switch(this.currentMap){
-        case "map":
+        case "houseMap":
           this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
           this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityLayer.renderDebug(this.debugGraphics[1], {
+          this.worldCollides1TropicalLayer.renderDebug(this.debugGraphics[1], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
           this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild1Layer.renderDebug(this.debugGraphics[2], {
+          this.worldCollides1SummerLayer.renderDebug(this.debugGraphics[2], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
-          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild2Layer.renderDebug(this.debugGraphics[3], {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });
-          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild3Layer.renderDebug(this.debugGraphics[4], {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });
-          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild4Layer.renderDebug(this.debugGraphics[5], {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });
-          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild5Layer.renderDebug(this.debugGraphics[6], {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });
-          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
-          this.cityBuild6Layer.renderDebug(this.debugGraphics[7], {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-          });
+
           break;
         case "winterMap":
           this.worldCollides9Layer.renderDebug(this.debugGraphics[0], {
@@ -880,12 +864,37 @@ class GameScene extends Phaser.Scene {
           });
 
           break;
-        case "mapDodo":
+        case "dungeonMap":
           this.worldLayer.renderDebug(this.debugGraphics[0], {
             tileColor: null, // Color of non-colliding tiles
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
           });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides1Layer.renderDebug(this.debugGraphics[1], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides1CaveLayer.renderDebug(this.debugGraphics[2], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides2Layer.renderDebug(this.debugGraphics[3], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+          this.debugGraphics.push(this.add.graphics().setAlpha(SCALE_DEBUG).setDepth(20));
+          this.worldCollides2CaveLayer.renderDebug(this.debugGraphics[4], {
+            tileColor: null, // Color of non-colliding tiles
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+          });
+
           break;
       }
     }else if(this.debugGraphics[0]){
