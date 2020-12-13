@@ -469,13 +469,9 @@ class GameScene extends Phaser.Scene {
         this.spawnPlayer.x *= MAP_RESIZING_FACTOR;
         this.spawnPlayer.y *= MAP_RESIZING_FACTOR;
 
-        let spawnEnemie = this.tilemap.findObject("Objects", obj => obj.name === "satanSpawn");
-        this.spawnEnnemi.push(spawnEnemie);
-
-        this.spawnEnnemi.forEach(element => {
-          element.x *= MAP_RESIZING_FACTOR;
-          element.y *= MAP_RESIZING_FACTOR;
-        });
+        this.spawnSatan = this.tilemap.findObject("Objects", obj => obj.name === "satanSpawn");
+        this.spawnSatan.x *= MAP_RESIZING_FACTOR;
+        this.spawnSatan.y *= MAP_RESIZING_FACTOR;
 
         break;
       default:
@@ -506,6 +502,9 @@ class GameScene extends Phaser.Scene {
       this.guardianSpawner.spawn(element.x,element.y, jeu);
     });
     this.guardianGroup = this.guardianSpawner.group;
+
+    // Satan
+    if(this.spawnSatan) this.guardianSpawner.spawn(this.spawnSatan.x,this.spawnSatan.y, jeu);
   }
 
   manageColliders(){
