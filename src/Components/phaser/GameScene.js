@@ -489,6 +489,7 @@ class GameScene extends Phaser.Scene {
   }
 
   createEnemies(jeu){
+    this.nbrEnemiesRemaining = 0;
     this.guardianSpawner = new GuardianSpawn(this, GUARDIAN_KEY);
     this.spawnEnnemi.forEach(element => {
       this.guardianSpawner.spawn(element.x,element.y, jeu);
@@ -585,8 +586,20 @@ class GameScene extends Phaser.Scene {
   }
 
   changeMap(player, tile){
+    if(this.nbrEnemiesRemaining != 0){
+      return this.tweens.add({
+        targets : this.player.himSelf,
+        y : this.player.himSelf.y-50,
+        ease : "linear",
+        duration : 300,
+        repeat : 0,
+      });
+    }
+
     this.player.ableToMove = false;
     let i = tile.properties.warpObjectsPlace;
+    //console.log(this.nbrEnemiesRemaining);
+
     if(!this.isReadyToTP){
       this.physics.moveTo(this.player.himSelf,this.warpObjects[i].x + 5,this.warpObjects[i].y,100);
       //console.log(player, tile);
@@ -598,6 +611,7 @@ class GameScene extends Phaser.Scene {
       //this.player.himSelf.y > (this.warpObjects[i].y - 20), this.player.himSelf.y < (this.warpObjects[i].y + 7));
     if(this.player.himSelf.x > (this.warpObjects[i].x - 7) && this.player.himSelf.x < (this.warpObjects[i].x + 7) && 
     this.player.himSelf.y > (this.warpObjects[i].y - 20) && this.player.himSelf.y < (this.warpObjects[i].y + 7)){
+      this.cameras.main.fadeOut(500);
       this.player.himSelf.body.stop();
       this.isReadyToTP = true;
       this.currentMap = tile.properties.TP;

@@ -77,6 +77,7 @@ export default class  GuardianSpawner{
     this.manageCollides(guardian);
     this.createAnims();
     this.manageMovements(guardian, jeu);
+    this.scene.nbrEnemiesRemaining++;
     return guardian;
     
   }
@@ -419,9 +420,6 @@ export default class  GuardianSpawner{
         guardian.aggro = true;
         //console.log("In the range");
 
-        if(guardian.gender == "M"){
-          ;
-        }
         if(guardian.anims.currentAnim == null || !guardian.anims.isPlaying || (guardian.anims.currentAnim.key != "frontHurt"
         && guardian.anims.currentAnim.key != "backHurt" && guardian.anims.currentAnim.key != "leftHurt" && guardian.anims.currentAnim.key != "rightHurt"
         && guardian.anims.currentAnim.key != "frontAtq1" && guardian.anims.currentAnim.key != "backAtq1" && guardian.anims.currentAnim.key != "leftAtq1" 
@@ -528,6 +526,7 @@ export default class  GuardianSpawner{
     guardian.greenBar.setScale((guardian.hp/10)*0.3, 0.3);
     guardian.isInvulnerability = true;
     if(guardian.hp <= 0){
+        this.scene.nbrEnemiesRemaining--;
         this.die(guardian);
     }
   }
