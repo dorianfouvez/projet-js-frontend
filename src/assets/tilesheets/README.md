@@ -1,2 +1,0 @@
-Attention ! Les tilesets "extruded" ne doivent pas être mit de la même manière que les "normaux" dans Tiled !!
-Les "normaux" sont décrit en 64 x 64 Alors qu'il faut mettre les "extruded" en 66 x 66 !!!

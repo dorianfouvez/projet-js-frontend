@@ -576,22 +576,23 @@ export default class PlayerSpawner{
     takeDamage(){
         if(this.isInvulnerability) return;
     
+        let jeu = this.scene;
         this.hurt = true;
         this.hp -= 1;
         if(this.ableToMove) this.scene.greenBar.setScale((this.hp/10), 1);
         if(this.hp == 0){
-            this.gameOver();
+            this.gameOver(jeu);
         }
     }
   
-    gameOver(){
-      // let sonMort = true;
+    gameOver(jeu){
       console.log("Game Over");
       this.himSelf.body.stop();
-      // if(sonMort){
-        this.deathSound.play();
-      //   sonMort = false;
-      // } 
+
+      jeu.globals.musicSeek = jeu.globals.bgm.seek;
+      jeu.globals.bgm.pause();
+      this.deathSound.play();
+
       this.ableToMove = false;
       switch(this.lastDirection){
         case "B":
