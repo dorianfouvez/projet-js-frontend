@@ -157,6 +157,17 @@
                  "width":0,
                  "x":1603.14,
                  "y":3113.45
+                }, 
+                {
+                 "height":0,
+                 "id":2,
+                 "name":"satanSpawn",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1509.09090909091,
+                 "y":1136.36363636364
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -165,7 +176,7 @@
          "y":0
         }],
  "nextlayerid":13,
- "nextobjectid":2,
+ "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",

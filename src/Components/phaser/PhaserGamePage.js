@@ -54,7 +54,8 @@ const PhaserGamePage = () => {
     right: 68,
     atq1: 37,
     atq2: 39,
-    run: 16};
+    run: 16
+  };
 };
 
 function KillGame() {
