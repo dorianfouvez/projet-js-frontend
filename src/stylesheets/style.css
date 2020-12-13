@@ -20,7 +20,10 @@
 #logo-site{
   width: 150px;
 }
-
+/********** color synopsis **********/
+.redcolor{
+  color : red ;
+}
 /*Déjà là*/
 body {
   height: 100vh;
